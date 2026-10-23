@@ -66,7 +66,7 @@ create policy docs_insert on public.docs for insert to authenticated with check 
     when coll = 'reports'                then data->>'by' = public.me()
     when coll = 'submissions'            then data->>'by' = public.me()
     when coll = 'notifications'          then data->>'from' = public.me()
-    when coll in ('parkings','companies','modOverrides','categories','editors') then public.is_mod()
+    when coll in ('parkings','companies','modOverrides','categories','editors','pro','settings') then public.is_mod()
     when coll = 'news'                   then public.is_mod() or (public.is_editor() and data->>'author' = public.me())
     when coll = 'hangout'                then data->>'author' = public.me() or public.is_mod()
     when coll = 'data/users/' || public.me() then true
@@ -84,7 +84,7 @@ using (
     when coll = 'reviews'                then data->>'author' = public.me() or public.is_mod()
     when coll = 'submissions'            then public.is_mod()
     when coll = 'notifications'          then data->>'to' = public.me()
-    when coll in ('parkings','companies','modOverrides','categories','editors') then public.is_mod()
+    when coll in ('parkings','companies','modOverrides','categories','editors','pro','settings') then public.is_mod()
     when coll = 'news'                   then public.is_mod() or (public.is_editor() and data->>'author' = public.me())
     when coll = 'hangout'                then data->>'author' = public.me() or public.is_mod()
     when coll = 'data/users/' || public.me() then true
@@ -99,7 +99,7 @@ with check (
     when coll = 'reviews'                then data->>'author' = public.me() or public.is_mod()
     when coll = 'submissions'            then public.is_mod()
     when coll = 'notifications'          then data->>'to' = public.me()
-    when coll in ('parkings','companies','modOverrides','categories','editors') then public.is_mod()
+    when coll in ('parkings','companies','modOverrides','categories','editors','pro','settings') then public.is_mod()
     when coll = 'news'                   then public.is_mod() or (public.is_editor() and data->>'author' = public.me())
     when coll = 'hangout'                then data->>'author' = public.me() or public.is_mod()
     when coll = 'data/users/' || public.me() then true
@@ -114,7 +114,7 @@ create policy docs_delete on public.docs for delete to authenticated using (
     when coll = 'reviews'                then data->>'author' = public.me() or public.is_mod()
     when coll = 'usernames'              then data->>'accountId' = public.me() or public.is_mod()
     when coll = 'notifications'          then data->>'to' = public.me()
-    when coll in ('reports','parkings','companies','modOverrides','submissions','categories','editors') then public.is_mod()
+    when coll in ('reports','parkings','companies','modOverrides','submissions','categories','editors','pro','settings') then public.is_mod()
     when coll = 'news'                   then public.is_mod() or (public.is_editor() and data->>'author' = public.me())
     when coll = 'hangout'                then data->>'author' = public.me() or public.is_mod()
     when coll = 'data/users/' || public.me() then true
