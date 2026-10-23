@@ -976,7 +976,9 @@ function gmStart(){const d=el("div",{id:"gmap"});wrap.prepend(d);
   let t="map";try{t=localStorage.getItem("cp-maptype")||"map"}catch(e){}gmSetType(t);
   requestAnimationFrame(()=>fitTo([53.0,50.8],[3.4,6.2],30))}
 function gmLoad(){const k=CFG&&CFG.googleMapsKey;if(!k||window.google&&window.google.maps)return;
-  window.gm_authFailure=()=>{gmFail();alertMsg("Google Maps kon niet laden. De eenvoudige kaart wordt gebruikt.")};
+  const GM_WHY={RefererNotAllowedMapError:"dit webadres staat niet bij de toegestane websites van de sleutel",ApiNotActivatedMapError:"de Maps JavaScript API staat niet aan",BillingNotEnabledMapError:"facturering staat niet aan voor dit project",InvalidKeyMapError:"de sleutel is ongeldig",ApiTargetBlockedMapError:"de sleutel mag de Maps JavaScript API niet gebruiken (API-beperking)",ExpiredKeyMapError:"de sleutel is verlopen",DeletedApiProjectMapError:"het Google-project is verwijderd"};
+  let gmErr="";const ce=console.error;console.error=function(...a){try{const t=a.join(" ");const m=t.match(/Google Maps JavaScript API (?:error|warning): (\w+)/);if(m&&!gmErr)gmErr=m[1]}catch(e){}return ce.apply(this,a)};
+  window.gm_authFailure=()=>{setTimeout(()=>{gmFail();const why=GM_WHY[gmErr];const d=el("div",{class:"toast",style:"max-width:min(520px,calc(100% - 32px));white-space:normal"},"Google Maps kon niet laden"+(why?": "+why+".":gmErr?" ("+gmErr+").":".")+" Webadres: "+location.origin);document.body.append(d);setTimeout(()=>d.remove(),15000)},50)};
   window.__cpGmInit=()=>{try{gmStart()}catch(e){gmFail()}};
   const s=document.createElement("script");s.async=true;s.src="https://maps.googleapis.com/maps/api/js?key="+encodeURIComponent(k)+"&v=weekly&language=nl&region=NL&loading=async&callback=__cpGmInit";s.onerror=()=>{};document.head.append(s)}
 let raf=0;function draw(){cancelAnimationFrame(raf);raf=requestAnimationFrame(render)}
