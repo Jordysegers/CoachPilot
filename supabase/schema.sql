@@ -30,6 +30,12 @@ $$;
 create or replace function public.me() returns text
 language sql stable as $$ select coalesce(auth.uid()::text, '') $$;
 
+-- Geblokkeerde gebruikers (rol 'Banned'): kunnen niets meer plaatsen
+create or replace function public.is_banned() returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.docs where path = 'bans/' || coalesce(auth.uid()::text, ''));
+$$;
+
 -- Redacteuren: mogen direct nieuws plaatsen (rol wordt niet getoond in de app)
 create or replace function public.is_editor() returns boolean
 language sql stable security definer set search_path = public as $$
@@ -51,13 +57,14 @@ create policy docs_select on public.docs for select using (
     when coll = 'submissions'   then public.is_mod() or data->>'by' = public.me()
     when coll like 'data/%'     then coll = 'data/users/' || public.me()
     when coll = 'editors'       then id = public.me() or public.is_mod()
+    when coll = 'bans'          then id = public.me() or public.is_mod()
     else true
   end
 );
 
 drop policy if exists docs_insert on public.docs;
 create policy docs_insert on public.docs for insert to authenticated with check (
-  case
+  (not public.is_banned() or public.is_mod()) and case
     when coll = 'profiles'               then id = public.me()
     when coll = 'usernames'              then data->>'accountId' = public.me() or public.is_mod()
     when coll = 'posts'                  then data->>'author' = public.me()
@@ -66,7 +73,7 @@ create policy docs_insert on public.docs for insert to authenticated with check 
     when coll = 'reports'                then data->>'by' = public.me()
     when coll = 'submissions'            then data->>'by' = public.me()
     when coll = 'notifications'          then data->>'from' = public.me()
-    when coll in ('parkings','companies','modOverrides','categories','editors','pro','settings') then public.is_mod()
+    when coll in ('parkings','companies','modOverrides','categories','editors','pro','settings','bans') then public.is_mod()
     when coll = 'news'                   then public.is_mod() or (public.is_editor() and data->>'author' = public.me())
     when coll = 'hangout'                then data->>'author' = public.me() or public.is_mod()
     when coll = 'data/users/' || public.me() then true
@@ -84,7 +91,7 @@ using (
     when coll = 'reviews'                then data->>'author' = public.me() or public.is_mod()
     when coll = 'submissions'            then public.is_mod()
     when coll = 'notifications'          then data->>'to' = public.me()
-    when coll in ('parkings','companies','modOverrides','categories','editors','pro','settings') then public.is_mod()
+    when coll in ('parkings','companies','modOverrides','categories','editors','pro','settings','bans') then public.is_mod()
     when coll = 'news'                   then public.is_mod() or (public.is_editor() and data->>'author' = public.me())
     when coll = 'hangout'                then data->>'author' = public.me() or public.is_mod()
     when coll = 'data/users/' || public.me() then true
@@ -92,14 +99,14 @@ using (
   end
 )
 with check (
-  case
+  (coll = 'notifications' or not public.is_banned() or public.is_mod()) and case
     when coll = 'profiles'               then id = public.me()
     when coll = 'usernames'              then data->>'accountId' = public.me() or public.is_mod()
     when coll = 'posts' or coll like 'posts/%/replies' then true
     when coll = 'reviews'                then data->>'author' = public.me() or public.is_mod()
     when coll = 'submissions'            then public.is_mod()
     when coll = 'notifications'          then data->>'to' = public.me()
-    when coll in ('parkings','companies','modOverrides','categories','editors','pro','settings') then public.is_mod()
+    when coll in ('parkings','companies','modOverrides','categories','editors','pro','settings','bans') then public.is_mod()
     when coll = 'news'                   then public.is_mod() or (public.is_editor() and data->>'author' = public.me())
     when coll = 'hangout'                then data->>'author' = public.me() or public.is_mod()
     when coll = 'data/users/' || public.me() then true
@@ -114,7 +121,7 @@ create policy docs_delete on public.docs for delete to authenticated using (
     when coll = 'reviews'                then data->>'author' = public.me() or public.is_mod()
     when coll = 'usernames'              then data->>'accountId' = public.me() or public.is_mod()
     when coll = 'notifications'          then data->>'to' = public.me()
-    when coll in ('reports','parkings','companies','modOverrides','submissions','categories','editors','pro','settings') then public.is_mod()
+    when coll in ('reports','parkings','companies','modOverrides','submissions','categories','editors','pro','settings','bans') then public.is_mod()
     when coll = 'news'                   then public.is_mod() or (public.is_editor() and data->>'author' = public.me())
     when coll = 'hangout'                then data->>'author' = public.me() or public.is_mod()
     when coll = 'data/users/' || public.me() then true
@@ -168,7 +175,7 @@ create trigger hangout_guard before insert on public.docs
 
 grant select on public.docs, public.moderators to anon, authenticated;
 grant insert, update, delete on public.docs to authenticated;
-grant execute on function public.is_mod(), public.me(), public.is_editor() to anon, authenticated;
+grant execute on function public.is_mod(), public.me(), public.is_editor(), public.is_banned() to anon, authenticated;
 
 -- 4. Live bijwerken (realtime)
 alter table public.docs replica identity full;
