@@ -30,6 +30,12 @@ $$;
 create or replace function public.me() returns text
 language sql stable as $$ select coalesce(auth.uid()::text, '') $$;
 
+-- Redacteuren: mogen direct nieuws plaatsen (rol wordt niet getoond in de app)
+create or replace function public.is_editor() returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.docs where path = 'editors/' || coalesce(auth.uid()::text, ''));
+$$;
+
 -- 3. Beveiliging (Row Level Security)
 alter table public.docs enable row level security;
 alter table public.moderators enable row level security;
@@ -44,6 +50,7 @@ create policy docs_select on public.docs for select using (
     when coll = 'reports'       then public.is_mod()
     when coll = 'submissions'   then public.is_mod() or data->>'by' = public.me()
     when coll like 'data/%'     then coll = 'data/users/' || public.me()
+    when coll = 'editors'       then id = public.me() or public.is_mod()
     else true
   end
 );
@@ -59,7 +66,8 @@ create policy docs_insert on public.docs for insert to authenticated with check 
     when coll = 'reports'                then data->>'by' = public.me()
     when coll = 'submissions'            then data->>'by' = public.me()
     when coll = 'notifications'          then data->>'from' = public.me()
-    when coll in ('parkings','companies','modOverrides','categories','news') then public.is_mod()
+    when coll in ('parkings','companies','modOverrides','categories','editors') then public.is_mod()
+    when coll = 'news'                   then public.is_mod() or (public.is_editor() and data->>'author' = public.me())
     when coll = 'hangout'                then data->>'author' = public.me() or public.is_mod()
     when coll = 'data/users/' || public.me() then true
     else false
@@ -76,7 +84,8 @@ using (
     when coll = 'reviews'                then data->>'author' = public.me() or public.is_mod()
     when coll = 'submissions'            then public.is_mod()
     when coll = 'notifications'          then data->>'to' = public.me()
-    when coll in ('parkings','companies','modOverrides','categories','news') then public.is_mod()
+    when coll in ('parkings','companies','modOverrides','categories','editors') then public.is_mod()
+    when coll = 'news'                   then public.is_mod() or (public.is_editor() and data->>'author' = public.me())
     when coll = 'hangout'                then data->>'author' = public.me() or public.is_mod()
     when coll = 'data/users/' || public.me() then true
     else false
@@ -90,7 +99,8 @@ with check (
     when coll = 'reviews'                then data->>'author' = public.me() or public.is_mod()
     when coll = 'submissions'            then public.is_mod()
     when coll = 'notifications'          then data->>'to' = public.me()
-    when coll in ('parkings','companies','modOverrides','categories','news') then public.is_mod()
+    when coll in ('parkings','companies','modOverrides','categories','editors') then public.is_mod()
+    when coll = 'news'                   then public.is_mod() or (public.is_editor() and data->>'author' = public.me())
     when coll = 'hangout'                then data->>'author' = public.me() or public.is_mod()
     when coll = 'data/users/' || public.me() then true
     else false
@@ -104,7 +114,8 @@ create policy docs_delete on public.docs for delete to authenticated using (
     when coll = 'reviews'                then data->>'author' = public.me() or public.is_mod()
     when coll = 'usernames'              then data->>'accountId' = public.me() or public.is_mod()
     when coll = 'notifications'          then data->>'to' = public.me()
-    when coll in ('reports','parkings','companies','modOverrides','submissions','categories','news') then public.is_mod()
+    when coll in ('reports','parkings','companies','modOverrides','submissions','categories','editors') then public.is_mod()
+    when coll = 'news'                   then public.is_mod() or (public.is_editor() and data->>'author' = public.me())
     when coll = 'hangout'                then data->>'author' = public.me() or public.is_mod()
     when coll = 'data/users/' || public.me() then true
     else false
@@ -137,9 +148,27 @@ create trigger docs_guard before update on public.docs
   for each row execute function public.docs_guard();
 
 -- Toegang voor de app
+-- Hangout: anti-spam (max 5 berichten per minuut, minstens 4 seconden ertussen, max 500 tekens)
+create or replace function public.hangout_guard() returns trigger
+language plpgsql security definer set search_path = public as $$
+declare n int; last_at timestamptz;
+begin
+  if new.coll = 'hangout' then
+    select count(*), max(created_at) into n, last_at from public.docs
+      where coll = 'hangout' and data->>'author' = new.data->>'author' and created_at > now() - interval '60 seconds';
+    if n >= 5 then raise exception 'Te veel berichten achter elkaar. Probeer het over een minuut weer.'; end if;
+    if last_at is not null and last_at > now() - interval '4 seconds' then raise exception 'Even rustig aan.'; end if;
+    if length(coalesce(new.data->>'text','')) > 500 then raise exception 'Bericht is te lang.'; end if;
+  end if;
+  return new;
+end $$;
+drop trigger if exists hangout_guard on public.docs;
+create trigger hangout_guard before insert on public.docs
+  for each row execute function public.hangout_guard();
+
 grant select on public.docs, public.moderators to anon, authenticated;
 grant insert, update, delete on public.docs to authenticated;
-grant execute on function public.is_mod(), public.me() to anon, authenticated;
+grant execute on function public.is_mod(), public.me(), public.is_editor() to anon, authenticated;
 
 -- 4. Live bijwerken (realtime)
 alter table public.docs replica identity full;
