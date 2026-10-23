@@ -69,6 +69,7 @@ create policy docs_insert on public.docs for insert to authenticated with check 
     when coll = 'usernames'              then data->>'accountId' = public.me() or public.is_mod()
     when coll = 'posts'                  then data->>'author' = public.me()
     when coll like 'posts/%/replies'     then data->>'author' = public.me()
+    when coll like 'news/%/comments'     then data->>'author' = public.me()
     when coll = 'reviews'                then data->>'author' = public.me()
     when coll = 'reports'                then data->>'by' = public.me()
     when coll = 'submissions'            then data->>'by' = public.me()
@@ -87,7 +88,8 @@ using (
   case
     when coll = 'profiles'               then id = public.me()
     when coll = 'usernames'              then data->>'accountId' = public.me() or public.is_mod()
-    when coll = 'posts' or coll like 'posts/%/replies' then true   -- trigger hieronder bewaakt wát er mag veranderen
+    when coll = 'posts' or coll like 'posts/%/replies' or coll like 'news/%/comments' then true
+    when coll = 'news'                   then auth.uid() is not null   -- trigger hieronder bewaakt wát er mag veranderen
     when coll = 'reviews'                then data->>'author' = public.me() or public.is_mod()
     when coll = 'submissions'            then public.is_mod()
     when coll = 'notifications'          then data->>'to' = public.me()
@@ -102,7 +104,8 @@ with check (
   (coll = 'notifications' or not public.is_banned() or public.is_mod()) and case
     when coll = 'profiles'               then id = public.me()
     when coll = 'usernames'              then data->>'accountId' = public.me() or public.is_mod()
-    when coll = 'posts' or coll like 'posts/%/replies' then true
+    when coll = 'posts' or coll like 'posts/%/replies' or coll like 'news/%/comments' then true
+    when coll = 'news'                   then auth.uid() is not null
     when coll = 'reviews'                then data->>'author' = public.me() or public.is_mod()
     when coll = 'submissions'            then public.is_mod()
     when coll = 'notifications'          then data->>'to' = public.me()
@@ -117,7 +120,7 @@ with check (
 drop policy if exists docs_delete on public.docs;
 create policy docs_delete on public.docs for delete to authenticated using (
   case
-    when coll = 'posts' or coll like 'posts/%/replies' then data->>'author' = public.me() or public.is_mod()
+    when coll = 'posts' or coll like 'posts/%/replies' or coll like 'news/%/comments' then data->>'author' = public.me() or public.is_mod()
     when coll = 'reviews'                then data->>'author' = public.me() or public.is_mod()
     when coll = 'usernames'              then data->>'accountId' = public.me() or public.is_mod()
     when coll = 'notifications'          then data->>'to' = public.me()
@@ -137,7 +140,12 @@ begin
   if new.path <> old.path or new.coll <> old.coll or new.id <> old.id then
     raise exception 'Het pad van een document kan niet veranderen';
   end if;
-  if (new.coll = 'posts' or new.coll like 'posts/%/replies' or new.coll = 'reviews') and not public.is_mod() then
+  if new.coll = 'news' and not public.is_mod() and not (public.is_editor() and old.data->>'author' = public.me()) then
+    if (new.data - 'commentCount') is distinct from (old.data - 'commentCount') then
+      raise exception 'Alleen een moderator of de redacteur mag dit nieuwsbericht aanpassen';
+    end if;
+  end if;
+  if (new.coll = 'posts' or new.coll like 'posts/%/replies' or new.coll like 'news/%/comments' or new.coll = 'reviews') and not public.is_mod() then
     if new.data->>'author' is distinct from old.data->>'author' then
       raise exception 'De schrijver van een bericht kan niet veranderen';
     end if;
