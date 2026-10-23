@@ -74,9 +74,10 @@ create policy docs_insert on public.docs for insert to authenticated with check 
     when coll = 'reports'                then data->>'by' = public.me()
     when coll = 'submissions'            then data->>'by' = public.me()
     when coll = 'notifications'          then data->>'from' = public.me()
-    when coll in ('parkings','companies','modOverrides','categories','editors','pro','settings','bans','ads') then public.is_mod()
+    when coll in ('parkings','companies','modOverrides','categories','editors','pro','settings','bans','ads','facilities') then public.is_mod()
     when coll = 'news'                   then public.is_mod() or (public.is_editor() and data->>'author' = public.me())
     when coll = 'hangout'                then data->>'author' = public.me() or public.is_mod()
+    when coll = 'closures'               then data->>'by' = public.me() and (coalesce((data->>'approved')::boolean,false) = false or public.is_mod())
     when coll = 'data/users/' || public.me() then true
     else false
   end
@@ -93,8 +94,9 @@ using (
     when coll = 'reviews'                then data->>'author' = public.me() or public.is_mod()
     when coll = 'submissions'            then public.is_mod()
     when coll = 'notifications'          then data->>'to' = public.me()
-    when coll in ('parkings','companies','modOverrides','categories','editors','pro','settings','bans','ads') then public.is_mod()
+    when coll in ('parkings','companies','modOverrides','categories','editors','pro','settings','bans','ads','facilities') then public.is_mod()
     when coll = 'hangout'                then data->>'author' = public.me() or public.is_mod()
+    when coll = 'closures'               then auth.uid() is not null
     when coll = 'data/users/' || public.me() then true
     else false
   end
@@ -108,8 +110,9 @@ with check (
     when coll = 'reviews'                then data->>'author' = public.me() or public.is_mod()
     when coll = 'submissions'            then public.is_mod()
     when coll = 'notifications'          then data->>'to' = public.me()
-    when coll in ('parkings','companies','modOverrides','categories','editors','pro','settings','bans','ads') then public.is_mod()
+    when coll in ('parkings','companies','modOverrides','categories','editors','pro','settings','bans','ads','facilities') then public.is_mod()
     when coll = 'hangout'                then data->>'author' = public.me() or public.is_mod()
+    when coll = 'closures'               then auth.uid() is not null
     when coll = 'data/users/' || public.me() then true
     else false
   end
@@ -122,9 +125,10 @@ create policy docs_delete on public.docs for delete to authenticated using (
     when coll = 'reviews'                then data->>'author' = public.me() or public.is_mod()
     when coll = 'usernames'              then data->>'accountId' = public.me() or public.is_mod()
     when coll = 'notifications'          then data->>'to' = public.me()
-    when coll in ('reports','parkings','companies','modOverrides','submissions','categories','editors','pro','settings','bans','ads') then public.is_mod()
+    when coll in ('reports','parkings','companies','modOverrides','submissions','categories','editors','pro','settings','bans','ads','facilities') then public.is_mod()
     when coll = 'news'                   then public.is_mod() or (public.is_editor() and data->>'author' = public.me())
     when coll = 'hangout'                then data->>'author' = public.me() or public.is_mod()
+    when coll = 'closures'               then data->>'by' = public.me() or public.is_mod()
     when coll = 'data/users/' || public.me() then true
     else false
   end
@@ -151,6 +155,9 @@ begin
        and (new.data - 'likes' - 'replyCount' - 'lastAt') is distinct from (old.data - 'likes' - 'replyCount' - 'lastAt') then
       raise exception 'Alleen de schrijver of een moderator mag dit bericht aanpassen';
     end if;
+  end if;
+  if new.coll = 'closures' and not public.is_mod() and coalesce(new.data->>'approved','') is distinct from coalesce(old.data->>'approved','') then
+    raise exception 'Alleen een admin kan een sluiting bevestigen';
   end if;
   new.updated_at := now();
   return new;
