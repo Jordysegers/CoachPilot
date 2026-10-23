@@ -94,7 +94,6 @@ using (
     when coll = 'submissions'            then public.is_mod()
     when coll = 'notifications'          then data->>'to' = public.me()
     when coll in ('parkings','companies','modOverrides','categories','editors','pro','settings','bans') then public.is_mod()
-    when coll = 'news'                   then public.is_mod() or (public.is_editor() and data->>'author' = public.me())
     when coll = 'hangout'                then data->>'author' = public.me() or public.is_mod()
     when coll = 'data/users/' || public.me() then true
     else false
@@ -110,7 +109,6 @@ with check (
     when coll = 'submissions'            then public.is_mod()
     when coll = 'notifications'          then data->>'to' = public.me()
     when coll in ('parkings','companies','modOverrides','categories','editors','pro','settings','bans') then public.is_mod()
-    when coll = 'news'                   then public.is_mod() or (public.is_editor() and data->>'author' = public.me())
     when coll = 'hangout'                then data->>'author' = public.me() or public.is_mod()
     when coll = 'data/users/' || public.me() then true
     else false
@@ -162,7 +160,6 @@ drop trigger if exists docs_guard on public.docs;
 create trigger docs_guard before update on public.docs
   for each row execute function public.docs_guard();
 
--- Toegang voor de app
 -- Hangout: anti-spam (max 5 berichten per minuut, minstens 4 seconden ertussen, max 500 tekens)
 create or replace function public.hangout_guard() returns trigger
 language plpgsql security definer set search_path = public as $$
@@ -181,6 +178,7 @@ drop trigger if exists hangout_guard on public.docs;
 create trigger hangout_guard before insert on public.docs
   for each row execute function public.hangout_guard();
 
+-- Toegang voor de app
 grant select on public.docs, public.moderators to anon, authenticated;
 grant insert, update, delete on public.docs to authenticated;
 grant execute on function public.is_mod(), public.me(), public.is_editor(), public.is_banned() to anon, authenticated;
