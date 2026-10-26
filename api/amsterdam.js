@@ -14,7 +14,8 @@ const UA = "Coachpilot/1.0 (https://coachpilot-steel.vercel.app)";
 // Een API-sleutel van Amsterdam is (straks) verplicht; zet die dan als AMSTERDAM_API_KEY in Vercel.
 const amsHeaders = () => { const h = { Accept: "application/geo+json, application/json", "Accept-Crs": "EPSG:4326", "User-Agent": UA }; if (process.env.AMSTERDAM_API_KEY) h["X-Api-Key"] = process.env.AMSTERDAM_API_KEY; return h; };
 const BB = "(52.33,4.83,52.40,4.97)";
-const S100_Q = '[out:json][timeout:15];relation["route"="road"]["ref"="S100"]' + BB + '->.r;(way["highway"]["ref"~"(^|;)S100(;|$)"]' + BB + ';way(r.r)["highway"];way["highway"~"^(primary|secondary|tertiary|trunk)(_link)?$"]["name"~"^(Weesperstraat|Mr\\\\. Visserplein|Valkenburgerstraat|Kattenburgerstraat|Kattenburgerplein|Kattenburgerkruising)$"]' + BB + ';);out geom;';
+// Let op: in OpenStreetMap staan de Amsterdamse stadsroutes vaak als kleine letters (s100), daarom hoofdletterongevoelig zoeken
+const S100_Q = '[out:json][timeout:20];relation["type"="route"]["ref"~"^s100$",i]' + BB + '->.r;(way(r.r)["highway"];way["highway"]["ref"~"(^|;)s100(;|$)",i]' + BB + ';way["highway"~"^(primary|secondary|tertiary|trunk|unclassified)(_link)?$"]["name"~"^(Weesperstraat|Mr\\\\. Visserplein|Valkenburgerstraat|Kattenburgerstraat|Kattenburgerplein|Kattenburgerkruising)$"]' + BB + ';);out geom;';
 
 // RD (Rijksdriehoek) naar WGS84, benadering van Schreutelkamp & Strang van Hees (nauwkeurig tot ~1 m)
 function rd2wgs(x, y) {
@@ -63,7 +64,7 @@ async function getAll(url) { let feats = [], next = url, n = 0;
   return feats; }
 // Alle servers tegelijk proberen; de eerste die antwoordt wint
 async function overpass() {
-  try { return await Promise.any(OVERPASS.map(u => getJson(u, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded", "User-Agent": UA, Accept: "application/json" }, body: "data=" + encodeURIComponent(S100_Q) }))); }
+  try { return await Promise.any(OVERPASS.map(u => getJson(u + "?data=" + encodeURIComponent(S100_Q), { headers: { "User-Agent": UA, Accept: "*/*" } }))); }
   catch (e) { throw new Error((e.errors || [e]).map(x => x.message).join(" / ")); } }
 
 module.exports = async (req, res) => {
@@ -76,9 +77,10 @@ module.exports = async (req, res) => {
     const jobs = Object.entries(SRC).map(async ([kind, url]) => { try { linesOf(await getAll(url)).forEach(c => out.features.push({ type: "Feature", properties: { kind }, geometry: { type: "LineString", coordinates: c } })); } catch (e) { out.errors.push(kind + ": " + e.message); } });
     jobs.push((async () => { try {
       const js = await overpass();
-      (js.elements || []).filter(e => e.type === "way" && e.geometry).forEach(w => out.features.push({ type: "Feature", properties: { kind: CORRIDOR.test((w.tags || {}).name || "") && !/S100/.test((w.tags || {}).ref || "") ? "corridor" : "s100" }, geometry: { type: "LineString", coordinates: simplify(w.geometry.map(p => [p.lon, p.lat])).map(round) } }));
+      (js.elements || []).filter(e => e.type === "way" && e.geometry).forEach(w => out.features.push({ type: "Feature", properties: { kind: CORRIDOR.test((w.tags || {}).name || "") && !/s100/i.test((w.tags || {}).ref || "") ? "corridor" : "s100" }, geometry: { type: "LineString", coordinates: simplify(w.geometry.map(p => [p.lon, p.lat])).map(round) } }));
     } catch (e) { out.errors.push("s100: " + e.message); } })());
     await Promise.all(jobs);
+    if (req.query && req.query.debug) { const n = {}; out.features.forEach(f => n[f.properties.kind] = (n[f.properties.kind] || 0) + 1); res.setHeader("Cache-Control", "no-store"); return res.status(200).json({ aantallen: n, fouten: out.errors, sleutel: !!process.env.AMSTERDAM_API_KEY }); }
     if (!out.features.length) throw new Error(out.errors.join("; ") || "geen gegevens");
     res.setHeader("Cache-Control", "public, s-maxage=86400, stale-while-revalidate=604800");
     res.setHeader("Content-Type", "application/json");
