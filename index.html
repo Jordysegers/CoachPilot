@@ -1303,10 +1303,9 @@ function zoneLabels(){ZN.labels.forEach(o=>o.e.remove());ZN.labels=[];if(!ZN.on|
     const e=el("button",{type:"button",class:"zlabel "+(z.zone==="zero"?"ze":"le")+(zFuture(z)?" fut":""),onclick:ev=>{ev.stopPropagation();selectZone(z)}},el("span",{class:"zl-ic"},z.zone==="zero"?"⚡":"🌿"),el("span",{class:"zl-tx"},z.town||z.name));
     ZN.labels.push({e,lat:c[0],lon:c[1]})})}
 function placeZoneLabels(zoom){const far=zoom<9.5;ZN.labels.forEach(o=>o.e.classList.toggle("dot",far))}
-function zoneRuleText(z){const cls=(z.bus||[]).map(c=>c.replace(/^EURO[_ ]?/,"Euro ").replace(/_/g," "));
-  const min=cls.length?cls.slice().sort()[0]:null;
-  if(z.zone==="zero")return min?"Zero-emissiezone. Volgens de NDW-gegevens geldt voor bussen een uitzondering voor: "+cls.join(", ")+".":"Zero-emissiezone: alleen uitstootvrije voertuigen. Voor bussen kan een overgangsregeling of ontheffing gelden.";
-  return min?"Milieuzone. Volgens de NDW-gegevens mogen bussen erin vanaf "+min+".":"Milieuzone. Voor bussen geldt meestal minimaal Euro 6 (diesel). Controleer de actuele regels via de link.";}
+function zoneRuleText(z){const cls=(z.bus||[]).map(c=>c.replace(/^EURO[_ ]?/,"Euro ").replace(/_/g," "));const min=cls.length?cls.slice().sort()[0]:"Euro 6";
+  if(z.zone==="zero")return"Zero-emissiezone voor bussen: alleen uitstootvrije bussen. Controleer of er een overgangsregeling of ontheffing geldt.";
+  return"Milieuzone voor bussen (touringcar en OV): diesel minimaal "+min+". Bussen met Euro 4 of 5 kunnen vaak een ontheffing krijgen bij de gemeente. Bussen die niet op diesel rijden mogen er altijd in.";}
 const fmtDate=s=>{if(!s)return"";const d=new Date(s);return isNaN(d)?String(s):d.toLocaleDateString("nl-NL",{day:"numeric",month:"long",year:"numeric"})};
 async function loadZones(){if(ZN.data||ZN.loading)return;if(!LIVE){ZN.err="preview";return}ZN.loading=true;
   try{const r=await fetch("/api/zones");const js=await r.json();if(!r.ok||js.error)throw new Error(js.error||("fout "+r.status));ZN.data=js;ZN.err=null}catch(e){ZN.err=e.message||String(e)}finally{ZN.loading=false}}
@@ -1326,11 +1325,11 @@ function drawZones(){drawZonesSvg();drawZonesGm();if(ZN.on&&ZN.data&&!ZN.labels.
 function renderLegend(){let l=document.getElementById("zLegend");if(!ZN.on||!ZN.data){if(l)l.remove();return}
   if(!l){l=el("div",{class:"zlegend",id:"zLegend"});document.getElementById("mapView").append(l)}
   const hasFut=ZN.data.features.some(f=>zFuture(f.properties));
-  l.replaceChildren(...[el("span",{class:"lg"},el("i",{class:"le"}),"Milieuzone"),el("span",{class:"lg"},el("i",{class:"ze"}),"Zero-emissie"),hasFut?el("span",{class:"lg"},el("i",{class:"fut"}),"Toekomstig"):null].filter(Boolean))}
+  l.replaceChildren(...[el("span",{class:"lg"},el("i",{class:"le"}),"Milieuzone bussen"),ZN.data.features.some(f=>f.properties.zone==="zero")?el("span",{class:"lg"},el("i",{class:"ze"}),"Zero-emissie"):null,hasFut?el("span",{class:"lg"},el("i",{class:"fut"}),"Toekomstig"):null].filter(Boolean))}
 async function toggleZones(){ZN.on=!ZN.on;buildChips();
   if(ZN.on){await loadZones();if(ZN.err==="preview"){alertMsg("Milieuzones zie je op de live site. Deze voorbeeldweergave mag de NDW-gegevens niet ophalen.");ZN.on=false;buildChips();return}
     if(ZN.err){alertMsg("Milieuzones laden lukte niet: "+ZN.err);ZN.on=false;buildChips();return}
-    alertMsg((ZN.data.features||[]).length+" milieuzones op de kaart. Tik op ‘Parkeren’ om de parkings te verbergen.")}
+    alertMsg((ZN.data.features||[]).length+" milieuzones voor bussen op de kaart. Tik op ‘Parkeren’ om de parkings te verbergen.")}
   else{S.zone=null;renderSheet()}drawZones();buildChips()}
 function selectZone(z){S.zone=z;S.sel=null;renderSheet();drawZones()}
 function renderZoneCard(){const z=S.zone;const panel=el("div",{class:"panel zonepanel"},el("div",{class:"grab"}));const sc=el("div",{class:"pscroll"});
@@ -1341,7 +1340,7 @@ function renderZoneCard(){const z=S.zone;const panel=el("div",{class:"panel zone
   const facts=[[zFuture(z)?"Ingangsdatum":"Van kracht sinds",fmtDate(z.from)],["Einddatum",zNoEnd(z)?"Geen einddatum (blijvend)":fmtDate(z.until)],["Status",z.status]].filter(x=>x[1]);
   if(facts.length)sc.append(el("div",{class:"infolist"},...facts.map(([k,v])=>el("div",{class:"inforow"},el("span",{},k),el("b",{},v)))));
   sc.append(el("div",{class:"r",style:"gap:8px;flex-wrap:wrap"},z.url?el("a",{class:"btn sm",href:z.url,target:"_blank",rel:"noopener"},"Meer informatie ↗"):null,el("a",{class:"btn sm",href:"https://www.milieuzones.nl",target:"_blank",rel:"noopener"},"Alle regels op milieuzones.nl ↗")));
-  sc.append(el("p",{class:"note",style:"margin:0"},"Bron: NDW (Nationaal Dataportaal Wegverkeer), dagelijks bijgewerkt"+(ZN.data&&ZN.data.fetchedAt?" · opgehaald "+ago(Date.parse(ZN.data.fetchedAt)):"")+". Controleer bij twijfel altijd de borden ter plaatse."));
+  sc.append(el("p",{class:"note",style:"margin:0"},"Alleen zones die gelden voor bussen. Bron: NDW (dagelijks bijgewerkt) en milieuzones.nl"+(ZN.data&&ZN.data.fetchedAt?" · opgehaald "+ago(Date.parse(ZN.data.fetchedAt)):"")+". Controleer bij twijfel altijd de borden ter plaatse."));
   panel.append(sc);sheet.append(panel)}
 /* ---------- filters ---------- */
 const qi=document.getElementById("q"),res=document.getElementById("results");

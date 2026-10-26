@@ -46,20 +46,44 @@ function normalize(f) {
   };
 }
 
+// Milieuzones die volgens milieuzones.nl gelden voor autobussen (touringcar en OV): "paarse" zones, diesel minimaal Euro 6.
+// Bron: https://www.milieuzones.nl/autobussen. Zero-emissiezones in Nederland gelden (nog) niet voor bussen, alleen voor bestel- en vrachtauto's.
+const BUS_TOWNS = [/\bAMSTERDAM\b/, /\bARNHEM\b/, /DEN HAAG|'?S-GRAVENHAGE/, /\bEINDHOVEN\b/, /\bRIJSWIJK\b/, /\bUTRECHT\b/];
+const BUS_TOKEN = /\bBUS\b|BUSSEN|AUTOBUS|COACH|TOURINGCAR|"M2"|"M3"|\bM2\b|\bM3\b/;
+
+function decide(f) {
+  const p = f.properties, flat = (JSON.stringify(f._raw || {}) + " " + p.name + " " + (p.town || "")).toUpperCase();
+  if (p.until && new Date(p.until) < new Date()) return "verlopen";
+  if (/GEEN MILIEUZONE MEER|VERVALLEN|INGETROKKEN/.test(flat)) return "vervallen";
+  const explicit = p.busKnown || BUS_TOKEN.test(flat);
+  if (explicit) return "bus";
+  if (p.zone === "zero") return "geen bus (zero-emissie voor bestel/vracht)";
+  const label = (p.name + " " + (p.town || "")).toUpperCase();
+  if (BUS_TOWNS.some(r => r.test(label))) return "bus-lijst";
+  return "geen bus";
+}
+
 module.exports = async (req, res) => {
   try {
     const r = await fetch(SRC, { headers: { Accept: "application/geo+json, application/json" } });
     if (!r.ok) throw new Error("NDW antwoordde met " + r.status);
     const raw = await r.json();
+    const list = (raw.features || (Array.isArray(raw) ? raw : [])).filter(f => f && f.geometry);
     if (req.query && req.query.raw) {
       res.setHeader("Cache-Control", "no-store");
-      const f0 = (raw.features || [])[0];
-      return res.status(200).json({ keys: Object.keys(raw), count: (raw.features || []).length, firstProperties: f0 && f0.properties, geometryType: f0 && f0.geometry && f0.geometry.type });
+      return res.status(200).json({ keys: Object.keys(raw), count: list.length, firstProperties: list.slice(0, 3).map(f => f.properties) });
     }
-    const feats = (raw.features || (Array.isArray(raw) ? raw : [])).filter(f => f && f.geometry).map(normalize);
-    const anyVehicleInfo = feats.some(f => f.properties.vehicles.length);
-    const out = { type: "FeatureCollection", source: "NDW – Nationaal Dataportaal Wegverkeer (CC-0)", fetchedAt: new Date().toISOString(), busFiltered: anyVehicleInfo,
-      features: anyVehicleInfo ? feats.filter(f => f.properties.busKnown || f.properties.mentionsBus || f.properties.zone === "zero" || !f.properties.vehicles.length) : feats };
+    const feats = list.map(f => { const n = normalize(f); n._raw = f.properties; n._why = decide(n); return n; });
+    if (req.query && req.query.debug) {
+      res.setHeader("Cache-Control", "no-store");
+      return res.status(200).json(feats.map(f => ({ name: f.properties.name, town: f.properties.town, zone: f.properties.zone, from: f.properties.from, until: f.properties.until, besluit: f._why })));
+    }
+    const seen = new Set();
+    const keep = feats.filter(f => (f._why === "bus" || f._why === "bus-lijst")).filter(f => { const k = JSON.stringify(f.geometry).slice(0, 400); if (seen.has(k)) return false; seen.add(k); return true; })
+      .map(f => { const o = { type: "Feature", geometry: f.geometry, properties: { ...f.properties } };
+        if (f._why === "bus-lijst" && !o.properties.bus) { o.properties.bus = ["EURO6"]; o.properties.busKnown = true; o.properties.purple = true; }
+        return o; });
+    const out = { type: "FeatureCollection", source: "NDW – Nationaal Dataportaal Wegverkeer (CC-0); busregels volgens milieuzones.nl", fetchedAt: new Date().toISOString(), features: keep };
     res.setHeader("Cache-Control", "public, s-maxage=21600, stale-while-revalidate=86400");
     res.setHeader("Content-Type", "application/json");
     res.status(200).send(JSON.stringify(out));
