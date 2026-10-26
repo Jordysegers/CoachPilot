@@ -88,6 +88,13 @@ body.picking .mapside{display:none}
 .zlegend .lg{display:flex;align-items:center;gap:5px}.zlegend i{width:14px;height:10px;border-radius:3px;background:rgb(22 163 74 / .3);border:2px solid #15803D}.zlegend i.ze{background:rgb(124 58 237 / .3);border-color:#6D28D9}.zlegend i.fut{background:none;border:2px dashed #6B7280}
 .zlegend .lgtip{flex-basis:100%;font-size:11px;font-weight:600;color:var(--muted)}
 body.picking .zlegend{display:none}
+.apath{fill:none;stroke-linecap:round;stroke-linejoin:round;cursor:pointer}.a-vrij{stroke:#059669;stroke-width:4;opacity:.9}.a-ontheffing{stroke:#F59E0B;stroke-width:4;stroke-dasharray:7 6}.a-s100{stroke:#DC2626;stroke-width:6;opacity:.85}
+.zlegend .ln{display:inline-block;width:16px;height:0;border-top:4px solid #059669;border-radius:2px}.zlegend .ln.onth,.amsrow .ln.onth{border-top:4px dashed #F59E0B}.zlegend .ln.s100,.amsrow .ln.s100{border-top-color:#DC2626}
+.amsrow .ln{display:inline-block;width:20px;height:0;border-top:4px solid #059669;margin-right:8px;vertical-align:middle}.amsrow p{margin:2px 0 0;font-size:13px;line-height:1.45}
+.zlabel.amslabel{color:#B91C1C;border-color:#DC2626}.zlabel.amslabel .zl-ic{background:#FEE2E2}
+.ztag.ban{background:#FEE2E2;color:#991B1B}.chip.layer.ams.on{background:#FEF2F2;color:#991B1B;box-shadow:inset 0 0 0 2px #DC2626,0 2px 8px rgb(20 22 31 / .08)}
+.zban{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:16px;background:#FEF2F2;border:1.5px solid #FCA5A5}.zban b{display:block;color:#991B1B}.zban span{font-size:13px;color:#7F1D1D}
+.zlegend{flex-wrap:wrap;white-space:normal}
 .ztag.fut{background:#FFF7E6;color:#92400E;box-shadow:inset 0 0 0 1.5px #F59E0B}.ztag.now{background:#E8F5E9;color:#166534}
 .zfuture{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:16px;background:#FFF7E6;border:1.5px dashed #F59E0B}.zfuture b{display:block;color:#92400E}.zfuture span{font-size:13px;color:#78350F}.zf-ic{font-size:20px}
 .zactive{display:inline-flex;align-self:flex-start;align-items:center;gap:7px;font-size:13px;font-weight:800;color:#166534;background:#E8F5E9;padding:5px 10px;border-radius:999px}.zdot{width:8px;height:8px;border-radius:50%;background:#16A34A;box-shadow:0 0 0 3px rgb(22 163 74 / .25)}
@@ -1137,7 +1144,7 @@ function icon(id,cls){const s=document.createElementNS(NS,"svg");if(cls)s.setAtt
 /* ---------- kaart ---------- */
 const wrap=document.getElementById("mapwrap"),svg=document.getElementById("mapsvg"),ov=document.getElementById("overlay");
 const V={cx:0,cy:0,s:1};
-function pathFrom(pts){return pts.map((p,i)=>{const[x,y]=P(p[0],p[1]);return(i?"L":"M")+x.toFixed(1)+" "+y.toFixed(1)}).join("")+"Z"}
+function pathFrom(pts){return pts.map((p,i)=>{const[x,y]=P(p[0],p[1]);return(i?"L":"M")+x.toFixed(3)+" "+y.toFixed(3)}).join("")+"Z"}
 function svgEl(tag,a){const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);svg.appendChild(e);return e}
 function buildSvg(){
   svgEl("path",{d:pathFrom(LAND),fill:"var(--land)",stroke:"var(--coast)","stroke-width":1.5,"vector-effect":"non-scaling-stroke"});
@@ -1189,7 +1196,7 @@ function gmSync(){if(!GM.map)return;const c=GM.map.getCenter(),z=GM.map.getZoom(
 function gmRender(){if(!GM.ov||!GM.layer)return;wrap.classList.toggle("far",(GM.map.getZoom()||0)<9);const pr=GM.ov.getProjection();if(!pr)return;
   const pos=(e,lat,lng)=>{const p=pr.fromLatLngToDivPixel(new google.maps.LatLng(lat,lng));e.style.left=p.x+"px";e.style.top=p.y+"px";if(e.parentNode!==GM.layer){GM.layer.append(e);google.maps.OverlayView.preventMapHitsAndGesturesFrom(e)}};
   const vis=new Set(filtered().filter(layerOk).map(p=>p.id));
-  pinEls.forEach(o=>{pos(o.e,o.p.lat,o.p.lon);o.e.classList.toggle("closed",!!activeClosure(o.p));o.e.classList.toggle("sel",o.p.id===S.sel);o.e.hidden=!vis.has(o.p.id)&&o.p.id!==S.sel});if(S.dest)pos(destEl(),S.dest.lat,S.dest.lon);else if(DEST.e)DEST.e.remove();if(ME.lat!=null)pos(meEl(),ME.lat,ME.lon);ZN.labels.forEach(o=>pos(o.e,o.lat,o.lon));placeZoneLabels(GM.map.getZoom()||0);
+  pinEls.forEach(o=>{pos(o.e,o.p.lat,o.p.lon);o.e.classList.toggle("closed",!!activeClosure(o.p));o.e.classList.toggle("sel",o.p.id===S.sel);o.e.hidden=!vis.has(o.p.id)&&o.p.id!==S.sel});if(S.dest)pos(destEl(),S.dest.lat,S.dest.lon);else if(DEST.e)DEST.e.remove();if(ME.lat!=null)pos(meEl(),ME.lat,ME.lon);ZN.labels.forEach(o=>pos(o.e,o.lat,o.lon));placeZoneLabels(GM.map.getZoom()||0);{const al=amsLabel();if(al)pos(al,AMS.center[0],AMS.center[1])}
   hotelEls.forEach(h=>h.remove());hotelEls=[];
   if(S.hotels){const list=S.sel?availHotels(S.sel):(GM.map.getZoom()>=15?availHotels(null):[]);
     list.forEach(h=>{const b=el("button",{class:"hpin",title:h.name+" · "+h.rooms+" kamers vrij",onclick:e=>{e.stopPropagation();nav(()=>{S.hotel=h.id;renderSheet();draw()})}},icon("i-bed"),"€"+h.price);if(S.hotel===h.id)b.classList.add("sel");pos(b,h.lat,h.lon);hotelEls.push(b)})}}
@@ -1209,7 +1216,7 @@ function gmStart(){const d=el("div",{id:"gmap"});wrap.prepend(d);
   GM.map.addListener("click",()=>{document.getElementById("q").blur()});
   const zb=document.querySelector(".zoom");if(zb&&!document.getElementById("ztype")){const b=el("button",{id:"ztype",type:"button",onclick:()=>gmSetType(GM.type==="sat"?"map":"sat")});zb.append(b)}
   let t="map";try{t=localStorage.getItem("cp-maptype")||"map"}catch(e){}gmSetType(t);
-  requestAnimationFrame(()=>fitTo([53.0,50.8],[3.4,6.2],30));if(ZN.g){ZN.g.remove();ZN.g=null}drawZonesGm()}
+  requestAnimationFrame(()=>fitTo([53.0,50.8],[3.4,6.2],30));if(ZN.g){ZN.g.remove();ZN.g=null}drawZonesGm();if(AMS.g){AMS.g.remove();AMS.g=null}drawAmsGm()}
 function gmLoad(){const k=CFG&&CFG.googleMapsKey;if(!k||window.google&&window.google.maps)return;
   const GM_WHY={RefererNotAllowedMapError:"dit webadres staat niet bij de toegestane websites van de sleutel",ApiNotActivatedMapError:"de Maps JavaScript API staat niet aan",BillingNotEnabledMapError:"facturering staat niet aan voor dit project",InvalidKeyMapError:"de sleutel is ongeldig",ApiTargetBlockedMapError:"de sleutel mag de Maps JavaScript API niet gebruiken (API-beperking)",ExpiredKeyMapError:"de sleutel is verlopen",DeletedApiProjectMapError:"het Google-project is verwijderd"};
   let gmErr="";const ce=console.error;console.error=function(...a){try{const t=a.join(" ");const m=t.match(/Google Maps JavaScript API (?:error|warning): (\w+)/);if(m&&!gmErr)gmErr=m[1]}catch(e){}return ce.apply(this,a)};
@@ -1225,7 +1232,7 @@ function render(){
   countryEls.forEach(c=>{place(c.e,c.xy);c.e.hidden=V.s>6});
   const vis=new Set(filtered().filter(layerOk).map(p=>p.id));wrap.classList.toggle("far",V.s<9);
   pinEls.forEach(o=>{place(o.e,o.xy);o.e.classList.toggle("closed",!!activeClosure(o.p));o.e.classList.toggle("sel",o.p.id===S.sel);o.e.hidden=!vis.has(o.p.id)&&o.p.id!==S.sel});
-  placeDest();placeMe();ZN.labels.forEach(o=>{if(o.e.parentNode!==ov)ov.appendChild(o.e);place(o.e,P(o.lat,o.lon))});placeZoneLabels(s2z(V.s));
+  placeDest();placeMe();ZN.labels.forEach(o=>{if(o.e.parentNode!==ov)ov.appendChild(o.e);place(o.e,P(o.lat,o.lon))});placeZoneLabels(s2z(V.s));{const al=amsLabel();if(al){if(al.parentNode!==ov)ov.appendChild(al);place(al,P(AMS.center[0],AMS.center[1]))}}
   hotelEls.forEach(h=>h.remove());hotelEls=[];
   if(S.hotels){
     const list=S.sel?availHotels(S.sel):(V.s>90?availHotels(null):[]);
@@ -1245,7 +1252,7 @@ function flyTo(xy,s){if(GM.on)return gmFly(xy,s);const[W,H]=size();const to={cx:
   const from={...V},t0=performance.now(),reduce=matchMedia("(prefers-reduced-motion:reduce)").matches;
   (function step(t){const k=reduce?1:Math.min(1,(t-t0)/450),e=1-Math.pow(1-k,3);V.cx=from.cx+(to.cx-from.cx)*e;V.cy=from.cy+(to.cy-from.cy)*e;V.s=from.s*Math.pow(to.s/from.s,e);render();if(k<1)requestAnimationFrame(step)})(t0)}
 const ptrs=new Map();let lastDist=0,downAt=null,downPin=null,downZone=null,dragged=false;
-wrap.addEventListener("pointerdown",e=>{if(GM.on)return;if(e.pointerType==="touch"&&e.clientX<28&&NAV.stack.length)return;downPin=e.target.closest(".pin,.hpin");downZone=e.target.closest&&e.target.closest(".zpath");downAt=[e.clientX,e.clientY];dragged=false;
+wrap.addEventListener("pointerdown",e=>{if(GM.on)return;if(e.pointerType==="touch"&&e.clientX<28&&NAV.stack.length)return;downPin=e.target.closest(".pin,.hpin");downZone=e.target.closest&&e.target.closest(".zpath,.apath");downAt=[e.clientX,e.clientY];dragged=false;
   try{wrap.setPointerCapture(e.pointerId)}catch(_){}ptrs.set(e.pointerId,[e.clientX,e.clientY]);wrap.classList.add("drag");document.getElementById("q").blur()});
 wrap.addEventListener("pointermove",e=>{if(GM.on)return;if(!ptrs.has(e.pointerId))return;const prev=ptrs.get(e.pointerId);ptrs.set(e.pointerId,[e.clientX,e.clientY]);
   if(downAt&&Math.hypot(e.clientX-downAt[0],e.clientY-downAt[1])>8)dragged=true;
@@ -1254,6 +1261,7 @@ wrap.addEventListener("pointermove",e=>{if(GM.on)return;if(!ptrs.has(e.pointerId
   else if(ptrs.size===2){const[a,b]=[...ptrs.values()];const d=Math.hypot(a[0]-b[0],a[1]-b[1]);const r=wrap.getBoundingClientRect();if(lastDist)zoomAt(d/lastDist,(a[0]+b[0])/2-r.left,(a[1]+b[1])/2-r.top);lastDist=d}});
 const up=e=>{if(GM.on)return;const wasTap=!dragged&&ptrs.size===1&&e.type==="pointerup";ptrs.delete(e.pointerId);lastDist=0;
   if(wasTap&&downPin){const t=downPin;downPin=null;t.click();}
+  else if(wasTap&&downZone&&downZone.classList.contains("apath")){downZone=null;openAms()}
   else if(wasTap&&downZone&&ZN.data){const f=ZN.data.features[+downZone.dataset.zi];downZone=null;if(f)selectZone(f.properties)}
   if(!ptrs.size){wrap.classList.remove("drag");if(dragged)refreshNearby();downAt=null}};
 wrap.addEventListener("pointerup",up);wrap.addEventListener("pointercancel",up);
@@ -1322,25 +1330,60 @@ function drawZonesGm(){if(!GM.on||!GM.map)return;const dl=GM.map.data;
     if(!ZN.gmClick){ZN.gmClick=dl.addListener("click",e=>{const p={};e.feature.forEachProperty((v,k)=>p[k]=v);selectZone(p)})}}
   else dl.setStyle(dl.getStyle())}
 function drawZones(){drawZonesSvg();drawZonesGm();if(ZN.on&&ZN.data&&!ZN.labels.length)zoneLabels();if(!ZN.on&&ZN.labels.length)zoneLabels();renderLegend();if(GM.on)gmRender();else draw()}
-function renderLegend(){let l=document.getElementById("zLegend");if(!ZN.on||!ZN.data){if(l)l.remove();return}
+function renderLegend(){let l=document.getElementById("zLegend");const z=ZN.on&&ZN.data,a=AMS.on&&AMS.data;if(!z&&!a){if(l)l.remove();return}
   if(!l){l=el("div",{class:"zlegend",id:"zLegend"});document.getElementById("mapView").append(l)}
-  const hasFut=ZN.data.features.some(f=>zFuture(f.properties));
-  l.replaceChildren(...[el("span",{class:"lg"},el("i",{class:"le"}),"Milieuzone bussen"),ZN.data.features.some(f=>f.properties.zone==="zero")?el("span",{class:"lg"},el("i",{class:"ze"}),"Zero-emissie"):null,hasFut?el("span",{class:"lg"},el("i",{class:"fut"}),"Toekomstig"):null].filter(Boolean))}
+  const hasFut=z&&ZN.data.features.some(f=>zFuture(f.properties));
+  l.replaceChildren(...[z?el("span",{class:"lg"},el("i",{class:"le"}),"Milieuzone bussen"):null,z&&ZN.data.features.some(f=>f.properties.zone==="zero")?el("span",{class:"lg"},el("i",{class:"ze"}),"Zero-emissie"):null,hasFut?el("span",{class:"lg"},el("i",{class:"fut"}),"Toekomstig"):null,
+    a?el("span",{class:"lg"},el("b",{class:"ln vrij"}),"Route vrij"):null,a?el("span",{class:"lg"},el("b",{class:"ln onth"}),"Met ontheffing"):null,a?el("span",{class:"lg"},el("b",{class:"ln s100"}),"S100 verbod"):null].filter(Boolean))}
 async function toggleZones(){ZN.on=!ZN.on;buildChips();
   if(ZN.on){await loadZones();if(ZN.err==="preview"){alertMsg("Milieuzones zie je op de live site. Deze voorbeeldweergave mag de NDW-gegevens niet ophalen.");ZN.on=false;buildChips();return}
     if(ZN.err){alertMsg("Milieuzones laden lukte niet: "+ZN.err);ZN.on=false;buildChips();return}
     alertMsg((ZN.data.features||[]).length+" milieuzones voor bussen op de kaart. Tik op ‘Parkeren’ om de parkings te verbergen.")}
   else{S.zone=null;renderSheet()}drawZones();buildChips()}
-function selectZone(z){S.zone=z;S.sel=null;renderSheet();drawZones()}
-function renderZoneCard(){const z=S.zone;const panel=el("div",{class:"panel zonepanel"},el("div",{class:"grab"}));const sc=el("div",{class:"pscroll"});
+function selectZone(z){S.ams=false;S.zone=z;S.sel=null;renderSheet();drawZones()}
+function closeZone(){S.zone=null;renderSheet();drawZones()}
+function grippedPanel(cls,onClose){const panel=el("div",{class:"panel "+cls});panel.append(sheetGrip(panel,v=>{panel.classList.toggle("tall",v==null?!panel.classList.contains("tall"):v)},onClose));return panel}
+function renderZoneCard(){const z=S.zone;const panel=grippedPanel("zonepanel",closeZone);const sc=el("div",{class:"pscroll"});
   sc.append(el("div",{class:"ptop"},el("div",{style:"min-width:0"},el("div",{class:"r",style:"gap:6px"},el("span",{class:"ztag "+(z.zone==="zero"?"ze":"le")},z.zone==="zero"?"Zero-emissiezone":"Milieuzone"),zFuture(z)?el("span",{class:"ztag fut"},"Toekomstig"):el("span",{class:"ztag now"},"● Nu van kracht")),el("h2",{style:"margin:6px 0 0;font-size:19px;font-weight:800"},z.name),z.town&&z.town!==z.name?el("div",{class:"pm"},z.town):null),
-    el("button",{class:"roundbtn","aria-label":"Sluiten",onclick:()=>{S.zone=null;renderSheet();drawZones()}},icon("i-x","i"))));
+    el("button",{class:"roundbtn","aria-label":"Sluiten",onclick:closeZone},icon("i-x","i"))));
   if(zFuture(z))sc.append(el("div",{class:"zfuture"},el("span",{class:"zf-ic"},"🗓"),el("div",{},el("b",{},"Toekomstig · gaat "+monthsUntil(z.from)+" in"),el("span",{},"Vanaf "+fmtDate(z.from)+" gelden deze regels. Tot die tijd mag je er nog gewoon in."))));
   sc.append(el("div",{class:"zrule"},el("span",{class:"zic"},"🚌"),el("p",{},zoneRuleText(z))));
   const facts=[[zFuture(z)?"Ingangsdatum":"Van kracht sinds",fmtDate(z.from)],["Einddatum",zNoEnd(z)?"Geen einddatum (blijvend)":fmtDate(z.until)],["Status",z.status]].filter(x=>x[1]);
   if(facts.length)sc.append(el("div",{class:"infolist"},...facts.map(([k,v])=>el("div",{class:"inforow"},el("span",{},k),el("b",{},v)))));
   sc.append(el("div",{class:"r",style:"gap:8px;flex-wrap:wrap"},z.url?el("a",{class:"btn sm",href:z.url,target:"_blank",rel:"noopener"},"Meer informatie ↗"):null,el("a",{class:"btn sm",href:"https://www.milieuzones.nl",target:"_blank",rel:"noopener"},"Alle regels op milieuzones.nl ↗")));
   sc.append(el("p",{class:"note",style:"margin:0"},"Alleen zones die gelden voor bussen. Bron: NDW (dagelijks bijgewerkt) en milieuzones.nl"+(ZN.data&&ZN.data.fetchedAt?" · opgehaald "+ago(Date.parse(ZN.data.fetchedAt)):"")+". Controleer bij twijfel altijd de borden ter plaatse."));
+  panel.append(sc);sheet.append(panel)}
+/* ---------- touringcarregels Amsterdam (S100) ---------- */
+const AMS={on:false,data:null,loading:false,err:null,g:null,gm:[],label:null,center:[52.3702,4.8952]};
+async function loadAms(){if(AMS.data||AMS.loading)return;if(!LIVE){AMS.err="preview";return}AMS.loading=true;buildChips();
+  try{const r=await fetch("/api/amsterdam");const js=await r.json();if(!r.ok||js.error)throw new Error(js.error||("fout "+r.status));AMS.data=js;AMS.err=null}catch(e){AMS.err=e.message||String(e)}finally{AMS.loading=false}}
+function lineD(c){return c.map((p,i)=>{const[x,y]=P(p[1],p[0]);return(i?"L":"M")+x.toFixed(3)+" "+y.toFixed(3)}).join("")}
+const AMS_ORDER={vrij:1,ontheffing:2,s100:3};
+function drawAmsSvg(){if(AMS.g){AMS.g.remove();AMS.g=null}if(!AMS.on||!AMS.data||GM.on)return;const g=document.createElementNS(NS,"g");g.setAttribute("class","amsg");
+  AMS.data.features.slice().sort((a,b)=>AMS_ORDER[a.properties.kind]-AMS_ORDER[b.properties.kind]).forEach(f=>{const p=document.createElementNS(NS,"path");p.setAttribute("d",lineD(f.geometry.coordinates));p.setAttribute("class","apath a-"+f.properties.kind);p.setAttribute("vector-effect","non-scaling-stroke");g.append(p)});
+  svg.append(g);AMS.g=g}
+const AMS_STYLE={vrij:{strokeColor:"#059669",strokeWeight:4,strokeOpacity:.9,zIndex:3},ontheffing:{strokeColor:"#F59E0B",strokeWeight:4,strokeOpacity:0,zIndex:4,icons:[{icon:{path:"M 0,-1 0,1",strokeOpacity:1,strokeColor:"#F59E0B",strokeWeight:4,scale:2},offset:"0",repeat:"10px"}]},s100:{strokeColor:"#DC2626",strokeWeight:6,strokeOpacity:.85,zIndex:5}};
+function drawAmsGm(){AMS.gm.forEach(l=>l.setMap(null));AMS.gm=[];if(!GM.on||!GM.map||!AMS.on||!AMS.data)return;
+  AMS.data.features.forEach(f=>{const l=new google.maps.Polyline({path:f.geometry.coordinates.map(c=>({lat:c[1],lng:c[0]})),clickable:true,...AMS_STYLE[f.properties.kind]});l.addListener("click",openAms);l.setMap(GM.map);AMS.gm.push(l)})}
+function amsLabel(){if(!AMS.on||!AMS.data){if(AMS.label){AMS.label.remove();AMS.label=null}return null}
+  if(!AMS.label)AMS.label=el("button",{type:"button",class:"zlabel amslabel",onclick:ev=>{ev.stopPropagation();openAms()}},el("span",{class:"zl-ic"},"🚫"),el("span",{class:"zl-tx"},"S100 · touringcarverbod"));return AMS.label}
+function drawAms(){drawAmsSvg();drawAmsGm();amsLabel();renderLegend();if(GM.on)gmRender();else draw()}
+async function toggleAms(){AMS.on=!AMS.on;buildChips();
+  if(AMS.on){await loadAms();if(AMS.err==="preview"){alertMsg("De touringcarroutes zie je op de live site. Deze voorbeeldweergave mag de gegevens niet ophalen.");AMS.on=false;buildChips();return}
+    if(AMS.err){alertMsg("Touringcarroutes laden lukte niet: "+AMS.err);AMS.on=false;buildChips();return}
+    alertMsg("Amsterdam: groen = vrije route, oranje = alleen met ontheffing, rood = S100.");if(!GM.on||!GM.map||(GM.map.getZoom()||0)<11)flyTo(P(AMS.center[0],AMS.center[1]),GM.on?null:60)}
+  else{S.ams=false;renderSheet()}drawAms();buildChips()}
+function openAms(){S.zone=null;S.sel=null;S.ams=true;renderSheet();drawZones()}
+function closeAms(){S.ams=false;renderSheet()}
+function renderAmsCard(){const panel=grippedPanel("zonepanel",closeAms);const sc=el("div",{class:"pscroll"});
+  sc.append(el("div",{class:"ptop"},el("div",{style:"min-width:0"},el("div",{class:"r",style:"gap:6px"},el("span",{class:"ztag ban"},"Touringcarverbod"),el("span",{class:"ztag now"},"● Nu van kracht")),el("h2",{style:"margin:6px 0 0;font-size:19px;font-weight:800"},"Amsterdam binnen de S100"),el("div",{class:"pm"},"De binnenring rond het centrum")),
+    el("button",{class:"roundbtn","aria-label":"Sluiten",onclick:closeAms},icon("i-x","i"))));
+  sc.append(el("div",{class:"zban"},el("span",{class:"zf-ic"},"🚫"),el("div",{},el("b",{},"Touringcars zwaarder dan 7,5 ton mogen niet binnen de S100 zonder ontheffing"),el("span",{},"Er wordt met camera's gehandhaafd. De boete is € 1.160 (bedrag van 2025)."))));
+  const rows=[["ln vrij","Groene route","Hier mag je zonder ontheffing rijden (aanbevolen touringcarroute)."],["ln onth","Oranje route","Alleen met ontheffing. Met een ontheffing moet je deze verplichte route volgen."],["ln s100","Rode lijn: de S100","Binnen deze ring geldt het verbod."]];
+  sc.append(el("div",{class:"infolist"},...rows.map(([c,k,v])=>el("div",{class:"inforow amsrow"},el("span",{},el("b",{class:c}),k),el("p",{},v)))));
+  sc.append(el("div",{class:"zrule"},el("span",{class:"zic"},"📝"),el("p",{},"Een dag- of jaarontheffing kan onder meer voor het vervoer van basisschoolleerlingen, ouderen of mensen met een beperking en voor culturele en educatieve bezoeken. De route Weesperstraat – Valkenburgerstraat – Kattenburgerstraat is uitgezonderd.")));
+  sc.append(el("div",{class:"r",style:"gap:8px;flex-wrap:wrap"},el("a",{class:"btn sm",href:"https://www.amsterdam.nl/verkeer-vervoer/touringcar/",target:"_blank",rel:"noopener"},"Regels en ontheffing aanvragen ↗")));
+  sc.append(el("p",{class:"note",style:"margin:0"},"Routes: open data van de gemeente Amsterdam. S100: OpenStreetMap"+(AMS.data&&AMS.data.fetchedAt?" · opgehaald "+ago(Date.parse(AMS.data.fetchedAt)):"")+". Volg altijd de borden ter plaatse."));
   panel.append(sc);sheet.append(panel)}
 /* ---------- filters ---------- */
 const qi=document.getElementById("q"),res=document.getElementById("results");
@@ -1375,6 +1418,7 @@ function buildChips(){
   const lchip=(img,label,on,fn,cls)=>c.append(el("button",{class:"chip layer "+(cls||"")+(on?" on":""),"aria-pressed":on,title:(on?"Verberg ":"Toon ")+label.toLowerCase(),onclick:fn},img,label));
   lchip(el("img",{class:"lci",src:PARK_LOGO,alt:""}),"Parkeren",S.lp!==false,()=>{S.lp=S.lp===false;buildChips();draw()});
   lchip(el("span",{class:"lci zi"},ZN.loading?"⏳":"🌿"),"Milieuzones",ZN.on,toggleZones,"zone");
+  lchip(el("span",{class:"lci zi"},AMS.loading?"⏳":"🚫"),"Touringcarroutes",AMS.on,toggleAms,"ams");
   lchip(el("img",{class:"lci",src:STOP_LOGO,alt:""}),"In- en uitstappen",S.ls!==false,()=>{S.ls=S.ls===false;buildChips();draw()});
   c.append(el("span",{class:"chipdiv","aria-hidden":"true"}));
   ["wc","nacht","afval","was"].filter(k=>SVC[k]).forEach(fchip);
@@ -1399,6 +1443,7 @@ function _renderSheet(){
   sheet.replaceChildren();
   if(S.hotel){const h=availHotels(null).find(x=>x.id===S.hotel);if(h)return renderHotel(h);S.hotel=null}
   if(S.sel)return renderDetail(PARKINGS.find(p=>p.id===S.sel));
+  if(S.ams)return renderAmsCard();
   if(S.zone)return renderZoneCard();
   if(S.dest)return renderDest();
   const list=nearby();
@@ -1504,7 +1549,7 @@ function renderDetail(p){
 function closeDetail(){const t=NAV.stack[NAV.stack.length-1];S.ptall=false;S.closeForm=false;
   if(t&&t.tab==="mapView"&&!t.sel&&Date.now()-(NAV.lastPop||0)>700){history.back();return}
   NAV.replace=true;nav(()=>{S.sel=null;S.hotel=null;renderSheet();draw()})}
-function select(id,fly){S.hotel=null;S.zone=null;if(S.sel!==id){S.ptall=false;S.closeForm=false}S.sel=id;if(fly)S.dtab="svc";renderSheet();const p=PARKINGS.find(x=>x.id===id);if(fly)flyTo(P(p.lat,p.lon));else draw()}
+function select(id,fly){S.hotel=null;S.zone=null;S.ams=false;if(S.sel!==id){S.ptall=false;S.closeForm=false}S.sel=id;if(fly)S.dtab="svc";renderSheet();const p=PARKINGS.find(x=>x.id===id);if(fly)flyTo(P(p.lat,p.lon));else draw()}
 
 /* ---------- foto, reviews, profielen ---------- */
 
