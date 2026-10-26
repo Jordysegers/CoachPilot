@@ -839,6 +839,10 @@ html,body{touch-action:manipulation}
 .carousel{scroll-padding-inline:max(16px,env(safe-area-inset-left,0px))}
 @media (max-width:699px){.sheet{bottom:calc(var(--navh,64px) + 4px)!important}.panel{margin-bottom:calc(-4px - var(--navh,64px))!important;padding-bottom:calc(4px + var(--navh,64px))!important}}
 .chatv{padding-top:0!important}.chatv .chatbar{margin-left:calc(-1 * max(16px,env(safe-area-inset-left,0px)));margin-right:calc(-1 * max(16px,env(safe-area-inset-right,0px)))}
+.zpath{fill:#16A34A;fill-opacity:.13;stroke:#15803D;stroke-width:1.6;cursor:pointer}.zpath.ze{fill:#7C3AED;stroke:#6D28D9}.zpath.sel{fill-opacity:.3;stroke-width:3}
+.chip.zonechip[aria-pressed="true"]{background:#E8F5E9;color:#166534;box-shadow:inset 0 0 0 1.5px #16A34A}
+.ztag{display:inline-block;font-size:11px;font-weight:800;padding:3px 8px;border-radius:7px;background:#E8F5E9;color:#166534}.ztag.ze{background:#F1E9FF;color:#5B21B6}
+.zrule{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:16px;background:var(--soft)}.zrule p{margin:0;line-height:1.5;font-weight:600}.zic{font-size:20px}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -1088,7 +1092,7 @@ function gmStart(){const d=el("div",{id:"gmap"});wrap.prepend(d);
   GM.map.addListener("click",()=>{document.getElementById("q").blur()});
   const zb=document.querySelector(".zoom");if(zb&&!document.getElementById("ztype")){const b=el("button",{id:"ztype",type:"button",onclick:()=>gmSetType(GM.type==="sat"?"map":"sat")});zb.append(b)}
   let t="map";try{t=localStorage.getItem("cp-maptype")||"map"}catch(e){}gmSetType(t);
-  requestAnimationFrame(()=>fitTo([53.0,50.8],[3.4,6.2],30))}
+  requestAnimationFrame(()=>fitTo([53.0,50.8],[3.4,6.2],30));if(ZN.g){ZN.g.remove();ZN.g=null}drawZonesGm()}
 function gmLoad(){const k=CFG&&CFG.googleMapsKey;if(!k||window.google&&window.google.maps)return;
   const GM_WHY={RefererNotAllowedMapError:"dit webadres staat niet bij de toegestane websites van de sleutel",ApiNotActivatedMapError:"de Maps JavaScript API staat niet aan",BillingNotEnabledMapError:"facturering staat niet aan voor dit project",InvalidKeyMapError:"de sleutel is ongeldig",ApiTargetBlockedMapError:"de sleutel mag de Maps JavaScript API niet gebruiken (API-beperking)",ExpiredKeyMapError:"de sleutel is verlopen",DeletedApiProjectMapError:"het Google-project is verwijderd"};
   let gmErr="";const ce=console.error;console.error=function(...a){try{const t=a.join(" ");const m=t.match(/Google Maps JavaScript API (?:error|warning): (\w+)/);if(m&&!gmErr)gmErr=m[1]}catch(e){}return ce.apply(this,a)};
@@ -1123,8 +1127,8 @@ function flyTo(xy,s){if(GM.on)return gmFly(xy,s);const[W,H]=size();const to={cx:
   if(isDesk())to.cx-=220/to.s;else{const wr=wrap.getBoundingClientRect(),pn=sheet.querySelector(".panel,.hcard,.carousel");const top=pn?pn.getBoundingClientRect().top-wr.top:H*0.6;const ty=Math.max(120,(115+top)/2);to.cy+=(H/2-ty)/to.s}
   const from={...V},t0=performance.now(),reduce=matchMedia("(prefers-reduced-motion:reduce)").matches;
   (function step(t){const k=reduce?1:Math.min(1,(t-t0)/450),e=1-Math.pow(1-k,3);V.cx=from.cx+(to.cx-from.cx)*e;V.cy=from.cy+(to.cy-from.cy)*e;V.s=from.s*Math.pow(to.s/from.s,e);render();if(k<1)requestAnimationFrame(step)})(t0)}
-const ptrs=new Map();let lastDist=0,downAt=null,downPin=null,dragged=false;
-wrap.addEventListener("pointerdown",e=>{if(GM.on)return;if(e.pointerType==="touch"&&e.clientX<28&&NAV.stack.length)return;downPin=e.target.closest(".pin,.hpin");downAt=[e.clientX,e.clientY];dragged=false;
+const ptrs=new Map();let lastDist=0,downAt=null,downPin=null,downZone=null,dragged=false;
+wrap.addEventListener("pointerdown",e=>{if(GM.on)return;if(e.pointerType==="touch"&&e.clientX<28&&NAV.stack.length)return;downPin=e.target.closest(".pin,.hpin");downZone=e.target.closest&&e.target.closest(".zpath");downAt=[e.clientX,e.clientY];dragged=false;
   try{wrap.setPointerCapture(e.pointerId)}catch(_){}ptrs.set(e.pointerId,[e.clientX,e.clientY]);wrap.classList.add("drag");document.getElementById("q").blur()});
 wrap.addEventListener("pointermove",e=>{if(GM.on)return;if(!ptrs.has(e.pointerId))return;const prev=ptrs.get(e.pointerId);ptrs.set(e.pointerId,[e.clientX,e.clientY]);
   if(downAt&&Math.hypot(e.clientX-downAt[0],e.clientY-downAt[1])>8)dragged=true;
@@ -1133,6 +1137,7 @@ wrap.addEventListener("pointermove",e=>{if(GM.on)return;if(!ptrs.has(e.pointerId
   else if(ptrs.size===2){const[a,b]=[...ptrs.values()];const d=Math.hypot(a[0]-b[0],a[1]-b[1]);const r=wrap.getBoundingClientRect();if(lastDist)zoomAt(d/lastDist,(a[0]+b[0])/2-r.left,(a[1]+b[1])/2-r.top);lastDist=d}});
 const up=e=>{if(GM.on)return;const wasTap=!dragged&&ptrs.size===1&&e.type==="pointerup";ptrs.delete(e.pointerId);lastDist=0;
   if(wasTap&&downPin){const t=downPin;downPin=null;t.click();}
+  else if(wasTap&&downZone&&ZN.data){const f=ZN.data.features[+downZone.dataset.zi];downZone=null;if(f)selectZone(f.properties)}
   if(!ptrs.size){wrap.classList.remove("drag");if(dragged)refreshNearby();downAt=null}};
 wrap.addEventListener("pointerup",up);wrap.addEventListener("pointercancel",up);
 let wt;wrap.addEventListener("wheel",e=>{if(GM.on)return;e.preventDefault();const r=wrap.getBoundingClientRect();zoomAt(Math.exp(-e.deltaY*0.0015),e.clientX-r.left,e.clientY-r.top);clearTimeout(wt);wt=setTimeout(refreshNearby,250)},{passive:false});
@@ -1168,6 +1173,43 @@ function renderDest(){const d=S.dest;const all=filtered().map(p=>({p,k:kmBetween
   const L=el("div",{class:"list"});list.forEach(({p,k})=>L.append(el("button",{class:"lrow",onclick:()=>select(p.id,true)},thumb(p,true),
     el("div",{style:"min-width:0"},el("h3",{},p.name),el("div",{class:"loc"},p.city+" · "+subOf(p))),el("div",{class:"meta"},el("span",{class:"dist"},fmtKm(k)),el("span",{class:"pm"},"hemelsbreed")))));
   sc.append(L);if(!far&&near.length>list.length)sc.append(el("button",{class:"btn",onclick:()=>{S.destMore=true;renderSheet()}},"Toon alle "+near.length+" plekken"));panel.append(sc);sheet.append(panel)}
+/* ---------- milieuzones (NDW open data via /api/zones) ---------- */
+const ZN={on:false,data:null,loading:false,err:null,g:null,gmAdded:false};
+function zoneRuleText(z){const cls=(z.bus||[]).map(c=>c.replace(/^EURO[_ ]?/,"Euro ").replace(/_/g," "));
+  const min=cls.length?cls.slice().sort()[0]:null;
+  if(z.zone==="zero")return min?"Zero-emissiezone. Volgens de NDW-gegevens geldt voor bussen een uitzondering voor: "+cls.join(", ")+".":"Zero-emissiezone: alleen uitstootvrije voertuigen. Voor bussen kan een overgangsregeling of ontheffing gelden.";
+  return min?"Milieuzone. Volgens de NDW-gegevens mogen bussen erin vanaf "+min+".":"Milieuzone. Voor bussen geldt meestal minimaal Euro 6 (diesel). Controleer de actuele regels via de link.";}
+const fmtDate=s=>{if(!s)return"";const d=new Date(s);return isNaN(d)?String(s):d.toLocaleDateString("nl-NL",{day:"numeric",month:"long",year:"numeric"})};
+async function loadZones(){if(ZN.data||ZN.loading)return;if(!LIVE){ZN.err="preview";return}ZN.loading=true;
+  try{const r=await fetch("/api/zones");const js=await r.json();if(!r.ok||js.error)throw new Error(js.error||("fout "+r.status));ZN.data=js;ZN.err=null}catch(e){ZN.err=e.message||String(e)}finally{ZN.loading=false}}
+function eachRing(geom,fn){if(!geom)return;const polys=geom.type==="Polygon"?[geom.coordinates]:geom.type==="MultiPolygon"?geom.coordinates:[];polys.forEach(poly=>(poly||[]).forEach(ring=>fn(ring)))}
+function drawZonesSvg(){if(ZN.g){ZN.g.remove();ZN.g=null}if(!ZN.on||!ZN.data||GM.on)return;
+  const g=document.createElementNS(NS,"g");g.setAttribute("class","zones");
+  ZN.data.features.forEach((f,i)=>{const z=f.properties;let d="";eachRing(f.geometry,ring=>{if(ring.length>2)d+=pathFrom(ring.map(c=>[c[1],c[0]]))});if(!d)return;
+    const pth=document.createElementNS(NS,"path");pth.setAttribute("d",d);pth.setAttribute("class","zpath "+(z.zone==="zero"?"ze":"le")+(S.zone&&S.zone.id===z.id?" sel":""));pth.setAttribute("fill-rule","evenodd");pth.setAttribute("vector-effect","non-scaling-stroke");pth.dataset.zi=i;g.append(pth)});
+  svg.append(g);ZN.g=g}
+function drawZonesGm(){if(!GM.on||!GM.map)return;const dl=GM.map.data;
+  if(!ZN.on||!ZN.data){dl.forEach(f=>dl.remove(f));ZN.gmAdded=false;return}
+  if(!ZN.gmAdded){dl.forEach(f=>dl.remove(f));dl.addGeoJson(ZN.data);ZN.gmAdded=true;
+    dl.setStyle(f=>{const ze=f.getProperty("zone")==="zero";const sel=S.zone&&S.zone.id===f.getProperty("id");return{fillColor:ze?"#7C3AED":"#16A34A",fillOpacity:sel?.28:.14,strokeColor:ze?"#6D28D9":"#15803D",strokeWeight:sel?3:1.6,clickable:true,zIndex:1}});
+    if(!ZN.gmClick){ZN.gmClick=dl.addListener("click",e=>{const p={};e.feature.forEachProperty((v,k)=>p[k]=v);selectZone(p)})}}
+  else dl.setStyle(dl.getStyle())}
+function drawZones(){drawZonesSvg();drawZonesGm()}
+async function toggleZones(){ZN.on=!ZN.on;buildChips();
+  if(ZN.on){await loadZones();if(ZN.err==="preview"){alertMsg("Milieuzones zie je op de live site. Deze voorbeeldweergave mag de NDW-gegevens niet ophalen.");ZN.on=false;buildChips();return}
+    if(ZN.err){alertMsg("Milieuzones laden lukte niet: "+ZN.err);ZN.on=false;buildChips();return}
+    thanks((ZN.data.features||[]).length+" milieuzones op de kaart","🌿")}
+  else{S.zone=null;renderSheet()}drawZones();buildChips()}
+function selectZone(z){S.zone=z;S.sel=null;renderSheet();drawZones()}
+function renderZoneCard(){const z=S.zone;const panel=el("div",{class:"panel zonepanel"},el("div",{class:"grab"}));const sc=el("div",{class:"pscroll"});
+  sc.append(el("div",{class:"ptop"},el("div",{style:"min-width:0"},el("span",{class:"ztag "+(z.zone==="zero"?"ze":"le")},z.zone==="zero"?"Zero-emissiezone":"Milieuzone"),el("h2",{style:"margin:6px 0 0;font-size:19px;font-weight:800"},z.name),z.town&&z.town!==z.name?el("div",{class:"pm"},z.town):null),
+    el("button",{class:"roundbtn","aria-label":"Sluiten",onclick:()=>{S.zone=null;renderSheet();drawZones()}},icon("i-x","i"))));
+  sc.append(el("div",{class:"zrule"},el("span",{class:"zic"},"🚌"),el("p",{},zoneRuleText(z))));
+  const facts=[[z.from&&new Date(z.from)>new Date()?"Geldt vanaf":"Geldig sinds",fmtDate(z.from)],["Geldig tot",fmtDate(z.until)],["Status",z.status]].filter(x=>x[1]);
+  if(facts.length)sc.append(el("div",{class:"infolist"},...facts.map(([k,v])=>el("div",{class:"inforow"},el("span",{},k),el("b",{},v)))));
+  sc.append(el("div",{class:"r",style:"gap:8px;flex-wrap:wrap"},z.url?el("a",{class:"btn sm",href:z.url,target:"_blank",rel:"noopener"},"Meer informatie ↗"):null,el("a",{class:"btn sm",href:"https://www.milieuzones.nl",target:"_blank",rel:"noopener"},"Alle regels op milieuzones.nl ↗")));
+  sc.append(el("p",{class:"note",style:"margin:0"},"Bron: NDW (Nationaal Dataportaal Wegverkeer), dagelijks bijgewerkt"+(ZN.data&&ZN.data.fetchedAt?" · opgehaald "+ago(Date.parse(ZN.data.fetchedAt)):"")+". Controleer bij twijfel altijd de borden ter plaatse."));
+  panel.append(sc);sheet.append(panel)}
 /* ---------- filters ---------- */
 const qi=document.getElementById("q"),res=document.getElementById("results");
 function norm(t){return t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")}
@@ -1197,6 +1239,7 @@ function nearby(){const c=S.dest?P(S.dest.lat,S.dest.lon):[V.cx,V.cy];return fil
 function buildChips(){
   const c=document.getElementById("chips");c.replaceChildren();
   c.append(el("button",{class:"chip addchip",onclick:()=>openSubmit("new")},"＋ Parking toevoegen"));
+  c.append(el("button",{class:"chip zonechip","aria-pressed":ZN.on,onclick:toggleZones},ZN.loading?"⏳ Milieuzones":"🌿 Milieuzones"));
   ["parkeren","instap","wc","nacht","afval","was"].filter(k=>SVC[k]).forEach(k=>c.append(el("button",{class:"chip","aria-pressed":S.filters.has(k),onclick:()=>{S.filters.has(k)?S.filters.delete(k):S.filters.add(k);buildChips();renderSheet();draw()}},icon(SVC[k][1]),SVC[k][0])));
 }
 
@@ -1218,6 +1261,7 @@ function _renderSheet(){
   sheet.replaceChildren();
   if(S.hotel){const h=availHotels(null).find(x=>x.id===S.hotel);if(h)return renderHotel(h);S.hotel=null}
   if(S.sel)return renderDetail(PARKINGS.find(p=>p.id===S.sel));
+  if(S.zone)return renderZoneCard();
   if(S.dest)return renderDest();
   const list=nearby();
   if(S.expanded||isDesk()){
@@ -1322,7 +1366,7 @@ function renderDetail(p){
 function closeDetail(){const t=NAV.stack[NAV.stack.length-1];S.ptall=false;S.closeForm=false;
   if(t&&t.tab==="mapView"&&!t.sel&&Date.now()-(NAV.lastPop||0)>700){history.back();return}
   NAV.replace=true;nav(()=>{S.sel=null;S.hotel=null;renderSheet();draw()})}
-function select(id,fly){S.hotel=null;if(S.sel!==id){S.ptall=false;S.closeForm=false}S.sel=id;if(fly)S.dtab="svc";renderSheet();const p=PARKINGS.find(x=>x.id===id);if(fly)flyTo(P(p.lat,p.lon));else draw()}
+function select(id,fly){S.hotel=null;S.zone=null;if(S.sel!==id){S.ptall=false;S.closeForm=false}S.sel=id;if(fly)S.dtab="svc";renderSheet();const p=PARKINGS.find(x=>x.id===id);if(fly)flyTo(P(p.lat,p.lon));else draw()}
 
 /* ---------- foto, reviews, profielen ---------- */
 
