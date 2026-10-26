@@ -875,7 +875,12 @@ html,body{touch-action:manipulation}
 @media (max-width:699px){.sheet{bottom:calc(var(--navh,64px) + 4px)!important}.panel{margin-bottom:calc(-4px - var(--navh,64px))!important;padding-bottom:calc(4px + var(--navh,64px))!important}}
 .chatv{padding-top:0!important}.chatv .chatbar{margin-left:calc(-1 * max(16px,env(safe-area-inset-left,0px)));margin-right:calc(-1 * max(16px,env(safe-area-inset-right,0px)))}
 .zpath{fill:#16A34A;fill-opacity:.24;stroke:#15803D;stroke-width:2.5;cursor:pointer}.zpath.fut{fill-opacity:.1;stroke-dasharray:6 5}.zpath.ze{fill:#7C3AED;stroke:#6D28D9}.zpath.sel{fill-opacity:.3;stroke-width:3}
-.chip.zonechip[aria-pressed="true"]{background:#E8F5E9;color:#166534;box-shadow:inset 0 0 0 1.5px #16A34A}
+.chip.layer{background:var(--card);color:var(--ink,#14161F);box-shadow:0 2px 8px rgb(20 22 31 / .08);padding:6px 12px 6px 6px}
+.chip.layer .lci{width:22px;height:22px;border-radius:7px;display:grid;place-items:center;font-size:14px;transition:filter .2s,opacity .2s}
+.chip.layer.on{box-shadow:inset 0 0 0 2px var(--accent),0 2px 8px rgb(20 22 31 / .08)}
+.chip.layer.zone.on{background:#E8F5E9;color:#166534;box-shadow:inset 0 0 0 2px #16A34A,0 2px 8px rgb(20 22 31 / .08)}
+.chip.layer:not(.on){color:var(--muted)}.chip.layer:not(.on) .lci{filter:grayscale(1);opacity:.45}
+.chipdiv{flex:none;width:1px;align-self:stretch;margin:6px 2px;background:rgb(20 22 31 / .15)}
 .ztag{display:inline-block;font-size:11px;font-weight:800;padding:3px 8px;border-radius:7px;background:#E8F5E9;color:#166534}.ztag.ze{background:#F1E9FF;color:#5B21B6}
 .zrule{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:16px;background:var(--soft)}.zrule p{margin:0;line-height:1.5;font-weight:600}.zic{font-size:20px}
 #splash{--sp1:#5470FF;--sp2:#3D5AFE;--sp3:#2B3FCC;--spi:#fff;position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;background:radial-gradient(120% 80% at 50% 30%,var(--sp1) 0%,var(--sp2) 45%,var(--sp3) 100%);color:var(--spi);transition:opacity .45s ease,transform .45s ease;padding:env(safe-area-inset-top) 16px env(safe-area-inset-bottom)}
@@ -980,7 +985,6 @@ try{splashTheme(localStorage.getItem("cp-theme"))}catch(e){}
       <button id="zout" aria-label="Uitzoomen">−</button>
       <button id="zfit" aria-label="Alles tonen"><svg class="i"><use href="#i-fit"/></svg></button>
     </div>
-    <button class="locbtn" id="layBtn" aria-label="Kaartlagen" title="Kaartlagen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2.5 8 12 13l9.5-5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="m2.5 12.2 9.5 5 9.5-5M2.5 16.4l9.5 5 9.5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button>
     <button class="locbtn" id="locBtn" aria-label="Mijn locatie" title="Mijn locatie"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v3M12 19v3M2 12h3M19 12h3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="2.6" fill="currentColor"/></svg></button>
     <button class="addfab" id="addFab" aria-label="Parking toevoegen" title="Parking toevoegen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button>
     </div>
@@ -1155,7 +1159,7 @@ function toggleLayers(e){if(e)e.stopPropagation();let p=document.getElementById(
     row("🌿","Milieuzones","Milieu- en zero-emissiezones",ZN.on,()=>{toggleZones().then(()=>{if(document.getElementById("layPop"))renderLayers()})}),
     ...(S.lp===false&&S.ls===false?[el("p",{class:"laynote"},"Alle parkings zijn verborgen.")]:[]))}
   renderLayers();document.querySelector(".mapside").append(p)}
-document.addEventListener("click",e=>{const p=document.getElementById("layPop");if(p&&!e.target.closest("#layPop,#layBtn"))p.remove()});
+
 /* GPS: eigen locatie */
 const ME={lat:null,lon:null,acc:0,watch:null,e:null,follow:false};
 function meEl(){if(!ME.e)ME.e=el("div",{class:"mepin",title:"Jij bent hier"},el("span",{class:"me-acc"}),el("span",{class:"me-dot"}));return ME.e}
@@ -1257,7 +1261,7 @@ let wt;wrap.addEventListener("wheel",e=>{if(GM.on)return;e.preventDefault();cons
 document.getElementById("zin").onclick=()=>zoomAt(1.6);
 document.getElementById("zout").onclick=()=>zoomAt(1/1.6);
 document.getElementById("zfit").onclick=()=>{S.sel=null;renderSheet();fitTo(PARKINGS.map(p=>p.lat),PARKINGS.map(p=>p.lon))};
-document.getElementById("proBtn").onclick=()=>openPro();document.getElementById("addFab").onclick=addParking;document.getElementById("locBtn").onclick=locateMe;document.getElementById("layBtn").onclick=toggleLayers;
+document.getElementById("proBtn").onclick=()=>openPro();document.getElementById("addFab").onclick=addParking;document.getElementById("locBtn").onclick=locateMe;
 const tH=document.getElementById("tHotels");if(!HOTELS_ON){tH.hidden=true;tH.classList.remove("acc")}tH.onclick=()=>{S.hotels=!S.hotels;tH.setAttribute("aria-pressed",S.hotels);tH.classList.toggle("acc",S.hotels);draw()};
 new ResizeObserver(draw).observe(wrap);
 
@@ -1326,7 +1330,7 @@ function renderLegend(){let l=document.getElementById("zLegend");if(!ZN.on||!ZN.
 async function toggleZones(){ZN.on=!ZN.on;buildChips();
   if(ZN.on){await loadZones();if(ZN.err==="preview"){alertMsg("Milieuzones zie je op de live site. Deze voorbeeldweergave mag de NDW-gegevens niet ophalen.");ZN.on=false;buildChips();return}
     if(ZN.err){alertMsg("Milieuzones laden lukte niet: "+ZN.err);ZN.on=false;buildChips();return}
-    alertMsg((ZN.data.features||[]).length+" milieuzones op de kaart. Parkings verbergen? Gebruik de lagenknop rechts.")}
+    alertMsg((ZN.data.features||[]).length+" milieuzones op de kaart. Tik op ‘Parkeren’ om de parkings te verbergen.")}
   else{S.zone=null;renderSheet()}drawZones();buildChips()}
 function selectZone(z){S.zone=z;S.sel=null;renderSheet();drawZones()}
 function renderZoneCard(){const z=S.zone;const panel=el("div",{class:"panel zonepanel"},el("div",{class:"grab"}));const sc=el("div",{class:"pscroll"});
@@ -1369,9 +1373,12 @@ function nearby(){const c=S.dest?P(S.dest.lat,S.dest.lon):[V.cx,V.cy];return fil
 function buildChips(){
   const c=document.getElementById("chips");c.replaceChildren();
   const fchip=k=>c.append(el("button",{class:"chip","aria-pressed":S.filters.has(k),onclick:()=>{S.filters.has(k)?S.filters.delete(k):S.filters.add(k);buildChips();renderSheet();draw()}},icon(SVC[k][1]),SVC[k][0]));
-  if(SVC.parkeren)fchip("parkeren");
-  c.append(el("button",{class:"chip zonechip","aria-pressed":ZN.on,onclick:toggleZones},ZN.loading?"⏳ Milieuzones":"🌿 Milieuzones"));
-  ["instap","wc","nacht","afval","was"].filter(k=>SVC[k]).forEach(fchip);
+  const lchip=(img,label,on,fn,cls)=>c.append(el("button",{class:"chip layer "+(cls||"")+(on?" on":""),"aria-pressed":on,title:(on?"Verberg ":"Toon ")+label.toLowerCase(),onclick:fn},img,label));
+  lchip(el("img",{class:"lci",src:PARK_LOGO,alt:""}),"Parkeren",S.lp!==false,()=>{S.lp=S.lp===false;buildChips();draw()});
+  lchip(el("span",{class:"lci zi"},ZN.loading?"⏳":"🌿"),"Milieuzones",ZN.on,toggleZones,"zone");
+  lchip(el("img",{class:"lci",src:STOP_LOGO,alt:""}),"In- en uitstappen",S.ls!==false,()=>{S.ls=S.ls===false;buildChips();draw()});
+  c.append(el("span",{class:"chipdiv","aria-hidden":"true"}));
+  ["wc","nacht","afval","was"].filter(k=>SVC[k]).forEach(fchip);
 }
 
 /* ---------- sheet ---------- */
