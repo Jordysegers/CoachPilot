@@ -25,7 +25,9 @@ function normalize(f) {
   const flat = JSON.stringify(p).toUpperCase();
   const name = first(p, ["name", "naam", "zoneName", "zoneNaam", "title", "description", "displayName"]) || "Milieuzone";
   const town = first(p, ["municipality", "gemeente", "municipalityName", "city", "plaats"]);
-  const ze = /ZERO|NUL[_ -]?EMISSIE|ZERO_EMISSION|UITSTOOTVRIJ/.test(flat);
+  // Alleen naam en type-velden bekijken: elders kan "zero" ook voorkomen als nee-waarde (bijv. zeroEmission:false)
+  const typeTxt = [name, ...Object.entries(p).filter(([k, v]) => typeof v === "string" && /type|soort|categor|kind|class/i.test(k)).map(([, v]) => v)].join(" ").toUpperCase();
+  const ze = /ZERO|NUL[_ -]?EMISSIE|ZERO_EMISSION|UITSTOOTVRIJ|\bZE[- ]?ZONE/.test(typeTxt);
   const rules = scanRules(p);
   const busRules = rules.filter(r => /BUS|COACH|AUTOBUS/.test(r.vehicle));
   const mentionsBus = /\bBUS\b|AUTOBUS|COACH|\"BUS/.test(flat);
@@ -55,9 +57,9 @@ function decide(f) {
   const p = f.properties, flat = (JSON.stringify(f._raw || {}) + " " + p.name + " " + (p.town || "")).toUpperCase();
   if (p.until && new Date(p.until) < new Date()) return "verlopen";
   if (/GEEN MILIEUZONE MEER|VERVALLEN|INGETROKKEN/.test(flat)) return "vervallen";
-  const explicit = p.busKnown || BUS_TOKEN.test(flat);
-  if (explicit) return "bus";
+  // Zero-emissiezones gelden in Nederland niet voor bussen (alleen bestel- en vrachtauto's)
   if (p.zone === "zero") return "geen bus (zero-emissie voor bestel/vracht)";
+  if (p.busKnown || BUS_TOKEN.test(flat)) return "bus";
   const label = (p.name + " " + (p.town || "")).toUpperCase();
   if (BUS_TOWNS.some(r => r.test(label))) return "bus-lijst";
   return "geen bus";
@@ -81,7 +83,9 @@ module.exports = async (req, res) => {
     const seen = new Set();
     const keep = feats.filter(f => (f._why === "bus" || f._why === "bus-lijst")).filter(f => { const k = JSON.stringify(f.geometry).slice(0, 400); if (seen.has(k)) return false; seen.add(k); return true; })
       .map(f => { const o = { type: "Feature", geometry: f.geometry, properties: { ...f.properties } };
-        if (f._why === "bus-lijst" && !o.properties.bus) { o.properties.bus = ["EURO6"]; o.properties.busKnown = true; o.properties.purple = true; }
+        // Paarse milieuzone: dieselbussen minimaal emissieklasse 6 (milieuzones.nl/autobussen)
+        const cls = (o.properties.bus || []).filter(c => /EURO[_ ]?[0-9]/i.test(c)); o.properties.bus = cls.length ? cls : ["EURO6"];
+        o.properties.zone = "low"; o.properties.purple = true; o.properties.busKnown = true;
         return o; });
     const out = { type: "FeatureCollection", source: "NDW – Nationaal Dataportaal Wegverkeer (CC-0); busregels volgens milieuzones.nl", fetchedAt: new Date().toISOString(), features: keep };
     res.setHeader("Cache-Control", "public, s-maxage=21600, stale-while-revalidate=86400");

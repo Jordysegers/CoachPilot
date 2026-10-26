@@ -80,12 +80,12 @@ body.picking .mapside{display:none}
 .sw{width:40px;height:24px;border-radius:12px;background:#D5D9E3;position:relative;flex:none;transition:background .2s}.sw::after{content:"";position:absolute;left:3px;top:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgb(0 0 0 / .25);transition:transform .2s}
 .sw.on{background:var(--accent)}.sw.on::after{transform:translateX(16px)}
 .laynote{margin:4px 8px 2px;font-size:12px;color:var(--muted)}
-.zlabel{position:absolute;transform:translate(-50%,-50%);display:flex;align-items:center;gap:5px;padding:3px 9px 3px 4px;border-radius:999px;background:#fff;box-shadow:0 2px 8px rgb(0 0 0 / .2);font-size:12px;font-weight:800;color:#166534;white-space:nowrap;z-index:4;cursor:pointer;pointer-events:auto;border:2px solid #16A34A}
+.zlabel{position:absolute;transform:translate(-50%,-50%);display:flex;align-items:center;gap:5px;padding:3px 9px 3px 4px;border-radius:999px;background:#fff;box-shadow:0 2px 8px rgb(0 0 0 / .2);font-size:12px;font-weight:800;color:#5B21B6;white-space:nowrap;z-index:4;cursor:pointer;pointer-events:auto;border:2px solid #7C3AED}
 .zlabel.ze{color:#5B21B6;border-color:#7C3AED}.zlabel.fut{border-style:dashed}
-.zlabel .zl-ic{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:11px;background:#E8F5E9}.zlabel.ze .zl-ic{background:#F1E9FF}
+.zlabel .zl-ic{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:11px;background:#F1E9FF}.zlabel.ze .zl-ic{background:#F1E9FF}
 .zlabel.dot{padding:2px}.zlabel.dot .zl-tx{display:none}
 .zlegend{position:absolute;left:16px;top:120px;z-index:8;display:flex;gap:9px;align-items:center;max-width:calc(100% - 92px);background:var(--card);border-radius:10px;padding:5px 9px;box-shadow:var(--shadow);font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden}
-.zlegend .lg{display:flex;align-items:center;gap:5px}.zlegend i{width:14px;height:10px;border-radius:3px;background:rgb(22 163 74 / .3);border:2px solid #15803D}.zlegend i.ze{background:rgb(124 58 237 / .3);border-color:#6D28D9}.zlegend i.fut{background:none;border:2px dashed #6B7280}
+.zlegend .lg{display:flex;align-items:center;gap:5px}.zlegend i{width:14px;height:10px;border-radius:3px;background:rgb(124 58 237 / .3);border:2px solid #6D28D9}.zlegend i.ze{background:rgb(124 58 237 / .3);border-color:#6D28D9}.zlegend i.fut{background:none;border:2px dashed #6B7280}
 .zlegend .lgtip{flex-basis:100%;font-size:11px;font-weight:600;color:var(--muted)}
 body.picking .zlegend{display:none}
 .apath{fill:none;stroke-linecap:round;stroke-linejoin:round;cursor:pointer}.a-vrij{stroke:#059669;stroke-width:4;opacity:.9}.a-ontheffing{stroke:#F59E0B;stroke-width:4;stroke-dasharray:7 6}.a-s100{stroke:#DC2626;stroke-width:6;opacity:.85}
@@ -881,14 +881,14 @@ html,body{touch-action:manipulation}
 .carousel{scroll-padding-inline:max(16px,env(safe-area-inset-left,0px))}
 @media (max-width:699px){.sheet{bottom:calc(var(--navh,64px) + 4px)!important}.panel{margin-bottom:calc(-4px - var(--navh,64px))!important;padding-bottom:calc(4px + var(--navh,64px))!important}}
 .chatv{padding-top:0!important}.chatv .chatbar{margin-left:calc(-1 * max(16px,env(safe-area-inset-left,0px)));margin-right:calc(-1 * max(16px,env(safe-area-inset-right,0px)))}
-.zpath{fill:#16A34A;fill-opacity:.24;stroke:#15803D;stroke-width:2.5;cursor:pointer}.zpath.fut{fill-opacity:.1;stroke-dasharray:6 5}.zpath.ze{fill:#7C3AED;stroke:#6D28D9}.zpath.sel{fill-opacity:.3;stroke-width:3}
+.zpath{fill:#7C3AED;fill-opacity:.2;stroke:#6D28D9;stroke-width:2.5;cursor:pointer}.zpath.fut{fill-opacity:.1;stroke-dasharray:6 5}.zpath.ze{fill:#7C3AED;stroke:#6D28D9}.zpath.sel{fill-opacity:.3;stroke-width:3}
 .chip.layer{background:var(--card);color:var(--ink,#14161F);box-shadow:0 2px 8px rgb(20 22 31 / .08);padding:6px 12px 6px 6px}
 .chip.layer .lci{width:22px;height:22px;border-radius:7px;display:grid;place-items:center;font-size:14px;transition:filter .2s,opacity .2s}
 .chip.layer.on{box-shadow:inset 0 0 0 2px var(--accent),0 2px 8px rgb(20 22 31 / .08)}
 .chip.layer.zone.on{background:#E8F5E9;color:#166534;box-shadow:inset 0 0 0 2px #16A34A,0 2px 8px rgb(20 22 31 / .08)}
 .chip.layer:not(.on){color:var(--muted)}.chip.layer:not(.on) .lci{filter:grayscale(1);opacity:.45}
 .chipdiv{flex:none;width:1px;align-self:stretch;margin:6px 2px;background:rgb(20 22 31 / .15)}
-.ztag{display:inline-block;font-size:11px;font-weight:800;padding:3px 8px;border-radius:7px;background:#E8F5E9;color:#166534}.ztag.ze{background:#F1E9FF;color:#5B21B6}
+.ztag{display:inline-block;font-size:11px;font-weight:800;padding:3px 8px;border-radius:7px;background:#F1E9FF;color:#5B21B6}.ztag.ze{background:#F1E9FF;color:#5B21B6}
 .zrule{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:16px;background:var(--soft)}.zrule p{margin:0;line-height:1.5;font-weight:600}.zic{font-size:20px}
 #splash{--sp1:#5470FF;--sp2:#3D5AFE;--sp3:#2B3FCC;--spi:#fff;position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;background:radial-gradient(120% 80% at 50% 30%,var(--sp1) 0%,var(--sp2) 45%,var(--sp3) 100%);color:var(--spi);transition:opacity .45s ease,transform .45s ease;padding:env(safe-area-inset-top) 16px env(safe-area-inset-bottom)}
 #splash.out{opacity:0;transform:scale(1.04);pointer-events:none}
@@ -1311,9 +1311,8 @@ function zoneLabels(){ZN.labels.forEach(o=>o.e.remove());ZN.labels=[];if(!ZN.on|
     const e=el("button",{type:"button",class:"zlabel "+(z.zone==="zero"?"ze":"le")+(zFuture(z)?" fut":""),onclick:ev=>{ev.stopPropagation();selectZone(z)}},el("span",{class:"zl-ic"},z.zone==="zero"?"⚡":"🌿"),el("span",{class:"zl-tx"},z.town||z.name));
     ZN.labels.push({e,lat:c[0],lon:c[1]})})}
 function placeZoneLabels(zoom){const far=zoom<9.5;ZN.labels.forEach(o=>o.e.classList.toggle("dot",far))}
-function zoneRuleText(z){const cls=(z.bus||[]).map(c=>c.replace(/^EURO[_ ]?/,"Euro ").replace(/_/g," "));const min=cls.length?cls.slice().sort()[0]:"Euro 6";
-  if(z.zone==="zero")return"Zero-emissiezone voor bussen: alleen uitstootvrije bussen. Controleer of er een overgangsregeling of ontheffing geldt.";
-  return"Milieuzone voor bussen (touringcar en OV): diesel minimaal "+min+". Bussen met Euro 4 of 5 kunnen vaak een ontheffing krijgen bij de gemeente. Bussen die niet op diesel rijden mogen er altijd in.";}
+function zoneRuleText(z){const cls=(z.bus||[]).map(c=>c.toUpperCase().replace(/^EURO[_ ]?/,"")).filter(Boolean);const min=cls.length?cls.sort()[0]:"6";
+  return"Paarse milieuzone. Dieselbussen (touringcar en OV) hebben toegang vanaf emissieklasse "+min+". Bussen met emissieklasse 4 of 5 kunnen vaak een ontheffing krijgen bij de gemeente. Bussen die niet op diesel rijden mogen er altijd in.";}
 const fmtDate=s=>{if(!s)return"";const d=new Date(s);return isNaN(d)?String(s):d.toLocaleDateString("nl-NL",{day:"numeric",month:"long",year:"numeric"})};
 async function loadZones(){if(ZN.data||ZN.loading)return;if(!LIVE){ZN.err="preview";return}ZN.loading=true;
   try{const r=await fetch("/api/zones");const js=await r.json();if(!r.ok||js.error)throw new Error(js.error||("fout "+r.status));ZN.data=js;ZN.err=null}catch(e){ZN.err=e.message||String(e)}finally{ZN.loading=false}}
@@ -1326,14 +1325,14 @@ function drawZonesSvg(){if(ZN.g){ZN.g.remove();ZN.g=null}if(!ZN.on||!ZN.data||GM
 function drawZonesGm(){if(!GM.on||!GM.map)return;const dl=GM.map.data;
   if(!ZN.on||!ZN.data){dl.forEach(f=>dl.remove(f));ZN.gmAdded=false;return}
   if(!ZN.gmAdded){dl.forEach(f=>dl.remove(f));dl.addGeoJson(ZN.data);ZN.gmAdded=true;
-    dl.setStyle(f=>{const ze=f.getProperty("zone")==="zero";const sel=S.zone&&S.zone.id===f.getProperty("id");const fut=f.getProperty("from")&&new Date(f.getProperty("from"))>new Date();return{fillColor:ze?"#7C3AED":"#16A34A",fillOpacity:sel?.38:fut?.1:.24,strokeColor:ze?"#6D28D9":"#15803D",strokeOpacity:fut?.6:1,strokeWeight:sel?4:2.5,clickable:true,zIndex:1}});
+    dl.setStyle(f=>{const ze=f.getProperty("zone")==="zero";const sel=S.zone&&S.zone.id===f.getProperty("id");const fut=f.getProperty("from")&&new Date(f.getProperty("from"))>new Date();return{fillColor:"#7C3AED",fillOpacity:sel?.34:fut?.08:.2,strokeColor:"#6D28D9",strokeOpacity:fut?.6:1,strokeWeight:sel?4:2.5,clickable:true,zIndex:1}});
     if(!ZN.gmClick){ZN.gmClick=dl.addListener("click",e=>{const p={};e.feature.forEachProperty((v,k)=>p[k]=v);selectZone(p)})}}
   else dl.setStyle(dl.getStyle())}
 function drawZones(){drawZonesSvg();drawZonesGm();if(ZN.on&&ZN.data&&!ZN.labels.length)zoneLabels();if(!ZN.on&&ZN.labels.length)zoneLabels();renderLegend();if(GM.on)gmRender();else draw()}
 function renderLegend(){let l=document.getElementById("zLegend");const z=ZN.on&&ZN.data,a=AMS.on&&AMS.data;if(!z&&!a){if(l)l.remove();return}
   if(!l){l=el("div",{class:"zlegend",id:"zLegend"});document.getElementById("mapView").append(l)}
   const hasFut=z&&ZN.data.features.some(f=>zFuture(f.properties));
-  l.replaceChildren(...[z?el("span",{class:"lg"},el("i",{class:"le"}),"Milieuzone bussen"):null,z&&ZN.data.features.some(f=>f.properties.zone==="zero")?el("span",{class:"lg"},el("i",{class:"ze"}),"Zero-emissie"):null,hasFut?el("span",{class:"lg"},el("i",{class:"fut"}),"Toekomstig"):null,
+  l.replaceChildren(...[z?el("span",{class:"lg"},el("i",{class:"le"}),"Paarse milieuzone (bussen)"):null,z&&ZN.data.features.some(f=>f.properties.zone==="zero")?el("span",{class:"lg"},el("i",{class:"ze"}),"Zero-emissie"):null,hasFut?el("span",{class:"lg"},el("i",{class:"fut"}),"Toekomstig"):null,
     a?el("span",{class:"lg"},el("b",{class:"ln vrij"}),"Route vrij"):null,a?el("span",{class:"lg"},el("b",{class:"ln onth"}),"Met ontheffing"):null,a?el("span",{class:"lg"},el("b",{class:"ln s100"}),"S100 verbod"):null].filter(Boolean))}
 async function toggleZones(){ZN.on=!ZN.on;buildChips();
   if(ZN.on){await loadZones();if(ZN.err==="preview"){alertMsg("Milieuzones zie je op de live site. Deze voorbeeldweergave mag de NDW-gegevens niet ophalen.");ZN.on=false;buildChips();return}
@@ -1344,7 +1343,7 @@ function selectZone(z){S.ams=false;S.zone=z;S.sel=null;renderSheet();drawZones()
 function closeZone(){S.zone=null;renderSheet();drawZones()}
 function grippedPanel(cls,onClose){const panel=el("div",{class:"panel "+cls});panel.append(sheetGrip(panel,v=>{panel.classList.toggle("tall",v==null?!panel.classList.contains("tall"):v)},onClose));return panel}
 function renderZoneCard(){const z=S.zone;const panel=grippedPanel("zonepanel",closeZone);const sc=el("div",{class:"pscroll"});
-  sc.append(el("div",{class:"ptop"},el("div",{style:"min-width:0"},el("div",{class:"r",style:"gap:6px"},el("span",{class:"ztag "+(z.zone==="zero"?"ze":"le")},z.zone==="zero"?"Zero-emissiezone":"Milieuzone"),zFuture(z)?el("span",{class:"ztag fut"},"Toekomstig"):el("span",{class:"ztag now"},"● Nu van kracht")),el("h2",{style:"margin:6px 0 0;font-size:19px;font-weight:800"},z.name),z.town&&z.town!==z.name?el("div",{class:"pm"},z.town):null),
+  sc.append(el("div",{class:"ptop"},el("div",{style:"min-width:0"},el("div",{class:"r",style:"gap:6px"},el("span",{class:"ztag "+(z.zone==="zero"?"ze":"le")},"Paarse milieuzone"),zFuture(z)?el("span",{class:"ztag fut"},"Toekomstig"):el("span",{class:"ztag now"},"● Nu van kracht")),el("h2",{style:"margin:6px 0 0;font-size:19px;font-weight:800"},z.name),z.town&&z.town!==z.name?el("div",{class:"pm"},z.town):null),
     el("button",{class:"roundbtn","aria-label":"Sluiten",onclick:closeZone},icon("i-x","i"))));
   if(zFuture(z))sc.append(el("div",{class:"zfuture"},el("span",{class:"zf-ic"},"🗓"),el("div",{},el("b",{},"Toekomstig · gaat "+monthsUntil(z.from)+" in"),el("span",{},"Vanaf "+fmtDate(z.from)+" gelden deze regels. Tot die tijd mag je er nog gewoon in."))));
   sc.append(el("div",{class:"zrule"},el("span",{class:"zic"},"🚌"),el("p",{},zoneRuleText(z))));
