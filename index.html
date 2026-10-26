@@ -1154,19 +1154,20 @@ function geoSearch(q){clearTimeout(GEO.t);if(q.length<3){GEO.items=[];GEO.q=q;re
       const js=await r.json();const items=js.map(x=>{const a=x.address||{};const name=x.name||(x.display_name||"").split(",")[0];const place=a.city||a.town||a.village||a.municipality||"";
         return{type:"g",label:name,sub:[x.type==="city"||x.type==="town"||x.addresstype==="city"?"Plaats":null,place&&place!==name?place:null,a.country].filter(Boolean).join(" · "),lat:+x.lat,lon:+x.lon,city:x.addresstype==="city"||x.addresstype==="town"||x.addresstype==="village"}});
       GEO.cache[q]=items;if(norm(qi.value.trim())===q){GEO.items=items;GEO.q=q;showResults()}}catch(e){}finally{GEO.busy=false}},450)}
-function setDest(d){S.dest=d;S.sel=null;S.expanded=false;S.hideNearby=false;renderSheet();
+function setDest(d){S.destMore=false;S.dest=d;S.sel=null;S.expanded=false;S.hideNearby=false;renderSheet();
   const near=filtered().map(p=>({p,k:kmBetween(d.lat,d.lon,p.lat,p.lon)})).sort((a,b)=>a.k-b.k).slice(0,d.city?8:5).filter((x,i)=>i<3||x.k<25);
   fitTo([d.lat,...near.map(x=>x.p.lat)],[d.lon,...near.map(x=>x.p.lon)],50);draw()}
 function clearDest(){S.dest=null;qi.value="";renderSheet();draw()}
 function renderDest(){const d=S.dest;const all=filtered().map(p=>({p,k:kmBetween(d.lat,d.lon,p.lat,p.lon)})).sort((a,b)=>a.k-b.k);
-  let list=all.filter(x=>x.k<=25).slice(0,20);const far=!list.length;if(far)list=all.slice(0,5);
+  const near=all.filter(x=>x.k<=25);const far=!near.length;let list=far?all.slice(0,5):near.slice(0,S.destMore?200:20);
+  const inCity=d.city?PARKINGS.filter(p=>norm(p.city)===norm(d.name)):[];const cs=inCity.filter(isStopP).length,cp=inCity.length-cs;
   const panel=el("div",{class:"panel destpanel"},el("div",{class:"grab"}));const sc=el("div",{class:"pscroll"});
-  sc.append(el("div",{class:"ptop"},el("div",{style:"min-width:0"},el("div",{class:"lbl2"},"Bestemming"),el("h2",{style:"margin:0;font-size:18px;font-weight:800"},"📍 "+d.name),d.sub?el("div",{class:"pm"},d.sub):null),
+  sc.append(el("div",{class:"ptop"},el("div",{style:"min-width:0"},el("div",{class:"lbl2"},"Bestemming"),el("h2",{style:"margin:0;font-size:18px;font-weight:800"},"📍 "+d.name),inCity.length?el("div",{class:"pm"},[cp&&cp+" parkeerplaats"+(cp===1?"":"en"),cs&&cs+" stopplaats"+(cs===1?"":"en")].filter(Boolean).join(" · ")+" in "+d.name):d.sub&&d.type!=="c"?el("div",{class:"pm"},d.sub):null),
     el("button",{class:"roundbtn","aria-label":"Bestemming wissen",onclick:clearDest},icon("i-x","i"))));
-  sc.append(el("div",{class:"sec",style:"margin:0"},far?"Geen busparking binnen 25 km. Dichtstbijzijnde:":list.length+" busparking"+(list.length===1?"":"s")+" in de buurt"));
+  sc.append(el("div",{class:"sec",style:"margin:0"},far?"Niets binnen 25 km. Dichtstbijzijnde plekken:":near.length+" plek"+(near.length===1?"":"ken")+" binnen 25 km, dichtstbij eerst"));
   const L=el("div",{class:"list"});list.forEach(({p,k})=>L.append(el("button",{class:"lrow",onclick:()=>select(p.id,true)},thumb(p,true),
     el("div",{style:"min-width:0"},el("h3",{},p.name),el("div",{class:"loc"},p.city+" · "+subOf(p))),el("div",{class:"meta"},el("span",{class:"dist"},fmtKm(k)),el("span",{class:"pm"},"hemelsbreed")))));
-  sc.append(L);panel.append(sc);sheet.append(panel)}
+  sc.append(L);if(!far&&near.length>list.length)sc.append(el("button",{class:"btn",onclick:()=>{S.destMore=true;renderSheet()}},"Toon alle "+near.length+" plekken"));panel.append(sc);sheet.append(panel)}
 /* ---------- filters ---------- */
 const qi=document.getElementById("q"),res=document.getElementById("results");
 function norm(t){return t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")}
@@ -1178,7 +1179,7 @@ function searchHits(){const q=norm(qi.value.trim());if(!q)return[];
   return[...places,...geo,...ps]}
 function goHit(h){res.hidden=true;qi.blur();
   if(h.type==="p"){S.dest=null;select(h.p.id,true);return}
-  qi.value=h.label;setDest({name:h.label,sub:h.type==="c"?(h.sub||""):h.sub,lat:h.lat,lon:h.lon,city:!!h.city})}
+  qi.value=h.label;setDest({name:h.label,sub:h.type==="c"?(h.sub||""):h.sub,lat:h.lat,lon:h.lon,city:!!h.city,type:h.type})}
 function showResults(){const raw=qi.value.trim();res.replaceChildren();if(!raw){res.hidden=true;return}
   geoSearch(norm(raw));const hits=searchHits();
   const grp=(title,arr)=>{if(!arr.length)return;res.append(el("div",{class:"hgroup"},title));arr.forEach(h=>res.append(el("button",{class:"hit",onpointerdown:e=>e.preventDefault(),onclick:()=>goHit(h)},
