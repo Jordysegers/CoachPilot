@@ -95,6 +95,9 @@ body.picking .zlegend{display:none}
 .ztag.ban{background:#FEE2E2;color:#991B1B}.chip.layer.ams.on{background:#FEF2F2;color:#991B1B;box-shadow:inset 0 0 0 2px #DC2626,0 2px 8px rgb(20 22 31 / .08)}
 .zban{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:16px;background:#FEF2F2;border:1.5px solid #FCA5A5}.zban b{display:block;color:#991B1B}.zban span{font-size:13px;color:#7F1D1D}
 .zlegend{flex-wrap:wrap;white-space:normal}
+.zrules{background:var(--soft);border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;gap:10px}.zrh{font-weight:800;font-size:14px}
+.zr{display:flex;gap:10px;align-items:flex-start}.zr b{display:block;font-size:14px}.zr span{font-size:13px;color:var(--muted);line-height:1.4}
+.zri{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:900;color:#fff;background:#16A34A}.zr.onth .zri{background:#F59E0B}.zr.ok .zri::after{content:"";width:5px;height:10px;border:solid #fff;border-width:0 2.5px 2.5px 0;transform:translateY(-1px) rotate(45deg)}
 .ztag.fut{background:#FFF7E6;color:#92400E;box-shadow:inset 0 0 0 1.5px #F59E0B}.ztag.now{background:#E8F5E9;color:#166534}
 .zfuture{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:16px;background:#FFF7E6;border:1.5px dashed #F59E0B}.zfuture b{display:block;color:#92400E}.zfuture span{font-size:13px;color:#78350F}.zf-ic{font-size:20px}
 .zactive{display:inline-flex;align-self:flex-start;align-items:center;gap:7px;font-size:13px;font-weight:800;color:#166534;background:#E8F5E9;padding:5px 10px;border-radius:999px}.zdot{width:8px;height:8px;border-radius:50%;background:#16A34A;box-shadow:0 0 0 3px rgb(22 163 74 / .25)}
@@ -1311,8 +1314,7 @@ function zoneLabels(){ZN.labels.forEach(o=>o.e.remove());ZN.labels=[];if(!ZN.on|
     const e=el("button",{type:"button",class:"zlabel "+(z.zone==="zero"?"ze":"le")+(zFuture(z)?" fut":""),onclick:ev=>{ev.stopPropagation();selectZone(z)}},el("span",{class:"zl-ic"},z.zone==="zero"?"⚡":"🌿"),el("span",{class:"zl-tx"},z.town||z.name));
     ZN.labels.push({e,lat:c[0],lon:c[1]})})}
 function placeZoneLabels(zoom){const far=zoom<9.5;ZN.labels.forEach(o=>o.e.classList.toggle("dot",far))}
-function zoneRuleText(z){const cls=(z.bus||[]).map(c=>c.toUpperCase().replace(/^EURO[_ ]?/,"")).filter(Boolean);const min=cls.length?cls.sort()[0]:"6";
-  return"Paarse milieuzone. Dieselbussen (touringcar en OV) hebben toegang vanaf emissieklasse "+min+". Bussen met emissieklasse 4 of 5 kunnen vaak een ontheffing krijgen bij de gemeente. Bussen die niet op diesel rijden mogen er altijd in.";}
+function zoneRuleText(z){return"Paarse milieuzone: dieselbussen vanaf Euro 6 hebben toegang. Lager dan Euro 6: ontheffing aanvragen bij de gemeente."}
 const fmtDate=s=>{if(!s)return"";const d=new Date(s);return isNaN(d)?String(s):d.toLocaleDateString("nl-NL",{day:"numeric",month:"long",year:"numeric"})};
 async function loadZones(){if(ZN.data||ZN.loading)return;if(!LIVE){ZN.err="preview";return}ZN.loading=true;
   try{const r=await fetch("/api/zones");const js=await r.json();if(!r.ok||js.error)throw new Error(js.error||("fout "+r.status));ZN.data=js;ZN.err=null}catch(e){ZN.err=e.message||String(e)}finally{ZN.loading=false}}
@@ -1346,7 +1348,11 @@ function renderZoneCard(){const z=S.zone;const panel=grippedPanel("zonepanel",cl
   sc.append(el("div",{class:"ptop"},el("div",{style:"min-width:0"},el("div",{class:"r",style:"gap:6px"},el("span",{class:"ztag "+(z.zone==="zero"?"ze":"le")},"Paarse milieuzone"),zFuture(z)?el("span",{class:"ztag fut"},"Toekomstig"):el("span",{class:"ztag now"},"● Nu van kracht")),el("h2",{style:"margin:6px 0 0;font-size:19px;font-weight:800"},z.name),z.town&&z.town!==z.name?el("div",{class:"pm"},z.town):null),
     el("button",{class:"roundbtn","aria-label":"Sluiten",onclick:closeZone},icon("i-x","i"))));
   if(zFuture(z))sc.append(el("div",{class:"zfuture"},el("span",{class:"zf-ic"},"🗓"),el("div",{},el("b",{},"Toekomstig · gaat "+monthsUntil(z.from)+" in"),el("span",{},"Vanaf "+fmtDate(z.from)+" gelden deze regels. Tot die tijd mag je er nog gewoon in."))));
-  sc.append(el("div",{class:"zrule"},el("span",{class:"zic"},"🚌"),el("p",{},zoneRuleText(z))));
+  {const cls=(z.bus||[]).map(c=>c.toUpperCase().replace(/^EURO[_ ]?/,"")).filter(Boolean).sort();const min=cls[0]||"6";
+    sc.append(el("div",{class:"zrules"},el("div",{class:"zrh"},"🚌 Dieselbussen (touringcar en OV)"),
+      el("div",{class:"zr ok"},el("span",{class:"zri"}),el("div",{},el("b",{},"Euro "+min+" of hoger"),el("span",{},"Je hebt toegang tot de zone."))),
+      el("div",{class:"zr onth"},el("span",{class:"zri"},"!"),el("div",{},el("b",{},"Lager dan Euro "+min),el("span",{},"Geen toegang zonder ontheffing. Je kunt een ontheffing aanvragen bij de gemeente."))),
+      el("div",{class:"zr ok"},el("span",{class:"zri"}),el("div",{},el("b",{},"Geen diesel"),el("span",{},"Bijvoorbeeld elektrisch of waterstof: altijd toegang.")))))}
   const facts=[[zFuture(z)?"Ingangsdatum":"Van kracht sinds",fmtDate(z.from)],["Einddatum",zNoEnd(z)?"Geen einddatum (blijvend)":fmtDate(z.until)],["Status",z.status]].filter(x=>x[1]);
   if(facts.length)sc.append(el("div",{class:"infolist"},...facts.map(([k,v])=>el("div",{class:"inforow"},el("span",{},k),el("b",{},v)))));
   sc.append(el("div",{class:"r",style:"gap:8px;flex-wrap:wrap"},z.url?el("a",{class:"btn sm",href:z.url,target:"_blank",rel:"noopener"},"Meer informatie ↗"):null,el("a",{class:"btn sm",href:"https://www.milieuzones.nl",target:"_blank",rel:"noopener"},"Alle regels op milieuzones.nl ↗")));
