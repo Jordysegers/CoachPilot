@@ -1335,7 +1335,7 @@ function renderLegend(){let l=document.getElementById("zLegend");const z=ZN.on&&
   if(!l){l=el("div",{class:"zlegend",id:"zLegend"});document.getElementById("mapView").append(l)}
   const hasFut=z&&ZN.data.features.some(f=>zFuture(f.properties));
   l.replaceChildren(...[z?el("span",{class:"lg"},el("i",{class:"le"}),"Paarse milieuzone (bussen)"):null,z&&ZN.data.features.some(f=>f.properties.zone==="zero")?el("span",{class:"lg"},el("i",{class:"ze"}),"Zero-emissie"):null,hasFut?el("span",{class:"lg"},el("i",{class:"fut"}),"Toekomstig"):null,
-    a?el("span",{class:"lg"},el("b",{class:"ln vrij"}),"Corridor: mag"):null,a?el("span",{class:"lg"},el("b",{class:"ln onth"}),"Met ontheffing"):null,a?el("span",{class:"lg"},el("b",{class:"ln s100"}),"S100 verbod"):null].filter(Boolean))}
+    a?el("span",{class:"lg"},el("b",{class:"ln vrij"}),"Corridor: mag"):null,a?el("span",{class:"lg"},el("b",{class:"ln s100"}),"S100 verbod"):null].filter(Boolean))}
 async function toggleZones(){ZN.on=!ZN.on;buildChips();
   if(ZN.on){await loadZones();if(ZN.err==="preview"){alertMsg("Milieuzones zie je op de live site. Deze voorbeeldweergave mag de NDW-gegevens niet ophalen.");ZN.on=false;buildChips();return}
     if(ZN.err){alertMsg("Milieuzones laden lukte niet: "+ZN.err);ZN.on=false;buildChips();return}
@@ -1361,22 +1361,22 @@ function renderZoneCard(){const z=S.zone;const panel=grippedPanel("zonepanel",cl
 /* ---------- touringcarregels Amsterdam (S100) ---------- */
 const AMS={on:false,data:null,loading:false,err:null,g:null,gm:[],label:null,center:[52.3702,4.8952]};
 function loadAms(){if(AMS.data)return Promise.resolve();if(AMS.p)return AMS.p;if(!LIVE){AMS.err="preview";return Promise.resolve()}AMS.loading=true;return AMS.p=(async()=>{
-  try{const ac=new AbortController();const tm=setTimeout(()=>ac.abort(),45000);let r;try{r=await fetch("/api/amsterdam?v=4",{signal:ac.signal})}catch(e){throw new Error(e.name==="AbortError"?"het duurde te lang, probeer het zo nog eens":e.message)}finally{clearTimeout(tm)}const js=await r.json();if(!r.ok||js.error)throw new Error(js.error||("fout "+r.status));AMS.data=js;AMS.err=null}catch(e){AMS.err=e.message||String(e)}finally{AMS.loading=false;AMS.p=null}})()}
+  try{const ac=new AbortController();const tm=setTimeout(()=>ac.abort(),45000);let r;try{r=await fetch("/api/amsterdam?v=5",{signal:ac.signal})}catch(e){throw new Error(e.name==="AbortError"?"het duurde te lang, probeer het zo nog eens":e.message)}finally{clearTimeout(tm)}const js=await r.json();if(!r.ok||js.error)throw new Error(js.error||("fout "+r.status));AMS.data=js;AMS.err=null}catch(e){AMS.err=e.message||String(e)}finally{AMS.loading=false;AMS.p=null}})()}
 function lineD(c){return c.map((p,i)=>{const[x,y]=P(p[1],p[0]);return(i?"L":"M")+x.toFixed(3)+" "+y.toFixed(3)}).join("")}
-const AMS_ORDER={vrij:1,ontheffing:2,s100:3,corridor:4};
+const AMS_ORDER={s100:3,corridor:4};
 function drawAmsSvg(){if(AMS.g){AMS.g.remove();AMS.g=null}if(!AMS.on||!AMS.data||GM.on)return;const g=document.createElementNS(NS,"g");g.setAttribute("class","amsg");
   AMS.data.features.filter(f=>f.properties.kind!=="vrij"&&AMS_ORDER[f.properties.kind]).sort((a,b)=>AMS_ORDER[a.properties.kind]-AMS_ORDER[b.properties.kind]).forEach(f=>{const p=document.createElementNS(NS,"path");p.setAttribute("d",lineD(f.geometry.coordinates));p.setAttribute("class","apath a-"+f.properties.kind);p.setAttribute("vector-effect","non-scaling-stroke");g.append(p)});
   svg.append(g);AMS.g=g}
 const AMS_STYLE={vrij:{strokeColor:"#059669",strokeWeight:4,strokeOpacity:.9,zIndex:3},ontheffing:{strokeColor:"#F59E0B",strokeWeight:4,strokeOpacity:0,zIndex:4,icons:[{icon:{path:"M 0,-1 0,1",strokeOpacity:1,strokeColor:"#F59E0B",strokeWeight:4,scale:2},offset:"0",repeat:"10px"}]},s100:{strokeColor:"#DC2626",strokeWeight:6,strokeOpacity:.85,zIndex:5},corridor:{strokeColor:"#059669",strokeWeight:7,strokeOpacity:.95,zIndex:6}};
 function drawAmsGm(){AMS.gm.forEach(l=>l.setMap(null));AMS.gm=[];if(!GM.on||!GM.map||!AMS.on||!AMS.data)return;
-  AMS.data.features.filter(f=>AMS_STYLE[f.properties.kind]&&f.properties.kind!=="vrij").forEach(f=>{const l=new google.maps.Polyline({path:f.geometry.coordinates.map(c=>({lat:c[1],lng:c[0]})),clickable:true,...AMS_STYLE[f.properties.kind]});l.addListener("click",openAms);l.setMap(GM.map);AMS.gm.push(l)})}
+  AMS.data.features.filter(f=>AMS_ORDER[f.properties.kind]).forEach(f=>{const l=new google.maps.Polyline({path:f.geometry.coordinates.map(c=>({lat:c[1],lng:c[0]})),clickable:true,...AMS_STYLE[f.properties.kind]});l.addListener("click",openAms);l.setMap(GM.map);AMS.gm.push(l)})}
 function amsLabel(){if(!AMS.on||!AMS.data){if(AMS.label){AMS.label.remove();AMS.label=null}return null}
   if(!AMS.label)AMS.label=el("button",{type:"button",class:"zlabel amslabel",onclick:ev=>{ev.stopPropagation();openAms()}},el("span",{class:"zl-ic"},"🚫"),el("span",{class:"zl-tx"},"S100 · touringcarverbod"));return AMS.label}
 function drawAms(){drawAmsSvg();drawAmsGm();amsLabel();renderLegend();if(GM.on)gmRender();else draw()}
 async function toggleAms(){AMS.on=!AMS.on;buildChips();
   if(AMS.on){await loadAms();if(AMS.err==="preview"){alertMsg("De touringcarroutes zie je op de live site. Deze voorbeeldweergave mag de gegevens niet ophalen.");AMS.on=false;buildChips();return}
     if(AMS.err){alertMsg("Touringcarroutes laden lukte niet: "+AMS.err);AMS.on=false;buildChips();return}
-    {const k=new Set(AMS.data.features.map(f=>f.properties.kind));alertMsg(!k.has("s100")?"De S100 en corridor konden nu niet geladen worden (kaartserver reageert niet). Probeer het later nog eens.":"Amsterdam: rood = S100 (verbod), groen = corridor (mag), oranje = route met ontheffing.")};if(!GM.on||!GM.map||(GM.map.getZoom()||0)<11)flyTo(P(AMS.center[0],AMS.center[1]),GM.on?null:60)}
+    {const k=new Set(AMS.data.features.map(f=>f.properties.kind));alertMsg(!k.has("s100")?"De S100 en corridor konden nu niet geladen worden (kaartserver reageert niet). Probeer het later nog eens.":"Amsterdam: rood = S100 (verbod binnen de ring), groen = corridor (mag zonder ontheffing).")};if(!GM.on||!GM.map||(GM.map.getZoom()||0)<11)flyTo(P(AMS.center[0],AMS.center[1]),GM.on?null:60)}
   else{S.ams=false;renderSheet()}drawAms();buildChips()}
 // gegevens alvast op de achtergrond ophalen, zodat de lagen meteen verschijnen als je ze aanzet
 if(LIVE)setTimeout(()=>{try{loadAms().then(()=>buildChips());loadZones().then(()=>buildChips())}catch(e){}},4000);
@@ -1386,11 +1386,11 @@ function renderAmsCard(){const panel=grippedPanel("zonepanel",closeAms);const sc
   sc.append(el("div",{class:"ptop"},el("div",{style:"min-width:0"},el("div",{class:"r",style:"gap:6px"},el("span",{class:"ztag ban"},"Touringcarverbod"),el("span",{class:"ztag now"},"● Nu van kracht")),el("h2",{style:"margin:6px 0 0;font-size:19px;font-weight:800"},"Amsterdam binnen de S100"),el("div",{class:"pm"},"De binnenring rond het centrum")),
     el("button",{class:"roundbtn","aria-label":"Sluiten",onclick:closeAms},icon("i-x","i"))));
   sc.append(el("div",{class:"zban"},el("span",{class:"zf-ic"},"🚫"),el("div",{},el("b",{},"Touringcars zwaarder dan 7,5 ton mogen niet binnen de S100 zonder ontheffing"),el("span",{},"Er wordt met camera's gehandhaafd. De boete is € 1.160 (bedrag van 2025)."))));
-  const rows=[["ln s100","Rode lijn: de S100","Binnen deze ring geldt het verbod. Over de S100 zelf mag je wel rijden."],["ln vrij","Groene lijn: de corridor","Weesperstraat – Valkenburgerstraat – Kattenburgerstraat. Hier mag je zonder ontheffing doorheen."],["ln onth","Oranje stippellijn","Verplichte route als je een ontheffing hebt."]];
+  const rows=[["ln s100","Rode lijn: de S100","Binnen deze ring geldt het verbod. Over de S100 zelf mag je wel rijden."],["ln vrij","Groene lijn: de corridor","Weesperstraat – Valkenburgerstraat – Kattenburgerstraat. Hier mag je zonder ontheffing doorheen."]];
   sc.append(el("div",{class:"infolist"},...rows.map(([c,k,v])=>el("div",{class:"inforow amsrow"},el("span",{},el("b",{class:c}),k),el("p",{},v)))));
   sc.append(el("div",{class:"zrule"},el("span",{class:"zic"},"📝"),el("p",{},"Een dag- of jaarontheffing kan onder meer voor het vervoer van basisschoolleerlingen, ouderen of mensen met een beperking en voor culturele en educatieve bezoeken. Vraag een ontheffing op tijd aan bij de gemeente.")));
   sc.append(el("div",{class:"r",style:"gap:8px;flex-wrap:wrap"},el("a",{class:"btn sm",href:"https://www.amsterdam.nl/verkeer-vervoer/touringcar/",target:"_blank",rel:"noopener"},"Regels en ontheffing aanvragen ↗")));
-  sc.append(el("p",{class:"note",style:"margin:0"},"Ontheffingsroute: open data van de gemeente Amsterdam. S100 en corridor: OpenStreetMap"+(AMS.data&&AMS.data.fetchedAt?" · opgehaald "+ago(Date.parse(AMS.data.fetchedAt)):"")+". Volg altijd de borden ter plaatse."));
+  sc.append(el("p",{class:"note",style:"margin:0"},"S100 en corridor: OpenStreetMap"+(AMS.data&&AMS.data.fetchedAt?" · opgehaald "+ago(Date.parse(AMS.data.fetchedAt)):"")+". Volg altijd de borden ter plaatse."));
   panel.append(sc);sheet.append(panel)}
 /* ---------- filters ---------- */
 const qi=document.getElementById("q"),res=document.getElementById("results");

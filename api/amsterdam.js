@@ -6,7 +6,8 @@
 // Amsterdam Datapunt API (dataset "touringcars"): https://api.data.amsterdam.nl/v1/docs/datasets/touringcars.html
 const API = "https://api.data.amsterdam.nl/v1/touringcars/";
 // Alleen de verplichte route met ontheffing; het grote netwerk van aanbevolen routes maakt de kaart te druk
-const SRC = { ontheffing: API + "verplichteroutes?_format=geojson&_pageSize=5000" };
+// De oranje ontheffingsroute (verplichteroutes) tonen we niet meer: die data sluit niet goed aan.
+const SRC = {};
 // Corridor binnen de S100 die zonder ontheffing gereden mag worden
 const CORRIDOR = /^(Weesperstraat|Mr\. Visserplein|Valkenburgerstraat|Kattenburgerstraat|Kattenburgerplein|Kattenburgerkruising)$/;
 const OVERPASS = ["https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter", "https://overpass.private.coffee/api/interpreter", "https://maps.mail.ru/osm/tools/overpass/api/interpreter", "https://overpass.osm.jp/api/interpreter"];
