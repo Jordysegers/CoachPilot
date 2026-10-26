@@ -1361,7 +1361,7 @@ function renderZoneCard(){const z=S.zone;const panel=grippedPanel("zonepanel",cl
 /* ---------- touringcarregels Amsterdam (S100) ---------- */
 const AMS={on:false,data:null,loading:false,err:null,g:null,gm:[],label:null,center:[52.3702,4.8952]};
 async function loadAms(){if(AMS.data||AMS.loading)return;if(!LIVE){AMS.err="preview";return}AMS.loading=true;buildChips();
-  try{const ac=new AbortController();const tm=setTimeout(()=>ac.abort(),25000);let r;try{r=await fetch("/api/amsterdam?v=3",{signal:ac.signal})}catch(e){throw new Error(e.name==="AbortError"?"het duurde te lang, probeer het zo nog eens":e.message)}finally{clearTimeout(tm)}const js=await r.json();if(!r.ok||js.error)throw new Error(js.error||("fout "+r.status));AMS.data=js;AMS.err=null}catch(e){AMS.err=e.message||String(e)}finally{AMS.loading=false}}
+  try{const ac=new AbortController();const tm=setTimeout(()=>ac.abort(),45000);let r;try{r=await fetch("/api/amsterdam?v=3",{signal:ac.signal})}catch(e){throw new Error(e.name==="AbortError"?"het duurde te lang, probeer het zo nog eens":e.message)}finally{clearTimeout(tm)}const js=await r.json();if(!r.ok||js.error)throw new Error(js.error||("fout "+r.status));AMS.data=js;AMS.err=null}catch(e){AMS.err=e.message||String(e)}finally{AMS.loading=false}}
 function lineD(c){return c.map((p,i)=>{const[x,y]=P(p[1],p[0]);return(i?"L":"M")+x.toFixed(3)+" "+y.toFixed(3)}).join("")}
 const AMS_ORDER={vrij:1,ontheffing:2,s100:3,corridor:4};
 function drawAmsSvg(){if(AMS.g){AMS.g.remove();AMS.g=null}if(!AMS.on||!AMS.data||GM.on)return;const g=document.createElementNS(NS,"g");g.setAttribute("class","amsg");

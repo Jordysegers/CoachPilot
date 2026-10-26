@@ -9,7 +9,14 @@ const API = "https://api.data.amsterdam.nl/v1/touringcars/";
 const SRC = { ontheffing: API + "verplichteroutes?_format=geojson&_pageSize=5000" };
 // Corridor binnen de S100 die zonder ontheffing gereden mag worden
 const CORRIDOR = /^(Weesperstraat|Mr\. Visserplein|Valkenburgerstraat|Kattenburgerstraat|Kattenburgerplein|Kattenburgerkruising)$/;
-const OVERPASS = ["https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter", "https://overpass.private.coffee/api/interpreter"];
+const OVERPASS = ["https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter", "https://overpass.private.coffee/api/interpreter", "https://maps.mail.ru/osm/tools/overpass/api/interpreter", "https://overpass.osm.jp/api/interpreter"];
+// De S100 verandert vrijwel nooit: na één geslaagde keer bewaren we hem in Supabase (tabel app_secrets) als reserve
+const { createClient } = require("@supabase/supabase-js");
+const SB_URL = process.env.SUPABASE_URL || "https://ediwujxxzpwontltomrv.supabase.co";
+const SB_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY;
+const sb = () => SB_KEY ? createClient(SB_URL, SB_KEY, { auth: { persistSession: false } }) : null;
+async function saveS100(features) { try { const c = sb(); if (c) await c.from("app_secrets").upsert({ name: "osm_s100", value: { at: new Date().toISOString(), features } }); } catch (e) {} }
+async function loadS100() { try { const c = sb(); if (!c) return null; const { data } = await c.from("app_secrets").select("value").eq("name", "osm_s100").maybeSingle(); return data && data.value; } catch (e) { return null; } }
 const UA = "Coachpilot/1.0 (https://coachpilot-steel.vercel.app)";
 // Een API-sleutel van Amsterdam is (straks) verplicht; zet die dan als AMSTERDAM_API_KEY in Vercel.
 const amsHeaders = () => { const h = { Accept: "application/geo+json, application/json", "Accept-Crs": "EPSG:4326", "User-Agent": UA }; if (process.env.AMSTERDAM_API_KEY) h["X-Api-Key"] = process.env.AMSTERDAM_API_KEY; return h; };
@@ -56,7 +63,7 @@ function linesOf(js) {
 }
 async function fetchT(url, opt = {}, ms = 9000) { const c = new AbortController(); const t = setTimeout(() => c.abort(), ms);
   try { return await fetch(url, { ...opt, signal: c.signal }); } catch (e) { throw new Error(url.split("/")[2] + (e.name === "AbortError" ? " reageerde niet op tijd" : ": " + e.message)); } finally { clearTimeout(t); } }
-async function getJson(url, opt) { const r = await fetchT(url, opt); if (!r.ok) throw new Error(url.split("/")[2] + " gaf " + r.status); return r.json(); }
+async function getJson(url, opt, ms) { const r = await fetchT(url, opt, ms); if (!r.ok) throw new Error(url.split("/")[2] + " gaf " + r.status); return r.json(); }
 // Alle pagina's ophalen (DSO-API geeft een "next"-link mee)
 async function getAll(url) { let feats = [], next = url, n = 0;
   while (next && n++ < 20) { const js = await getJson(next, { headers: amsHeaders() }); const f = js.features || (js._embedded && Object.values(js._embedded)[0]) || (Array.isArray(js) ? js : []); feats = feats.concat(f);
@@ -64,7 +71,7 @@ async function getAll(url) { let feats = [], next = url, n = 0;
   return feats; }
 // Alle servers tegelijk proberen; de eerste die antwoordt wint
 async function overpass() {
-  try { return await Promise.any(OVERPASS.map(u => getJson(u + "?data=" + encodeURIComponent(S100_Q), { headers: { "User-Agent": UA, Accept: "*/*" } }))); }
+  try { return await Promise.any(OVERPASS.map(u => getJson(u + "?data=" + encodeURIComponent(S100_Q), { headers: { "User-Agent": UA, Accept: "*/*" } }, 25000))); }
   catch (e) { throw new Error((e.errors || [e]).map(x => x.message).join(" / ")); } }
 
 module.exports = async (req, res) => {
@@ -75,10 +82,16 @@ module.exports = async (req, res) => {
       return res.status(200).json({ status: r.status, key: !!process.env.AMSTERDAM_API_KEY, begin: t.slice(0, 1500) });
     }
     const jobs = Object.entries(SRC).map(async ([kind, url]) => { try { linesOf(await getAll(url)).forEach(c => out.features.push({ type: "Feature", properties: { kind }, geometry: { type: "LineString", coordinates: c } })); } catch (e) { out.errors.push(kind + ": " + e.message); } });
-    jobs.push((async () => { try {
-      const js = await overpass();
-      (js.elements || []).filter(e => e.type === "way" && e.geometry).forEach(w => out.features.push({ type: "Feature", properties: { kind: CORRIDOR.test((w.tags || {}).name || "") && !/s100/i.test((w.tags || {}).ref || "") ? "corridor" : "s100" }, geometry: { type: "LineString", coordinates: simplify(w.geometry.map(p => [p.lon, p.lat])).map(round) } }));
-    } catch (e) { out.errors.push("s100: " + e.message); } })());
+    jobs.push((async () => { let osm = [];
+      try {
+        const js = await overpass();
+        osm = (js.elements || []).filter(e => e.type === "way" && e.geometry).map(w => ({ type: "Feature", properties: { kind: CORRIDOR.test((w.tags || {}).name || "") && !/s100/i.test((w.tags || {}).ref || "") ? "corridor" : "s100" }, geometry: { type: "LineString", coordinates: simplify(w.geometry.map(p => [p.lon, p.lat])).map(round) } }));
+        if (osm.some(f => f.properties.kind === "s100")) await saveS100(osm); else throw new Error("geen S100 gevonden in OpenStreetMap");
+      } catch (e) {
+        const c = await loadS100();
+        if (c && c.features) { osm = c.features; out.errors.push("s100 uit reserve van " + c.at + " (" + e.message + ")"); } else out.errors.push("s100: " + e.message);
+      }
+      osm.forEach(f => out.features.push(f)); })());
     await Promise.all(jobs);
     if (req.query && req.query.debug) { const n = {}; out.features.forEach(f => n[f.properties.kind] = (n[f.properties.kind] || 0) + 1); res.setHeader("Cache-Control", "no-store"); return res.status(200).json({ aantallen: n, fouten: out.errors, sleutel: !!process.env.AMSTERDAM_API_KEY }); }
     if (!out.features.length) throw new Error(out.errors.join("; ") || "geen gegevens");
@@ -91,4 +104,4 @@ module.exports = async (req, res) => {
   }
 };
 
-module.exports.config = { maxDuration: 30 };
+module.exports.config = { maxDuration: 60 };
