@@ -831,9 +831,14 @@ html,body{touch-action:manipulation}
   :root{--navb:max(0px,calc(env(safe-area-inset-bottom,0px) - 20px))}
   nav.tabs{left:0!important;right:0!important;transform:none!important;bottom:0!important;width:auto!important;border-radius:0!important;border-top:1px solid var(--line);
     padding:6px max(16px,env(safe-area-inset-left,0px)) max(6px,calc(env(safe-area-inset-bottom,0px) - 16px)) max(16px,env(safe-area-inset-right,0px))!important;box-shadow:0 -2px 12px rgb(20 22 31 / .05)!important;gap:4px!important}
-  nav.tabs button{border-radius:14px!important}
+  nav.tabs button{border-radius:0!important;position:relative;padding:10px 0 6px!important}
+  nav.tabs button[aria-selected="true"]{background:none!important;color:var(--accent)!important}
+  nav.tabs button[aria-selected="true"]::before{content:"";position:absolute;top:-7px;left:22%;right:22%;height:3px;border-radius:0 0 3px 3px;background:var(--accent)}
+  nav.tabs button[aria-selected="true"] svg{stroke-width:2.2}
 }
 .carousel{scroll-padding-inline:max(16px,env(safe-area-inset-left,0px))}
+@media (max-width:699px){.sheet{bottom:calc(var(--navh,64px) + 4px)!important}.panel{margin-bottom:calc(-4px - var(--navh,64px))!important;padding-bottom:calc(4px + var(--navh,64px))!important}}
+.chatv{padding-top:0!important}.chatv .chatbar{margin-left:calc(-1 * max(16px,env(safe-area-inset-left,0px)));margin-right:calc(-1 * max(16px,env(safe-area-inset-right,0px)))}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -2155,7 +2160,7 @@ function renderComm(){
   const sv=document.getElementById("commView"),keep=sv.scrollTop,key=screenKey(),changed=key!==lastScreenKey;lastScreenKey=key;
   const hgF=document.activeElement&&document.activeElement.id==="hgText";HG.stick=changed||sv.scrollHeight-sv.scrollTop-sv.clientHeight<160;
   if(!changed&&(["new","newsedit"].includes(C.screen)||(C.screen==="user"&&C.modEditUser))&&comm.querySelector("form")&&!C.forceRender)return;C.forceRender=false;
-  comm.replaceChildren();if(!(C.section==="hangout"&&["home","chat",undefined,null,""].includes(C.screen)))clearChatInput();if(!(C.section==="hangout"&&C.screen==="chat")&&DM.unsub){DM.unsub();DM.unsub=null;DM.pid=null}comm.classList.toggle("threadv",C.screen==="thread");sv.classList.toggle("thv",C.screen==="thread");if(changed)animateIn(comm);
+  comm.replaceChildren();if(!(C.section==="hangout"&&["home","chat",undefined,null,""].includes(C.screen)))clearChatInput();if(!(C.section==="hangout"&&C.screen==="chat")&&DM.unsub){DM.unsub();DM.unsub=null;DM.pid=null}comm.classList.toggle("threadv",C.screen==="thread");comm.classList.toggle("chatv",C.section==="hangout"&&C.screen==="chat");sv.classList.toggle("thv",C.screen==="thread");if(changed)animateIn(comm);
   const sc=C.screen;
   if(sc!=="newsitem"&&C.unsubNC){C.unsubNC();C.unsubNC=null;C.ncFor=null}
   if(sc==="thread"&&C.open){const fid=document.activeElement&&document.activeElement.classList.contains("ed-area")?document.activeElement.id:null;renderThread();if(!changed)sv.scrollTop=keep;if(fid){const n=document.getElementById(fid);n&&n.parentElement.focusEnd()}return}
@@ -2425,6 +2430,8 @@ function placeHinput(){HGHOST.hidden=document.getElementById("commView").hidden;
   if(kb>80&&document.activeElement&&document.activeElement.id==="hgText"){document.body.classList.add("kbopen");h.style.bottom=(kb+8)+"px"}
   else{document.body.classList.remove("kbopen");const r=nav?nav.getBoundingClientRect():null;h.style.bottom=(r&&r.height?Math.max(8,window.innerHeight-r.top+8):92)+"px"}
   const chat=document.querySelector(".chat");if(chat)chat.style.paddingBottom=(h.offsetHeight+24)+"px"}
+function measureNav(){const n=document.querySelector("nav.tabs");if(n)document.documentElement.style.setProperty("--navh",n.offsetHeight+"px")}
+setTimeout(measureNav,0);window.addEventListener("resize",measureNav);
 if(window.visualViewport){visualViewport.addEventListener("resize",placeHinput);visualViewport.addEventListener("scroll",placeHinput)}
 window.addEventListener("resize",placeHinput);
 /* ---------- hangout: chat met foto's ---------- */
