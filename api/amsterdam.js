@@ -3,11 +3,13 @@
 //   "Route zonder ontheffing voor touringcars" en "Verplichte route met ontheffing voor touringcars".
 // - S100 (binnenring): uit OpenStreetMap (Overpass API), wegen met ref S100.
 // Alles wordt vereenvoudigd en 24 uur gecachet door Vercel, zodat de kaart licht blijft.
-const SRC = {
-  vrij: "https://e85bcf2124fb4437b1bc6eb75dfc3abf.objectstore.eu/dcatd/bb070fe2638f4fe8b4a5abac0fa450e0",
-  ontheffing: "https://e85bcf2124fb4437b1bc6eb75dfc3abf.objectstore.eu/dcatd/f118360818664180a66fe1f75204ccd2"
-};
-const OVERPASS = "https://overpass-api.de/api/interpreter";
+// Amsterdam Datapunt API (dataset "touringcars"): https://api.data.amsterdam.nl/v1/docs/datasets/touringcars.html
+const API = "https://api.data.amsterdam.nl/v1/touringcars/";
+const SRC = { vrij: API + "aanbevolenroutes?_format=geojson&_pageSize=5000", ontheffing: API + "verplichteroutes?_format=geojson&_pageSize=5000" };
+const OVERPASS = ["https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter", "https://overpass.private.coffee/api/interpreter"];
+const UA = "Coachpilot/1.0 (https://coachpilot-steel.vercel.app)";
+// Een API-sleutel van Amsterdam is (straks) verplicht; zet die dan als AMSTERDAM_API_KEY in Vercel.
+const amsHeaders = () => { const h = { Accept: "application/geo+json, application/json", "Accept-Crs": "EPSG:4326", "User-Agent": UA }; if (process.env.AMSTERDAM_API_KEY) h["X-Api-Key"] = process.env.AMSTERDAM_API_KEY; return h; };
 const S100_Q = '[out:json][timeout:25];area["name"="Amsterdam"]["admin_level"="8"]->.a;(way(area.a)["highway"]["ref"~"(^|;)S100(;|$)"];relation(area.a)["type"="route"]["ref"="S100"];)->.r;(.r;way(r.r););way._["highway"];out geom;';
 
 // RD (Rijksdriehoek) naar WGS84, benadering van Schreutelkamp & Strang van Hees (nauwkeurig tot ~1 m)
@@ -48,18 +50,25 @@ function linesOf(js) {
   return out.map(line).filter(l => l.length > 1);
 }
 async function getJson(url, opt) { const r = await fetch(url, opt); if (!r.ok) throw new Error(url.split("/")[2] + " gaf " + r.status); return r.json(); }
+// Alle pagina's ophalen (DSO-API geeft een "next"-link mee)
+async function getAll(url) { let feats = [], next = url, n = 0;
+  while (next && n++ < 20) { const js = await getJson(next, { headers: amsHeaders() }); const f = js.features || (js._embedded && Object.values(js._embedded)[0]) || (Array.isArray(js) ? js : []); feats = feats.concat(f);
+    const l = js._links && js._links.next; next = (l && (l.href || l)) || (Array.isArray(js.links) && (js.links.find(x => x.rel === "next") || {}).href) || null; if (typeof next !== "string") next = null; }
+  return feats; }
+async function overpass() { let last;
+  for (const u of OVERPASS) { try { return await getJson(u, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded", "User-Agent": UA, Accept: "application/json" }, body: "data=" + encodeURIComponent(S100_Q) }); } catch (e) { last = e; } }
+  throw last; }
 
 module.exports = async (req, res) => {
   const out = { type: "FeatureCollection", fetchedAt: new Date().toISOString(), source: "Gemeente Amsterdam (open data) en OpenStreetMap", errors: [], features: [] };
   try {
     if (req.query && req.query.raw) {
-      const js = await getJson(SRC.vrij); const it = (Array.isArray(js) ? js : js.features || [])[0];
-      res.setHeader("Cache-Control", "no-store");
-      return res.status(200).json({ isArray: Array.isArray(js), keys: Array.isArray(js) ? null : Object.keys(js), first: it ? JSON.stringify(it).slice(0, 1200) : null });
+      res.setHeader("Cache-Control", "no-store"); const r = await fetch(SRC.vrij, { headers: amsHeaders() }); const t = await r.text();
+      return res.status(200).json({ status: r.status, key: !!process.env.AMSTERDAM_API_KEY, begin: t.slice(0, 1500) });
     }
-    const jobs = Object.entries(SRC).map(async ([kind, url]) => { try { linesOf(await getJson(url)).forEach(c => out.features.push({ type: "Feature", properties: { kind }, geometry: { type: "LineString", coordinates: c } })); } catch (e) { out.errors.push(kind + ": " + e.message); } });
+    const jobs = Object.entries(SRC).map(async ([kind, url]) => { try { linesOf(await getAll(url)).forEach(c => out.features.push({ type: "Feature", properties: { kind }, geometry: { type: "LineString", coordinates: c } })); } catch (e) { out.errors.push(kind + ": " + e.message); } });
     jobs.push((async () => { try {
-      const js = await getJson(OVERPASS, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: "data=" + encodeURIComponent(S100_Q) });
+      const js = await overpass();
       (js.elements || []).filter(e => e.type === "way" && e.geometry).forEach(w => out.features.push({ type: "Feature", properties: { kind: "s100" }, geometry: { type: "LineString", coordinates: simplify(w.geometry.map(p => [p.lon, p.lat])).map(round) } }));
     } catch (e) { out.errors.push("s100: " + e.message); } })());
     await Promise.all(jobs);
