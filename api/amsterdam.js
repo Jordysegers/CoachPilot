@@ -5,13 +5,16 @@
 // Alles wordt vereenvoudigd en 24 uur gecachet door Vercel, zodat de kaart licht blijft.
 // Amsterdam Datapunt API (dataset "touringcars"): https://api.data.amsterdam.nl/v1/docs/datasets/touringcars.html
 const API = "https://api.data.amsterdam.nl/v1/touringcars/";
-const SRC = { vrij: API + "aanbevolenroutes?_format=geojson&_pageSize=5000", ontheffing: API + "verplichteroutes?_format=geojson&_pageSize=5000" };
+// Alleen de verplichte route met ontheffing; het grote netwerk van aanbevolen routes maakt de kaart te druk
+const SRC = { ontheffing: API + "verplichteroutes?_format=geojson&_pageSize=5000" };
+// Corridor binnen de S100 die zonder ontheffing gereden mag worden
+const CORRIDOR = /^(Weesperstraat|Mr\. Visserplein|Valkenburgerstraat|Kattenburgerstraat|Kattenburgerplein|Kattenburgerkruising)$/;
 const OVERPASS = ["https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter", "https://overpass.private.coffee/api/interpreter"];
 const UA = "Coachpilot/1.0 (https://coachpilot-steel.vercel.app)";
 // Een API-sleutel van Amsterdam is (straks) verplicht; zet die dan als AMSTERDAM_API_KEY in Vercel.
 const amsHeaders = () => { const h = { Accept: "application/geo+json, application/json", "Accept-Crs": "EPSG:4326", "User-Agent": UA }; if (process.env.AMSTERDAM_API_KEY) h["X-Api-Key"] = process.env.AMSTERDAM_API_KEY; return h; };
 const BB = "(52.33,4.83,52.40,4.97)";
-const S100_Q = '[out:json][timeout:15];relation["route"="road"]["ref"="S100"]' + BB + '->.r;(way["highway"]["ref"~"(^|;)S100(;|$)"]' + BB + ';way(r.r)["highway"];);out geom;';
+const S100_Q = '[out:json][timeout:15];relation["route"="road"]["ref"="S100"]' + BB + '->.r;(way["highway"]["ref"~"(^|;)S100(;|$)"]' + BB + ';way(r.r)["highway"];way["highway"~"^(primary|secondary|tertiary|trunk)(_link)?$"]["name"~"^(Weesperstraat|Mr\\\\. Visserplein|Valkenburgerstraat|Kattenburgerstraat|Kattenburgerplein|Kattenburgerkruising)$"]' + BB + ';);out geom;';
 
 // RD (Rijksdriehoek) naar WGS84, benadering van Schreutelkamp & Strang van Hees (nauwkeurig tot ~1 m)
 function rd2wgs(x, y) {
@@ -73,7 +76,7 @@ module.exports = async (req, res) => {
     const jobs = Object.entries(SRC).map(async ([kind, url]) => { try { linesOf(await getAll(url)).forEach(c => out.features.push({ type: "Feature", properties: { kind }, geometry: { type: "LineString", coordinates: c } })); } catch (e) { out.errors.push(kind + ": " + e.message); } });
     jobs.push((async () => { try {
       const js = await overpass();
-      (js.elements || []).filter(e => e.type === "way" && e.geometry).forEach(w => out.features.push({ type: "Feature", properties: { kind: "s100" }, geometry: { type: "LineString", coordinates: simplify(w.geometry.map(p => [p.lon, p.lat])).map(round) } }));
+      (js.elements || []).filter(e => e.type === "way" && e.geometry).forEach(w => out.features.push({ type: "Feature", properties: { kind: CORRIDOR.test((w.tags || {}).name || "") && !/S100/.test((w.tags || {}).ref || "") ? "corridor" : "s100" }, geometry: { type: "LineString", coordinates: simplify(w.geometry.map(p => [p.lon, p.lat])).map(round) } }));
     } catch (e) { out.errors.push("s100: " + e.message); } })());
     await Promise.all(jobs);
     if (!out.features.length) throw new Error(out.errors.join("; ") || "geen gegevens");
