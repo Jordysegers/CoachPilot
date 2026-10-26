@@ -1316,8 +1316,8 @@ function zoneLabels(){ZN.labels.forEach(o=>o.e.remove());ZN.labels=[];if(!ZN.on|
 function placeZoneLabels(zoom){const far=zoom<9.5;ZN.labels.forEach(o=>o.e.classList.toggle("dot",far))}
 function zoneRuleText(z){return"Paarse milieuzone: dieselbussen vanaf Euro 6 hebben toegang. Lager dan Euro 6: ontheffing aanvragen bij de gemeente."}
 const fmtDate=s=>{if(!s)return"";const d=new Date(s);return isNaN(d)?String(s):d.toLocaleDateString("nl-NL",{day:"numeric",month:"long",year:"numeric"})};
-async function loadZones(){if(ZN.data||ZN.loading)return;if(!LIVE){ZN.err="preview";return}ZN.loading=true;
-  try{const r=await fetch("/api/zones");const js=await r.json();if(!r.ok||js.error)throw new Error(js.error||("fout "+r.status));ZN.data=js;ZN.err=null}catch(e){ZN.err=e.message||String(e)}finally{ZN.loading=false}}
+function loadZones(){if(ZN.data)return Promise.resolve();if(ZN.p)return ZN.p;if(!LIVE){ZN.err="preview";return Promise.resolve()}ZN.loading=true;return ZN.p=(async()=>{
+  try{const r=await fetch("/api/zones");const js=await r.json();if(!r.ok||js.error)throw new Error(js.error||("fout "+r.status));ZN.data=js;ZN.err=null}catch(e){ZN.err=e.message||String(e)}finally{ZN.loading=false;ZN.p=null}})()}
 function eachRing(geom,fn){if(!geom)return;const polys=geom.type==="Polygon"?[geom.coordinates]:geom.type==="MultiPolygon"?geom.coordinates:[];polys.forEach(poly=>(poly||[]).forEach(ring=>fn(ring)))}
 function drawZonesSvg(){if(ZN.g){ZN.g.remove();ZN.g=null}if(!ZN.on||!ZN.data||GM.on)return;
   const g=document.createElementNS(NS,"g");g.setAttribute("class","zones");
@@ -1360,8 +1360,8 @@ function renderZoneCard(){const z=S.zone;const panel=grippedPanel("zonepanel",cl
   panel.append(sc);sheet.append(panel)}
 /* ---------- touringcarregels Amsterdam (S100) ---------- */
 const AMS={on:false,data:null,loading:false,err:null,g:null,gm:[],label:null,center:[52.3702,4.8952]};
-async function loadAms(){if(AMS.data||AMS.loading)return;if(!LIVE){AMS.err="preview";return}AMS.loading=true;buildChips();
-  try{const ac=new AbortController();const tm=setTimeout(()=>ac.abort(),45000);let r;try{r=await fetch("/api/amsterdam?v=3",{signal:ac.signal})}catch(e){throw new Error(e.name==="AbortError"?"het duurde te lang, probeer het zo nog eens":e.message)}finally{clearTimeout(tm)}const js=await r.json();if(!r.ok||js.error)throw new Error(js.error||("fout "+r.status));AMS.data=js;AMS.err=null}catch(e){AMS.err=e.message||String(e)}finally{AMS.loading=false}}
+function loadAms(){if(AMS.data)return Promise.resolve();if(AMS.p)return AMS.p;if(!LIVE){AMS.err="preview";return Promise.resolve()}AMS.loading=true;return AMS.p=(async()=>{
+  try{const ac=new AbortController();const tm=setTimeout(()=>ac.abort(),45000);let r;try{r=await fetch("/api/amsterdam?v=3",{signal:ac.signal})}catch(e){throw new Error(e.name==="AbortError"?"het duurde te lang, probeer het zo nog eens":e.message)}finally{clearTimeout(tm)}const js=await r.json();if(!r.ok||js.error)throw new Error(js.error||("fout "+r.status));AMS.data=js;AMS.err=null}catch(e){AMS.err=e.message||String(e)}finally{AMS.loading=false;AMS.p=null}})()}
 function lineD(c){return c.map((p,i)=>{const[x,y]=P(p[1],p[0]);return(i?"L":"M")+x.toFixed(3)+" "+y.toFixed(3)}).join("")}
 const AMS_ORDER={vrij:1,ontheffing:2,s100:3,corridor:4};
 function drawAmsSvg(){if(AMS.g){AMS.g.remove();AMS.g=null}if(!AMS.on||!AMS.data||GM.on)return;const g=document.createElementNS(NS,"g");g.setAttribute("class","amsg");
@@ -1378,6 +1378,8 @@ async function toggleAms(){AMS.on=!AMS.on;buildChips();
     if(AMS.err){alertMsg("Touringcarroutes laden lukte niet: "+AMS.err);AMS.on=false;buildChips();return}
     {const k=new Set(AMS.data.features.map(f=>f.properties.kind));alertMsg(!k.has("s100")?"De S100 en corridor konden nu niet geladen worden (kaartserver reageert niet). Probeer het later nog eens.":"Amsterdam: rood = S100 (verbod), groen = corridor (mag), oranje = route met ontheffing.")};if(!GM.on||!GM.map||(GM.map.getZoom()||0)<11)flyTo(P(AMS.center[0],AMS.center[1]),GM.on?null:60)}
   else{S.ams=false;renderSheet()}drawAms();buildChips()}
+// gegevens alvast op de achtergrond ophalen, zodat de lagen meteen verschijnen als je ze aanzet
+if(LIVE)setTimeout(()=>{try{loadAms().then(()=>buildChips());loadZones().then(()=>buildChips())}catch(e){}},4000);
 function openAms(){S.zone=null;S.sel=null;S.ams=true;renderSheet();drawZones()}
 function closeAms(){S.ams=false;renderSheet()}
 function renderAmsCard(){const panel=grippedPanel("zonepanel",closeAms);const sc=el("div",{class:"pscroll"});
@@ -1422,8 +1424,8 @@ function buildChips(){
   const fchip=k=>c.append(el("button",{class:"chip","aria-pressed":S.filters.has(k),onclick:()=>{S.filters.has(k)?S.filters.delete(k):S.filters.add(k);buildChips();renderSheet();draw()}},icon(SVC[k][1]),SVC[k][0]));
   const lchip=(img,label,on,fn,cls)=>c.append(el("button",{class:"chip layer "+(cls||"")+(on?" on":""),"aria-pressed":on,title:(on?"Verberg ":"Toon ")+label.toLowerCase(),onclick:fn},img,label));
   lchip(el("img",{class:"lci",src:PARK_LOGO,alt:""}),"Parkeren",S.lp!==false,()=>{S.lp=S.lp===false;buildChips();draw()});
-  lchip(el("span",{class:"lci zi"},ZN.loading?"⏳":"🌿"),"Milieuzones",ZN.on,toggleZones,"zone");
-  lchip(el("span",{class:"lci zi"},AMS.loading?"⏳":"🚫"),"Touringcarroutes",AMS.on,toggleAms,"ams");
+  lchip(el("span",{class:"lci zi"},ZN.loading&&ZN.on?"⏳":"🌿"),"Milieuzones",ZN.on,toggleZones,"zone");
+  lchip(el("span",{class:"lci zi"},AMS.loading&&AMS.on?"⏳":"🚫"),"Touringcarroutes",AMS.on,toggleAms,"ams");
   lchip(el("img",{class:"lci",src:STOP_LOGO,alt:""}),"In- en uitstappen",S.ls!==false,()=>{S.ls=S.ls===false;buildChips();draw()});
   c.append(el("span",{class:"chipdiv","aria-hidden":"true"}));
   ["wc","nacht","afval","was"].filter(k=>SVC[k]).forEach(fchip);

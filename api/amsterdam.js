@@ -83,12 +83,15 @@ module.exports = async (req, res) => {
     }
     const jobs = Object.entries(SRC).map(async ([kind, url]) => { try { linesOf(await getAll(url)).forEach(c => out.features.push({ type: "Feature", properties: { kind }, geometry: { type: "LineString", coordinates: c } })); } catch (e) { out.errors.push(kind + ": " + e.message); } });
     jobs.push((async () => { let osm = [];
+      // Snel: een recente reservekopie (< 30 dagen) direct gebruiken, zonder de trage kaartservers te vragen
+      const cached = await loadS100();
+      if (cached && cached.features && Date.now() - Date.parse(cached.at) < 30 * 864e5 && !(req.query && req.query.fresh)) { cached.features.forEach(f => out.features.push(f)); return; }
       try {
         const js = await overpass();
         osm = (js.elements || []).filter(e => e.type === "way" && e.geometry).map(w => ({ type: "Feature", properties: { kind: CORRIDOR.test((w.tags || {}).name || "") && !/s100/i.test((w.tags || {}).ref || "") ? "corridor" : "s100" }, geometry: { type: "LineString", coordinates: simplify(w.geometry.map(p => [p.lon, p.lat])).map(round) } }));
         if (osm.some(f => f.properties.kind === "s100")) await saveS100(osm); else throw new Error("geen S100 gevonden in OpenStreetMap");
       } catch (e) {
-        const c = await loadS100();
+        const c = cached;
         if (c && c.features) { osm = c.features; out.errors.push("s100 uit reserve van " + c.at + " (" + e.message + ")"); } else out.errors.push("s100: " + e.message);
       }
       osm.forEach(f => out.features.push(f)); })());
