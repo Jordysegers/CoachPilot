@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#3D5AFE"><link rel="manifest" href="/api/manifest"><link rel="apple-touch-icon" href="/icon-180.png"><link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Coachpilot">
-<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<meta name="theme-color" content="#3D5AFE"><link rel="manifest" href="/api/manifest"><link rel="apple-touch-icon" href="/icon-180.png"><link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Coachpilot">
+<style>:root{color-scheme:light}html,body{background:#ECEFF5}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style><style id="live-safe">.topbar{top:calc(12px + env(safe-area-inset-top,0px))!important}.page-in{padding-top:calc(20px + env(safe-area-inset-top,0px))!important}.threadv{padding-top:0!important}.thbar{top:0}</style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.1/dist/umd/supabase.js"></script>
 <script src="config.js"></script>
 </head><body>
@@ -1940,13 +1940,13 @@ async function pushInit(){if(!pushSupported())return;try{PUSH.reg=await navigato
   if(!document.getElementById("accView").hidden)renderAcc()}
 async function savePushSub(sub,prefs,keep){const id=subKey(sub);const cur=(C.pushDoc&&C.pushDoc.id===id)?C.pushDoc:null;
   const d={user:C.me,sub:sub.toJSON(),prefs:prefs||(cur&&cur.prefs)||{mention:true,reply:true,dm:true,admin:true},ua:navigator.userAgent.slice(0,120),at:Date.now()};
-  if(keep&&cur&&cur.user===C.me)return;try{await C.db.collection("pushsubs").doc(id).set(d);C.pushDoc={id,...d}}catch(e){}}
+  if(keep&&cur&&cur.user===C.me)return;try{await C.db.collection("pushsubs").doc(id).set(d);C.pushDoc={id,...d};return true}catch(e){if(!keep)alertMsg("Aanmelden voor meldingen lukte niet: "+(e.message||"onbekende fout"));return false}}
 async function enablePush(){if(PUSH.busy)return;PUSH.busy=true;renderAcc();
   try{const perm=await Notification.requestPermission();if(perm!=="granted"){PUSH.state=perm==="denied"?"denied":"off";return}
     PUSH.reg=PUSH.reg||await navigator.serviceWorker.register("/sw.js");await navigator.serviceWorker.ready;
     const r=await fetch("/api/push");const js=await r.json();if(!js.publicKey)throw new Error(js.error||"Geen sleutel ontvangen");
     PUSH.sub=await PUSH.reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64ToU8(js.publicKey)});
-    await savePushSub(PUSH.sub);PUSH.state="on";thanks("Pushmeldingen staan aan","🔔")}
+    if(!(await savePushSub(PUSH.sub))){PUSH.state="error";return}PUSH.state="on";thanks("Pushmeldingen staan aan","🔔")}
   catch(e){PUSH.state="error";alertMsg("Meldingen aanzetten lukte niet: "+(e.message||e))}finally{PUSH.busy=false;renderAcc()}}
 async function disablePush(){try{if(PUSH.sub){const id=subKey(PUSH.sub);await PUSH.sub.unsubscribe();try{await C.db.doc("pushsubs/"+id).delete()}catch(e){}}}catch(e){}PUSH.sub=null;C.pushDoc=null;PUSH.state="off";renderAcc()}
 async function setPushPref(k,v){if(!PUSH.sub)return;const prefs={...((C.pushDoc&&C.pushDoc.prefs)||{mention:true,reply:true,dm:true,admin:true}),[k]:v};await savePushSub(PUSH.sub,prefs);renderAcc()}
