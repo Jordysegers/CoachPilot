@@ -829,9 +829,11 @@ html,body{touch-action:manipulation}
 .nmem{display:flex;flex-direction:column;align-items:center;gap:4px;border:0;background:none;padding:0;flex:none;width:56px}.nmem .av{width:44px;height:44px;font-size:16px}.nmem span{font-size:11.5px;font-weight:600;color:var(--ink);max-width:56px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media (max-width:699px){
   :root{--navb:env(safe-area-inset-bottom,0px)}
-  nav.tabs{left:0!important;right:0!important;transform:none!important;bottom:0!important;width:auto!important;border-radius:22px 22px 0 0!important;
-    padding:6px max(8px,env(safe-area-inset-left,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-right,0px))!important;box-shadow:0 -4px 20px rgb(20 22 31 / .08)!important;gap:2px!important}
+  nav.tabs{left:0!important;right:0!important;transform:none!important;bottom:0!important;width:auto!important;border-radius:0!important;border-top:1px solid var(--line);
+    padding:6px max(16px,env(safe-area-inset-left,0px)) calc(4px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-right,0px))!important;box-shadow:0 -2px 12px rgb(20 22 31 / .05)!important;gap:4px!important}
+  nav.tabs button{border-radius:14px!important}
 }
+.carousel{scroll-padding-inline:max(16px,env(safe-area-inset-left,0px))}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -1105,7 +1107,7 @@ function render(){
       ov.appendChild(b);place(b,P(h.lat,h.lon));hotelEls.push(b)});
   }
 }
-function fitTo(lats,lons,pad=40){if(GM.on)return gmFit(lats,lons,pad);const[W,H]=size();const pts=lats.map((la,i)=>P(la,lons[i]));const xs=pts.map(p=>p[0]),ys=pts.map(p=>p[1]);
+function fitTo(lats,lons,pad=40){if(GM.on)return gmFit(lats,lons,pad);const[W,H]=size();if(W<2*pad+20||H<2*pad+20){setTimeout(()=>fitTo(lats,lons,pad),120);return}const pts=lats.map((la,i)=>P(la,lons[i]));const xs=pts.map(p=>p[0]),ys=pts.map(p=>p[1]);
   const w=Math.max(...xs)-Math.min(...xs)||1,h=Math.max(...ys)-Math.min(...ys)||1;
   V.cx=(Math.max(...xs)+Math.min(...xs))/2;V.cy=(Math.max(...ys)+Math.min(...ys))/2;V.s=Math.min((W-pad*2)/w,(H-pad*2)/h,40);
   if(!isDesk())V.cy+=25/V.s; // ruimte voor kaartjes onderin
