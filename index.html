@@ -65,6 +65,14 @@ svg.i{width:18px;height:18px;flex:none}
 .zoom{position:absolute;right:max(16px,env(safe-area-inset-right,0px));top:132px;display:flex;flex-direction:column;background:var(--card);border-radius:14px;box-shadow:var(--shadow);overflow:hidden;z-index:9}
 .zoom button{width:44px;height:42px;border:0;background:none;font-size:20px;font-weight:600;display:grid;place-items:center}
 .zoom button + button{border-top:1px solid var(--line)}
+.mapside{position:absolute;right:max(16px,env(safe-area-inset-right,0px));top:132px;display:flex;flex-direction:column;align-items:center;gap:12px;z-index:9}
+.mapside .zoom{position:static}
+.addfab{width:48px;height:48px;border-radius:50%;border:0;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;box-shadow:0 6px 18px rgb(61 90 254 / .35),0 2px 6px rgb(20 22 31 / .15);cursor:pointer;transition:transform .15s}
+.addfab:active{transform:scale(.92)}.addfab svg{width:22px;height:22px}
+body.picking .mapside{display:none}
+.picksub{display:block;font-size:13px;color:var(--muted);margin:4px 0 2px;line-height:1.4}
+.probtn{flex:none;height:50px;padding:0 13px;border:0;border-radius:16px;background:linear-gradient(135deg,#FFE08A,#F5B83D);color:#5A3B00;font-weight:800;font-size:14px;display:flex;align-items:center;gap:5px;box-shadow:var(--shadow);cursor:pointer}
+.probtn span{font-size:14px}
 
 /* ---- sheet ---- */
 .sheet{position:absolute;left:0;right:0;bottom:calc(72px + var(--navb));z-index:11;pointer-events:none}
@@ -924,15 +932,19 @@ html,body{touch-action:manipulation}
     <div class="topbar">
       <div class="searchrow">
         <label class="search" for="q"><svg class="i"><use href="#i-search"/></svg><input id="q" type="search" placeholder="Zoeken…" autocomplete="off"></label>
+        <button class="probtn" id="proBtn" hidden aria-label="Coachpilot Pro bekijken"><span>⭐</span>Pro</button>
         <button class="iconbtn acc" id="tHotels" aria-pressed="true" aria-label="Hotels op kaart tonen"><svg class="i"><use href="#i-bed"/></svg></button>
       </div>
       <div class="results" id="results" hidden></div>
       <div class="chips" id="chips"></div>
     </div>
+    <div class="mapside">
     <div class="zoom">
       <button id="zin" aria-label="Inzoomen">+</button>
       <button id="zout" aria-label="Uitzoomen">−</button>
       <button id="zfit" aria-label="Alles tonen"><svg class="i"><use href="#i-fit"/></svg></button>
+    </div>
+    <button class="addfab" id="addFab" aria-label="Parking toevoegen" title="Parking toevoegen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button>
     </div>
     <div class="sheet" id="sheet"></div>
   </section>
@@ -942,7 +954,7 @@ html,body{touch-action:manipulation}
 
   <section class="view page" id="modView" hidden><div class="page-in" id="modIn"></div></section>
   <section class="formview" id="formView" hidden><div class="page-in" id="formIn"></div></section>
-  <div class="pickbar" id="pickBar" hidden><div class="cross" aria-hidden="true"></div><div class="pickcard"><b>Sleep de kaart tot het kruis op de parking staat</b><div class="r"><button class="btn primary" onclick="endPick(true)">Locatie bevestigen</button><button class="btn" onclick="endPick(false)">Annuleren</button></div></div></div>
+  <div class="pickbar" id="pickBar" hidden><div class="cross" aria-hidden="true"></div><div class="pickcard"><b id="pickTitle">Sleep de kaart tot het kruis op de parking staat</b><span class="picksub" id="pickSub" hidden></span><div class="r"><button class="btn primary" id="pickOk" onclick="endPick(true)">Locatie bevestigen</button><button class="btn" onclick="endPick(false)">Annuleren</button></div></div></div>
   <section class="welcome" id="welcomeView" hidden></section>
   <section class="auth" id="unameView" hidden style="z-index:110"><div class="auth-in" id="unameIn"></div></section>
   <section class="auth" id="authView" hidden><div class="auth-in" id="authIn"></div></section>
@@ -1182,6 +1194,7 @@ let wt;wrap.addEventListener("wheel",e=>{if(GM.on)return;e.preventDefault();cons
 document.getElementById("zin").onclick=()=>zoomAt(1.6);
 document.getElementById("zout").onclick=()=>zoomAt(1/1.6);
 document.getElementById("zfit").onclick=()=>{S.sel=null;renderSheet();fitTo(PARKINGS.map(p=>p.lat),PARKINGS.map(p=>p.lon))};
+document.getElementById("proBtn").onclick=()=>openPro();document.getElementById("addFab").onclick=addParking;
 const tH=document.getElementById("tHotels");if(!HOTELS_ON){tH.hidden=true;tH.classList.remove("acc")}tH.onclick=()=>{S.hotels=!S.hotels;tH.setAttribute("aria-pressed",S.hotels);tH.classList.toggle("acc",S.hotels);draw()};
 new ResizeObserver(draw).observe(wrap);
 
@@ -1276,9 +1289,10 @@ function filtered(){const q=S.q.trim().toLowerCase();return PARKINGS.filter(p=>(
 function nearby(){const c=S.dest?P(S.dest.lat,S.dest.lon):[V.cx,V.cy];return filtered().map(p=>{const xy=P(p.lat,p.lon);return{p,d:Math.hypot(xy[0]-c[0],xy[1]-c[1])}}).sort((a,b)=>a.d-b.d).map(o=>o.p)}
 function buildChips(){
   const c=document.getElementById("chips");c.replaceChildren();
-  c.append(el("button",{class:"chip addchip",onclick:()=>openSubmit("new")},"＋ Parking toevoegen"));
+  const fchip=k=>c.append(el("button",{class:"chip","aria-pressed":S.filters.has(k),onclick:()=>{S.filters.has(k)?S.filters.delete(k):S.filters.add(k);buildChips();renderSheet();draw()}},icon(SVC[k][1]),SVC[k][0]));
+  if(SVC.parkeren)fchip("parkeren");
   c.append(el("button",{class:"chip zonechip","aria-pressed":ZN.on,onclick:toggleZones},ZN.loading?"⏳ Milieuzones":"🌿 Milieuzones"));
-  ["parkeren","instap","wc","nacht","afval","was"].filter(k=>SVC[k]).forEach(k=>c.append(el("button",{class:"chip","aria-pressed":S.filters.has(k),onclick:()=>{S.filters.has(k)?S.filters.delete(k):S.filters.add(k);buildChips();renderSheet();draw()}},icon(SVC[k][1]),SVC[k][0])));
+  ["instap","wc","nacht","afval","was"].filter(k=>SVC[k]).forEach(fchip);
 }
 
 /* ---------- sheet ---------- */
@@ -1289,7 +1303,8 @@ const subOf=p=>{const c=activeClosure(p);if(c)return c.type==="perm"?"⛔ Geslot
 function thumb(p,small){const hv=availHotels(p.id);return el("div",{class:"thumb"},photo("ph",p),!small&&el("span",{class:"badge"},subOf(p)),null)}
 function priceEl(s){if(!s)return el("span",{class:"price unk"},"Onbekend");const[a,b]=priceParts(s);return el("span",{class:"price"},a,b?el("small",{},b):null)}
 function refreshNearby(){if(!S.sel&&!S.expanded&&!isDesk())renderSheet()}
-function renderSheet(){
+function updateProBtn(){const b=document.getElementById("proBtn");if(b)b.hidden=!C.me||isPro(C.me)}
+function renderSheet(){updateProBtn();
   const old=sheet.querySelector(".pscroll"),keep=old&&old.dataset.sel===String(S.sel)?old.scrollTop:0;
   _renderSheet();
   const k2=[S.sel,S.hotel,S.expanded].join("|");if(sheet.dataset.k!==k2&&sheet.firstElementChild)animateIn(sheet.firstElementChild);sheet.dataset.k=k2;
@@ -1509,6 +1524,8 @@ let F=null;
 function openSubmit(mode,p){if(isBanned(C.me)){thanks("Je account is geblokkeerd. Je kunt niets meer insturen.","🚫");return}const base=p||{};
   F={mode,pid:p?p.id:null,mod:isMod(C.me),data:{name:base.name||"",address:base.address||"",city:base.city||"",country:base.country||"NL",price:base.price||"",spots:base.spots?String(base.spots):"",maxh:base.maxh||"",note:base.note||"",hours:base.hours||"",phone:base.phone||"",svc:[...(base.svc||[])]},lat:base.lat,lon:base.lon,photos:[],note:"",err:""};
   renderForm();formView.hidden=false;formView.scrollTop=0;formView.classList.remove("enter");void formView.offsetWidth;formView.classList.add("enter")}
+function addParking(){if(!C.me){alertMsg("Log in om een parking toe te voegen.");return}if(isBanned(C.me)){openSubmit("new");return}
+  openSubmit("new");F.fromMap=true;formView.classList.remove("enter");if(!GM.on&&V.s<12){V.s=12}if(GM.on&&GM.map&&(GM.map.getZoom()||0)<13)GM.map.setZoom(13);startPick()}
 function closeForm(){formView.hidden=true;F=null}
 function renderForm(){
   formIn.replaceChildren();const d=F.data,isNew=F.mode==="new",mod=F.mod;
@@ -1684,9 +1701,12 @@ function renderModCats(){
 
 /* locatie kiezen op de kaart */
 const pickBar=document.getElementById("pickBar");
-function startPick(){formView.hidden=true;showTabRaw("mapView");S.sel=null;S.hotel=null;sheet.hidden=true;document.body.classList.add("picking");pickBar.hidden=false;
-  if(typeof F.lat==="number"){const xy=P(F.lat,F.lon);V.cx=xy[0];V.cy=xy[1];V.s=Math.max(V.s,20)}draw()}
-function endPick(ok){if(ok){F.lon=V.cx/63+1.5;F.lat=54.8-V.cy/100}
+function startPick(){const nw=!!(F&&F.fromMap);document.getElementById("pickTitle").textContent=nw?"Nieuwe parking toevoegen":"Sleep de kaart tot het kruis op de parking staat";
+  const ps=document.getElementById("pickSub");ps.hidden=!nw;ps.textContent="Schuif de kaart tot het kruis precies op de busparking of stopplaats staat.";document.getElementById("pickOk").textContent=nw?"Hier toevoegen":"Locatie bevestigen";
+  formView.hidden=true;showTabRaw("mapView");S.sel=null;S.hotel=null;sheet.hidden=true;document.body.classList.add("picking");pickBar.hidden=false;
+  if(typeof F.lat==="number"){const xy=P(F.lat,F.lon);V.cx=xy[0];V.cy=xy[1];V.s=Math.max(V.s,20);if(GM.on&&GM.map){GM.map.setCenter({lat:F.lat,lng:F.lon});GM.map.setZoom(Math.max(GM.map.getZoom()||0,16))}}draw()}
+function endPick(ok){if(GM.on)gmSync();if(!ok&&F&&F.fromMap){pickBar.hidden=true;document.body.classList.remove("picking");sheet.hidden=false;closeForm();renderSheet();return}
+  if(F)F.fromMap=false;if(ok){F.lon=V.cx/63+1.5;F.lat=54.8-V.cy/100}
   pickBar.hidden=true;document.body.classList.remove("picking");sheet.hidden=false;renderSheet();renderForm();formView.hidden=false}
 
 /* moderatie-tab */
