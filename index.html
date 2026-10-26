@@ -12,12 +12,12 @@
 <style>
 /* Layout: full-screen map, floating search + chips on top, floating bottom sheet with cards, floating pill tab bar. Soft cards, one blue accent, yellow for active chips, dark price pins. */
 :root{
-  --bg:#F7F8FB; --card:#FFFFFF; --soft:#F1F3F8; --ink:#14161F; --muted:#7A7F91; --line:#E7E9F0;
+  --bg:#ECEFF5; --card:#FFFFFF; --soft:#F1F3F8; --ink:#14161F; --muted:#6F7487; --line:#E2E5ED;
   --land:#FAFAFB; --water:#E3EEF8; --road:#FFFFFF; --road-edge:#E2E4EA; --coast:#D9DCE3;
   --accent:#3D5AFE; --accent-ink:#FFFFFF; --accent-soft:#E9EDFF;
   --yellow:#FFC83D; --yellow-ink:#1E1600; --pin:#FFFFFF; --pin-ink:#14161F;
   --ok:#17A35B; --ok-soft:#E5F6EC; --warn:#E08A00; --warn-soft:#FFF3DC;
-  --shadow:0 6px 20px rgb(20 22 31 / .06),0 1px 3px rgb(20 22 31 / .04);
+  --shadow:0 6px 20px rgb(20 22 31 / .07),0 1px 3px rgb(20 22 31 / .06);
   color-scheme:light;
   --font:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
 }
@@ -606,7 +606,7 @@ body.picking .topbar,body.picking .sheet{display:none}
 .macts{display:flex;gap:6px}
 .hgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;border-radius:16px;overflow:hidden}
 .hgrid img{width:100%;aspect-ratio:1;object-fit:cover;display:block}
-.chat{padding-bottom:110px!important}
+
 .hinput{position:fixed;left:50%;transform:translateX(-50%);width:min(680px,calc(100% - 24px));bottom:calc(84px + env(safe-area-inset-bottom,0px));background:var(--card);border-radius:22px;box-shadow:var(--shadow);padding:8px;display:flex;flex-direction:column;gap:6px;z-index:4}
 .hrow{display:flex;gap:8px;align-items:flex-end}
 .hrow textarea{flex:1;min-width:0;border:0;background:var(--soft);border-radius:16px;padding:10px 14px;resize:none;outline:none;line-height:1.35;max-height:120px}
@@ -739,6 +739,86 @@ body.picking .topbar,body.picking .sheet{display:none}
 .prow.off{opacity:.55}
 .adconfirm{grid-column:1/-1;display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 12px;border-radius:12px;background:#FDECEC;color:#8A1C1C;font-weight:600;font-size:13px}.adconfirm span{margin-right:auto}
 .btn.danger{background:#E53935;color:#fff}
+.hgroup{padding:10px 14px 4px;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}.hfoot{padding:10px 14px 12px;font-size:12px;color:var(--muted);border-top:1px solid var(--line)}
+.cic.cplace{background:#E8F5E9;color:#2E7D32}
+.destpin{position:absolute;transform:translate(-50%,-100%);font-size:30px;line-height:1;filter:drop-shadow(0 3px 4px rgb(0 0 0 / .3));pointer-events:none;z-index:7}
+.lbl2{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.dist{font-weight:800;font-size:14px;color:var(--ink);white-space:nowrap}.lrow .meta{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+@media (max-width:699px){.panel.destpanel{max-height:min(52vh,52dvh)}}
+.hclear{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap;font-size:13px;font-weight:600}.hclear span{margin-right:auto;color:#8A1C1C}
+/* onderwerp-pagina: leesweergave (wit, geen kaartjes), anders dan het overzicht */
+#commView.thv{background:var(--card)}
+.threadv{gap:0;padding-top:0!important}
+.thbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;margin:0 calc(-1 * max(16px,env(safe-area-inset-right,0px))) 0 calc(-1 * max(16px,env(safe-area-inset-left,0px)));
+  padding:calc(10px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px));background:color-mix(in srgb,var(--card) 92%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.thback{width:38px;height:38px;border-radius:50%;border:0;background:var(--soft);color:var(--ink);display:grid;place-items:center;flex:none}.thback .i{width:18px;height:18px}
+.thbar-t{display:flex;flex-direction:column;min-width:0;flex:1;line-height:1.2}.thbar-t b{font-size:14px;color:var(--cat);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.thbar-t span{font-size:12px;color:var(--muted)}
+.thjump{border:0;background:var(--accent);color:var(--accent-ink);font-weight:800;font-size:13px;padding:9px 14px;border-radius:999px;flex:none}
+.thhero{display:flex;flex-direction:column;gap:14px;padding:22px 0 20px;border-bottom:8px solid var(--soft);margin:0 calc(-1 * max(16px,env(safe-area-inset-right,0px))) 0 calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px))}
+.thhero .cchip{display:none}
+.thhero .thtop h1{font-size:clamp(24px,6.4vw,32px);line-height:1.15;letter-spacing:-.02em;margin:0;text-wrap:balance}
+.thhero .thtop .pm{order:2}
+.thhero .fpost.op{background:none;box-shadow:none;border:0;padding:0;border-radius:0;gap:14px}
+.thhero .fpost.op .body,.thhero .fpost.op p{font-size:16.5px;line-height:1.65;color:var(--ink)}
+.thhero .fpost.op .pfoot{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:8px 0;margin-top:4px}
+.thdiv{display:block;padding:18px 0 4px;font-size:15px;font-weight:800;color:var(--ink)}
+.threadv .rgroup{border-bottom:1px solid var(--line);padding:6px 0}
+.threadv .rgroup > .fpost,.threadv .rthread .fpost{background:none;box-shadow:none;border:0;border-radius:0;padding:10px 0}
+.threadv .fpost:not(.op) .author .av{width:32px;height:32px;font-size:13px}
+.threadv .fpost:not(.op) .pfoot .like{background:none;padding:4px 6px;color:var(--muted);font-weight:700}
+.threadv .fpost:not(.op) .pfoot .like.on{color:var(--accent)}
+.threadv .rthread{margin-left:15px;padding-left:16px;border-left:2px solid var(--line)}
+.threadv .fpost.best{background:color-mix(in srgb,#F5B400 8%,transparent)!important;border-radius:14px!important;padding:10px 12px!important}
+.threadv .nudge{margin-top:12px}
+.threadv #replyBox{margin-top:16px}
+@media (min-width:700px){.thbar,.thhero{margin-left:0;margin-right:0}}
+.swatches{display:flex;flex-wrap:wrap;gap:10px}.swatch{width:40px;height:40px;border-radius:12px;border:3px solid var(--card);box-shadow:0 0 0 1px var(--line)}.swatch[aria-pressed="true"]{box-shadow:0 0 0 2px var(--ink)}
+#thPick{width:100%;height:44px;border:0;border-radius:12px;padding:0;background:none}
+.thprev{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px;border-radius:16px;background:var(--soft)}.pvlink{color:var(--accent);font-weight:700}.pvtab{background:var(--accent);color:var(--accent-ink);padding:6px 12px;border-radius:12px;font-weight:700;font-size:12px}
+.fbr{display:grid;grid-template-columns:36px 1fr;gap:8px;padding:8px 0;align-items:start}.fbr.child{grid-template-columns:28px 1fr}
+.fbr .avbtn{padding:0;border:0;background:none}.fbr .av{width:36px;height:36px;font-size:14px}.fbr.child .av{width:28px;height:28px;font-size:12px}
+.fbc{min-width:0;display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+.fbb{position:relative;background:var(--soft);border-radius:18px;padding:8px 12px 9px;max-width:100%;display:flex;flex-direction:column;gap:2px}
+.fbb .body,.fbb p{margin:0;font-size:15px;line-height:1.45}
+.fbname{border:0;background:none;padding:0;font-weight:800;font-size:13.5px;color:var(--ink);display:inline-flex;align-items:center;gap:6px;text-align:left}
+.fblikes{position:absolute;right:-6px;bottom:-10px;background:var(--card);border-radius:999px;padding:1px 7px;font-size:11.5px;font-weight:700;box-shadow:0 1px 4px rgb(20 22 31 / .15)}
+.fba{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:2px 0 0 10px;font-size:12.5px}
+.fbtime{color:var(--muted)}.fbact{border:0;background:none;padding:2px 0;font-weight:800;font-size:12.5px;color:var(--muted)}.fbact.on{color:var(--accent)}.fbact.best{color:#B07D00}.fbact.del.armed{color:#C62828}
+.fbr.best .fbb{background:color-mix(in srgb,#F5B400 16%,var(--soft));box-shadow:inset 0 0 0 1px color-mix(in srgb,#F5B400 45%,transparent)}
+.fbr .bestb{font-size:11px;font-weight:800;color:#8A6200;margin-left:10px}
+.threadv .rgroup{border-bottom:0;padding:2px 0}
+.threadv .rthread{margin-left:44px;padding-left:0;border-left:0}
+.fbc .phgrid{max-width:320px}
+.fba{flex-wrap:nowrap;gap:10px;white-space:nowrap;max-width:100%;font-size:12px}.fba .fbact{font-size:12px}.fba .fbact.more{letter-spacing:1px;padding:2px 4px}
+.fbmore{display:flex;flex-wrap:wrap;gap:6px;padding:4px 0 2px 6px}.fbmore .fbact{background:var(--soft);padding:6px 10px;border-radius:999px;font-size:12.5px}
+.fblikes{right:10px}
+.thhero .pfoot{display:flex;flex-wrap:wrap;gap:6px;justify-content:space-between}.thhero .pfoot > .r{display:flex;flex-direction:row;flex-wrap:nowrap;gap:6px}.thhero .pfoot .like{padding:6px 9px;font-size:12.5px;white-space:nowrap}
+.proteaser{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:0;border-radius:20px;padding:14px 16px;background:linear-gradient(120deg,#1E1B4B,#3B2A7A 55%,#7C3AED);color:#fff;box-shadow:0 10px 24px rgb(60 40 140 / .25)}
+.pt-star{width:40px;height:40px;border-radius:12px;background:rgb(255 255 255 / .14);display:grid;place-items:center;font-size:20px;flex:none}.pt-txt{display:flex;flex-direction:column;min-width:0;flex:1}.pt-txt b{font-size:15px}.pt-txt span{font-size:12.5px;opacity:.85}.pt-go{font-size:26px;opacity:.8}
+.proview{position:fixed;inset:0;z-index:95;overflow-y:auto;overscroll-behavior:contain;background:linear-gradient(180deg,#1E1B4B 0,#2E2470 340px,var(--bg) 340px)}
+.pp-in{max-width:620px;margin:0 auto;padding:calc(12px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(40px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:16px}
+.pp-top{display:flex;justify-content:flex-end}.pp-top .roundbtn{background:rgb(255 255 255 / .15);color:#fff}
+.pp-hero{color:#fff;text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px;padding:4px 8px 6px}.pp-hero h1{margin:0;font-size:30px;letter-spacing:-.02em}.pp-hero p{margin:0;opacity:.85;max-width:420px;line-height:1.5}
+.pp-badge{width:64px;height:64px;border-radius:20px;background:linear-gradient(135deg,#FFD25E,#F5A623);display:grid;place-items:center;font-size:32px;box-shadow:0 10px 30px rgb(245 166 35 / .4)}
+.pp-ben{display:grid;grid-template-columns:1fr 1fr;gap:10px}.pp-b{background:var(--card);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:6px;box-shadow:var(--shadow)}.pp-b b{display:block;font-size:14px}.pp-b span:not(.pp-e){font-size:12.5px;color:var(--muted);line-height:1.4}.pp-e{font-size:22px}
+@media (max-width:380px){.pp-ben{grid-template-columns:1fr}}
+.pp-h2{margin:8px 0 0;font-size:18px}.pp-card{margin:0}
+.pp-faq{display:flex;flex-direction:column;gap:8px}.pp-faq details{background:var(--card);border-radius:14px;padding:12px 14px;box-shadow:var(--shadow)}.pp-faq summary{font-weight:700;cursor:pointer}.pp-faq p{margin:8px 0 0;color:var(--muted);line-height:1.5}
+.dname{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.dname h2{margin:0}
+.drate{border:0;border-radius:999px;padding:4px 10px;background:#FFF1CC;color:#6B4E00;font-weight:800;font-size:13px;white-space:nowrap}.drate.none{background:var(--soft);color:var(--muted)}
+.stat .ic{font-weight:800}
+.hinput{transition:bottom .12s ease-out}body.kbopen nav.tabs{display:none}
+.chat{min-height:calc(100dvh - 330px);display:flex;flex-direction:column;justify-content:flex-end}
+.pushcard{display:flex;flex-direction:column;gap:10px}.iosguide{background:var(--soft);border-radius:14px;padding:12px 14px;font-size:13.5px}.iosguide ol{margin:6px 0 0;padding-left:20px;line-height:1.6}
+.iconprev{display:flex;align-items:center;gap:12px}.iconprev img{width:72px;height:72px;border-radius:18px;box-shadow:var(--shadow);object-fit:cover;background:var(--soft)}
+.pushtoggle{background:var(--accent-soft);border-radius:12px;padding:10px 12px;font-weight:700}
+.hseg{margin-top:-4px}.segb{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;margin-left:6px;border-radius:9px;background:#E53935;color:#fff;font-size:11px;font-weight:800}
+.dmrow.unread h3{font-weight:800}.dmmeta{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.fbadge{display:inline-flex;align-items:center;padding:6px 10px;border-radius:999px;background:var(--ok-soft);color:var(--ok);font-weight:800;font-size:12.5px}
+.chatbar{margin-bottom:8px}.chatwho{display:flex;align-items:center;gap:10px;border:0;background:none;padding:0;flex:1;min-width:0;text-align:left}.chatwho .av{width:34px;height:34px}
+#hgHost[hidden]{display:none}
+@media (max-width:699px){input,textarea,select{font-size:16px!important}}
+html,body{touch-action:manipulation}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -781,7 +861,7 @@ body.picking .topbar,body.picking .sheet{display:none}
     </div>
     <div class="topbar">
       <div class="searchrow">
-        <label class="search" for="q"><svg class="i"><use href="#i-search"/></svg><input id="q" type="search" placeholder="Zoek stad of busparking" autocomplete="off"></label>
+        <label class="search" for="q"><svg class="i"><use href="#i-search"/></svg><input id="q" type="search" placeholder="Zoeken…" autocomplete="off"></label>
         <button class="iconbtn acc" id="tHotels" aria-pressed="true" aria-label="Hotels op kaart tonen"><svg class="i"><use href="#i-bed"/></svg></button>
       </div>
       <div class="results" id="results" hidden></div>
@@ -879,6 +959,7 @@ const SVC = {
 const SVC_KEYS = Object.keys(SVC);
 const STOP_LOGO="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2215%22 fill=%22%23F57C00%22/%3E%3Crect x=%2210%22 y=%2211%22 width=%2217%22 height=%2242%22 rx=%222.5%22 fill=%22none%22 stroke=%22%23fff%22 stroke-width=%224.5%22/%3E%3Ccircle cx=%2240%22 cy=%2215.5%22 r=%225.5%22 fill=%22%23fff%22/%3E%3Cpath d=%22M38 24.5l-4.5 13 7.5 6.5 2.5 9.5M33.5 37.5l-4 15M37.5 26l-7.5 5.5M39.5 26.5l5.5 7 6 1.5%22 fill=%22none%22 stroke=%22%23fff%22 stroke-width=%225%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/%3E%3C/svg%3E";
 const PARK_LOGO="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2215%22 fill=%22%233D5AFE%22/%3E%3Cpath d=%22M15 50V13h11.5a10.5 10.5 0 0 1 0 21H15%22 fill=%22none%22 stroke=%22%23fff%22 stroke-width=%227%22 stroke-linejoin=%22round%22/%3E%3Crect x=%2232%22 y=%2237%22 width=%2225%22 height=%2215%22 rx=%223.5%22 fill=%22%23fff%22/%3E%3Crect x=%2235%22 y=%2240%22 width=%225%22 height=%225%22 rx=%221%22 fill=%22%233D5AFE%22/%3E%3Crect x=%2242%22 y=%2240%22 width=%225%22 height=%225%22 rx=%221%22 fill=%22%233D5AFE%22/%3E%3Crect x=%2249%22 y=%2240%22 width=%225%22 height=%225%22 rx=%221%22 fill=%22%233D5AFE%22/%3E%3Ccircle cx=%2238%22 cy=%2252.5%22 r=%223%22 fill=%22%233D5AFE%22 stroke=%22%23fff%22 stroke-width=%221.6%22/%3E%3Ccircle cx=%2251%22 cy=%2252.5%22 r=%223%22 fill=%22%233D5AFE%22 stroke=%22%23fff%22 stroke-width=%221.6%22/%3E%3C/svg%3E";
+const isStopP=p=>{const sv=p.svc||[];if(sv.includes("parkeren"))return false;if(sv.includes("instap"))return true;return p.kind==="stop"};
 const PARKINGS = [{"id":"bp5235","name":"Stadionlaan","city":"'s-Hertogenbosch","country":"NL","lat":51.69989,"lon":5.323128,"address":"Stadionlaan","postcode":"5213 JH","kind":"park","svc":["parkeren"]},{"id":"bp1451","name":"Kanaalkade","city":"Alkmaar","country":"NL","lat":52.633305,"lon":4.750007,"address":"Kanaalkade","postcode":"1811 LS","kind":"stop","svc":["instap"]},{"id":"bp1450","name":"Stadion","city":"Alkmaar","country":"NL","lat":52.613052,"lon":4.744169,"address":"Stadionweg","postcode":"1812 AZ","kind":"park","svc":["parkeren"]},{"id":"bp4513","name":"Brekkerweg","city":"Allingawier","country":"NL","lat":53.046671,"lon":5.444212,"address":"Brekkerweg","postcode":"8758 LC","kind":"stop","svc":["parkeren","instap"]},{"id":"bp6081","name":"C.P. Mulderveld","city":"Alphen aan den Rijn","country":"NL","lat":52.121761,"lon":4.675317,"address":"C.P. Mulderveld","postcode":"2406 LH","kind":"park","svc":["parkeren","instap"]},{"id":"bp6647","name":"Geldersestraat","city":"Amersfoort","country":"NL","lat":52.162418,"lon":5.376779,"address":"Geldersestraat","postcode":"3812 PP","kind":"park","svc":["parkeren","instap"]},{"id":"bp5736","name":"H1 De Ruijterkade West","city":"Amsterdam","country":"NL","lat":52.382282,"lon":4.89558,"address":"De Ruijterkade","postcode":"1013 AA","kind":"stop","svc":["instap"]},{"id":"bp5740","name":"H10 Joods Historisch Museum","city":"Amsterdam","country":"NL","lat":52.367313,"lon":4.904104,"address":"Jonas Daniël Meijerplein","postcode":"1011 RM","kind":"stop","svc":["instap"]},{"id":"bp1431","name":"H11 Scheepvaartmuseum","city":"Amsterdam","country":"NL","lat":52.371643,"lon":4.916262,"address":"Kattenburgerstraat","postcode":"1018 JB","kind":"stop","svc":["instap"]},{"id":"bp5741","name":"H12 Blue Boat Company","city":"Amsterdam","country":"NL","lat":52.35804,"lon":4.892219,"address":"Stadhouderskade","postcode":"1073 ZR","kind":"stop","svc":["instap"]},{"id":"bp1433","name":"H13 Coster Diamonds","city":"Amsterdam","country":"NL","lat":52.359734,"lon":4.883392,"address":"Hobbemastraat 16","postcode":"1071 CN","kind":"stop","svc":["instap"]},{"id":"bp1434","name":"H14 Park Hotel","city":"Amsterdam","country":"NL","lat":52.361576,"lon":4.88267,"address":"Stadhouderskade","postcode":"1071 ZD","kind":"stop","svc":["instap"]},{"id":"bp1435","name":"H15 Hotel NH City Center","city":"Amsterdam","country":"NL","lat":52.369869,"lon":4.8889,"address":"Spuistraat","postcode":"1012 WJ","kind":"stop","svc":["instap"]},{"id":"bp1436","name":"H16 Anne Frank Huis","city":"Amsterdam","country":"NL","lat":52.373924,"lon":4.883979,"address":"Westermarkt 29","postcode":"1016 DL","kind":"stop","svc":["instap"]},{"id":"bp9329","name":"H17 Nassaukade","city":"Amsterdam","country":"NL","lat":52.381302,"lon":4.879399,"address":"Nassaukade","postcode":"1052 CN","kind":"stop","svc":["instap"]},{"id":"bp5737","name":"H18 Westerdoksdijk","city":"Amsterdam","country":"NL","lat":52.386471,"lon":4.892895,"address":"Westerdoksdijk","postcode":"1013 BX","kind":"stop","svc":["instap"]},{"id":"bp1437","name":"H19 Amstel","city":"Amsterdam","country":"NL","lat":52.367016,"lon":4.895334,"address":"Amstel","postcode":"1017 AB","kind":"stop","svc":["instap"]},{"id":"bp5738","name":"H2 EYE","city":"Amsterdam","country":"NL","lat":52.384533,"lon":4.902441,"address":"Bercylaan","postcode":"1031 KS","kind":"stop","svc":["instap"]},{"id":"bp1438","name":"H20 Hotel Die Port van Cleve","city":"Amsterdam","country":"NL","lat":52.373951,"lon":4.890737,"address":"Nieuwezijds Voorburgwal","postcode":"1012 HG","kind":"stop","svc":["instap"]},{"id":"bp9333","name":"H21 Westcord Fashion Hotel","city":"Amsterdam","country":"NL","lat":52.357767,"lon":4.844122,"address":"Hendrikje Stoffelsstraat","postcode":"1058 GC","kind":"stop","svc":["instap"]},{"id":"bp9336","name":"H22 Renaissance Hotel","city":"Amsterdam","country":"NL","lat":52.378068,"lon":4.894271,"address":"Kattengat","postcode":"1012 VC","kind":"stop","svc":["instap"]},{"id":"bp5742","name":"H23 Stedelijk Museum","city":"Amsterdam","country":"NL","lat":52.358425,"lon":4.880055,"address":"Paulus Potterstraat","postcode":"1071 DB","kind":"stop","svc":["instap"]},{"id":"bp1441","name":"H24 Hermitage","city":"Amsterdam","country":"NL","lat":52.364735,"lon":4.905958,"address":"Weesperstraat","postcode":"1018 DN","kind":"stop","svc":["instap"]},{"id":"bp1442","name":"H25 Rijks Museum","city":"Amsterdam","country":"NL","lat":52.359505,"lon":4.887984,"address":"Stadhouderskade","postcode":"1072 AD","kind":"stop","svc":["instap"]},{"id":"bp1443","name":"H26 Station Zuid","city":"Amsterdam","country":"NL","lat":52.336704,"lon":4.874816,"address":"Gustav Mahlerlaan","postcode":"1082 MT","kind":"stop","svc":["instap"]},{"id":"bp5743","name":"H27 Grand Hotel Amrath","city":"Amsterdam","country":"NL","lat":52.37455,"lon":4.904222,"address":"Prins Hendrikkade","postcode":"1011 AK","kind":"stop","svc":["instap"]},{"id":"bp17550","name":"H28 De Ruijterkade oost","city":"Amsterdam","country":"NL","lat":52.378201,"lon":4.9073,"address":"De Ruijterkade","postcode":"1011 AC","kind":"stop","svc":["instap"]},{"id":"bp1427","name":"H3 Prins Hendrikkade/Lovers Canal Cruise","city":"Amsterdam","country":"NL","lat":52.378815,"lon":4.896449,"address":"Prins Hendrikkade","postcode":"1012 TK","kind":"stop","svc":["instap"]},{"id":"bp5746","name":"H30 Holland Casino","city":"Amsterdam","country":"NL","lat":52.362064,"lon":4.880918,"address":"Stadhouderskade","postcode":"1054 ES","kind":"stop","svc":["instap"]},{"id":"bp5747","name":"H31 Stayokay","city":"Amsterdam","country":"NL","lat":52.36515,"lon":4.935099,"address":"Timorplein","postcode":"1094 CL","kind":"stop","svc":["instap"]},{"id":"bp5748","name":"H33 Rhijnspoorplein","city":"Amsterdam","country":"NL","lat":52.360161,"lon":4.90795,"address":"Mauritskade","postcode":"1091 GC","kind":"stop","svc":["instap"]},{"id":"bp9339","name":"H34 Hotel Nieuw Slotania","city":"Amsterdam","country":"NL","lat":52.381424,"lon":4.820355,"address":"Burgemeester de Vlugtlaan","postcode":"1063 JN","kind":"stop","svc":["instap"]},{"id":"bp1444","name":"H35 Riekermolen","city":"Amsterdam","country":"NL","lat":52.324486,"lon":4.893932,"address":"De Borcht, Amsteldijk","postcode":"1083 AC","kind":"stop","svc":["instap"]},{"id":"bp1432","name":"H36 Heineken","city":"Amsterdam","country":"NL","lat":52.357941,"lon":4.891491,"address":"Stadhouderskade 78","postcode":"1072 AE","kind":"stop","svc":["instap"]},{"id":"bp9344","name":"H37 Europaboulevard / Novotel","city":"Amsterdam","country":"NL","lat":52.334122,"lon":4.889632,"address":"Europaboulevard","postcode":"1083 AD","kind":"stop","svc":["instap"]},{"id":"bp6651","name":"H38 Amstelstation","city":"Amsterdam","country":"NL","lat":52.345612,"lon":4.919484,"address":"Julianaplein 6","postcode":"1097 MH","kind":"stop","svc":["instap"]},{"id":"bp9349","name":"H39 Westerpark","city":"Amsterdam","country":"NL","lat":52.38538,"lon":4.868424,"address":"Haarlemmerweg","postcode":"1051 NW","kind":"stop","svc":["instap"]},{"id":"bp9323","name":"H4 Zouthaven – Piet Heinbuildings","city":"Amsterdam","country":"NL","lat":52.377151,"lon":4.917947,"address":"Piet Heinkade","postcode":"1019 GZ","kind":"stop","svc":["instap"]},{"id":"bp9352","name":"H41 Motel One","city":"Amsterdam","country":"NL","lat":52.338854,"lon":4.892993,"address":"Maaslandstraat","postcode":"1079 PD","kind":"stop","svc":["instap"]},{"id":"bp9355","name":"H42 Station Holendrecht","city":"Amsterdam","country":"NL","lat":52.29785,"lon":4.959463,"address":"Meibergdreef","postcode":"1105 AX","kind":"stop","svc":["instap"]},{"id":"bp9358","name":"H44 Hotel Casa Amsterdam","city":"Amsterdam","country":"NL","lat":52.350134,"lon":4.918581,"address":"Eerste Ringdijkstraat","postcode":"1097 BC","kind":"stop","svc":["instap"]},{"id":"bp9326","name":"H5 Zouthaven – Piet Heinkade","city":"Amsterdam","country":"NL","lat":52.377353,"lon":4.913897,"address":"Piet Heinkade","postcode":"1019 BR","kind":"stop","svc":["instap"]},{"id":"bp1440","name":"H6 St. Nicolaaskerk","city":"Amsterdam","country":"NL","lat":52.376705,"lon":4.900447,"address":"Prins Hendrikkade","postcode":"1012 JD","kind":"stop","svc":["instap"]},{"id":"bp1428","name":"H7 Amsterdam Museum","city":"Amsterdam","country":"NL","lat":52.370098,"lon":4.88982,"address":"Nieuwezijds Voorburgwal","postcode":"1012 RV","kind":"stop","svc":["instap"]},{"id":"bp1429","name":"H8 Rokin Kooij rondvaarten","city":"Amsterdam","country":"NL","lat":52.368828,"lon":4.892209,"address":"Rokin","postcode":"1012 LB","kind":"stop","svc":["instap"]},{"id":"bp5739","name":"H9 Javakade","city":"Amsterdam","country":"NL","lat":52.379154,"lon":4.921877,"address":"Javakade","postcode":"1019 SZ","kind":"stop","svc":["instap"]},{"id":"bp27541","name":"Metaalbewerkerweg","city":"Amsterdam","country":"NL","lat":52.401215,"lon":4.907433,"address":"Metaalbewerkerweg","postcode":"1032 KW","kind":"park","svc":["parkeren"]},{"id":"bp2171","name":"P1 Zeeburg","city":"Amsterdam","country":"NL","lat":52.372177,"lon":4.959455,"address":"Zuiderzeeweg","postcode":"1095 KJ","kind":"park","svc":["parkeren","wc","ov","was","afval"],"price":"€4/uur","note":"4,00 euro/uur max. 40,00 euro/24 uur"},{"id":"bp12099","name":"P10 Naaldwijkstraat","city":"Amsterdam","country":"NL","lat":52.345479,"lon":4.841983,"address":"Naaldwijkstraat","postcode":"1182 DB","kind":"park","svc":["parkeren"],"price":"€4,50","note":"4,50 euro","hours":"9.00 - 21.00"},{"id":"bp12108","name":"P11 Golden Tulip A’dam West","city":"Amsterdam","country":"NL","lat":52.385762,"lon":4.846296,"address":"Molenwerf","postcode":"1014 AG","kind":"stop","svc":["parkeren","instap"],"price":"€2,40/uur","note":"2,40 euro/uur","hours":"9.00 - 21.00"},{"id":"bp6650","name":"P14 Sportfondsenbad Amsterdam-Oost","city":"Amsterdam","country":"NL","lat":52.35614,"lon":4.928571,"address":"Oranje-Vrijstaatkade 11B","postcode":"1093 KS","kind":"stop","svc":["parkeren","instap"],"price":"€3","note":"Ma t/m za max. 1 uur (3,00 euro)"},{"id":"bp1425","name":"P2 PTA Passenger Terminal Amsterdam","city":"Amsterdam","country":"NL","lat":52.377346,"lon":4.916433,"address":"Piet Heinkade","postcode":"1019 GZ","kind":"park","svc":["parkeren","wc"],"price":"€5/uur","note":"5,00 euro/uur 70,00 euro/24 uur","phone":"+31 (0)20 5091006"},{"id":"bp1422","name":"P3 Museumplein Coach Park","city":"Amsterdam","country":"NL","lat":52.359196,"lon":4.882746,"address":"Paulus Potterstraat","postcode":"1071 AG","kind":"stop","svc":["parkeren","instap","winkel"],"price":"€11,50/uur","note":"11,50 euro/uur max. 100,00 euro/24 uur"},{"id":"bp1423","name":"P4 Artis","city":"Amsterdam","country":"NL","lat":52.368092,"lon":4.913839,"address":"Plantage Kerklaan","postcode":"1018 CZ","kind":"stop","svc":["parkeren","instap","wc"],"note":"Maart–oktober: alleen voor bezoekers van Artis en het Verzetsmuseum (Artis-bezoekers gratis). November–februari: 6,00 euro/uur","hours":"Maart–oktober: alleen voor bezoekers van Artis en het Verzetsmuseum"},{"id":"bp1424","name":"P5 Gassan Diamonds","city":"Amsterdam","country":"NL","lat":52.369808,"lon":4.903421,"address":"Nieuwe Uilenburgerstraat","postcode":"1011 LN","kind":"park","svc":["parkeren","instap","wc"],"note":"Alleen voor bezoekers van Gassan Diamonds","hours":"9.00 – 17.30","phone":"+31 (0)20 622 53 33"},{"id":"bp6654","name":"P6 – RAI","city":"Amsterdam","country":"NL","lat":52.343189,"lon":4.891173,"address":"Europaplein","postcode":"1078 GZ","kind":"park","svc":["parkeren"],"price":"€50/dag","note":"50,00 euro/24 uur","hours":"Alleen als er nog plek is"},{"id":"bp6652","name":"P8 – P Plus Arena","city":"Amsterdam","country":"NL","lat":52.317944,"lon":4.932872,"address":"De Passage 100","postcode":"1101 AX","kind":"paid","svc":["betaald","ov"],"price":"€22,50/dag","note":"22,50 euro/24 uur Tijdens evenementen: 35 euro/dag"},{"id":"bp6084","name":"Paleis Het Loo","city":"Apeldoorn","country":"NL","lat":52.229595,"lon":5.942784,"address":"Amersfoortseweg","postcode":"7315 JA","kind":"park","svc":["parkeren","instap"]},{"id":"bp16250","name":"Wester Es","city":"Appelscha","country":"NL","lat":52.955438,"lon":6.336159,"address":"Wester Es","postcode":"8426 SJ","kind":"park","svc":["parkeren"]},{"id":"bp5383","name":"Kasteeltuinen Arcen","city":"Arcen","country":"NL","lat":51.472492,"lon":6.185823,"address":"Lingsforterweg","postcode":"5944 BE","kind":"park","svc":["parkeren","instap"]},{"id":"bp6085","name":"Rijnkade","city":"Arnhem","country":"NL","lat":51.979191,"lon":5.90211,"address":"Rijnkade","postcode":"6811 JK","kind":"park","svc":["parkeren"]},{"id":"bp19520","name":"Kortbossen","city":"Assen","country":"NL","lat":52.984415,"lon":6.545517,"address":"Kortbossen","postcode":"9405 BK","kind":"park","svc":["parkeren"]},{"id":"bp5907","name":"Plein 13","city":"Bergen op Zoom","country":"NL","lat":51.490459,"lon":4.293453,"address":"Jacob Obrechtlaan","postcode":"4611 AM","kind":"park","svc":["parkeren","instap"]},{"id":"bp26517","name":"Vaandragerdreef","city":"Bergschenhoek","country":"NL","lat":51.964035,"lon":4.521304,"address":"Vaandragerdreef","postcode":"2661 JW","kind":"park","svc":["parkeren"]},{"id":"bp6686","name":"Willem Lodewijkstraat","city":"Bourtange","country":"NL","lat":53.008801,"lon":7.189363,"address":"Willem Lodewijkstraat","postcode":"9545 PA","kind":"park","svc":["parkeren","instap"]},{"id":"bp6087","name":"Jumbo","city":"Brielle","country":"NL","lat":51.900074,"lon":4.168646,"address":"Kaaisingel","postcode":"3231 KD","kind":"park","svc":["parkeren"]},{"id":"bp6088","name":"Tielseweg","city":"Buren","country":"NL","lat":51.909744,"lon":5.336677,"address":"Tielseweg","postcode":"4116 EB","kind":"park","svc":["parkeren"]},{"id":"bp24234","name":"Van Heutszsingel","city":"Coevorden","country":"NL","lat":52.66384,"lon":6.73779,"address":"Van Heutszsingel","postcode":"7741 ET","kind":"park","svc":["parkeren","instap"]},{"id":"bp6131","name":"Dokter Hoolboomweg","city":"De Klomp","country":"NL","lat":52.046246,"lon":5.573346,"address":"Dokter Hoolboomweg","postcode":"6745 XH","kind":"park","svc":["parkeren","ov"]},{"id":"bp6089","name":"Nikadel","city":"De Koog","country":"NL","lat":53.098461,"lon":4.767558,"address":"Nikadel","postcode":"1796 BR","kind":"park","svc":["parkeren"]},{"id":"bp1445","name":"Hotel Delft Centre","city":"Delft","country":"NL","lat":52.015072,"lon":4.367133,"address":"Koepoortplaats","postcode":"2612 RR","kind":"stop","svc":["instap","wc","nacht"],"note":"Max. 30 min."},{"id":"bp1447","name":"Olof Palmestraat/1","city":"Delft","country":"NL","lat":52.013302,"lon":4.37782,"address":"Olof Palmestraat","postcode":"2616 LM","kind":"park","svc":["parkeren"]},{"id":"bp16079","name":"Olof Palmestraat/2","city":"Delft","country":"NL","lat":52.014851,"lon":4.375071,"address":"Olof Palmestraat","postcode":"2616 LS","kind":"park","svc":["parkeren"]},{"id":"bp1448","name":"Paardenmarkt","city":"Delft","country":"NL","lat":52.016171,"lon":4.358887,"address":"Paardenmarkt","postcode":"2611 PB","kind":"park","svc":["parkeren"],"note":"Bus max. 10 m"},{"id":"bp1446","name":"Phoenixstraat","city":"Delft","country":"NL","lat":52.01181,"lon":4.353441,"address":"Phoenixstraat","postcode":"2611 AK","kind":"stop","svc":["instap"],"note":"Max. 30 min."},{"id":"bp4511","name":"Royal Delft","city":"Delft","country":"NL","lat":52.001415,"lon":4.367146,"address":"Rotterdamseweg-Noord","postcode":"2628 AR","kind":"park","svc":["parkeren","instap"]},{"id":"bp6446","name":"Keesomlaan","city":"Den Burg","country":"NL","lat":53.051613,"lon":4.791987,"address":"Keesomlaan","postcode":"1791 DB","kind":"park","svc":["parkeren","instap"]},{"id":"bp4165","name":"Gevers Deynootweg","city":"Den Haag","country":"NL","lat":52.115257,"lon":4.285858,"address":"Gevers Deynootweg","postcode":"2586 HN","kind":"stop","svc":["instap"],"note":"Max. 10 min."},{"id":"bp6386","name":"Hof Weg","city":"Den Haag","country":"NL","lat":52.078499,"lon":4.312055,"address":"Hof Weg","postcode":"2511 AE","kind":"stop","svc":["instap"]},{"id":"bp4510","name":"Hogewal","city":"Den Haag","country":"NL","lat":52.082983,"lon":4.302366,"address":"Hogewal","postcode":"2514 HA","kind":"park","svc":["parkeren","instap"]},{"id":"bp1453","name":"Internationaal Hof van Justitie","city":"Den Haag","country":"NL","lat":52.086845,"lon":4.29818,"address":"Carnegieplein","postcode":"2518 BD","kind":"stop","svc":["instap"]},{"id":"bp3758","name":"Madurodam","city":"Den Haag","country":"NL","lat":52.098366,"lon":4.298728,"address":"Doctor Aletta Jacobsweg","postcode":"2585 JC","kind":"park","svc":["parkeren"]},{"id":"bp4509","name":"Museon","city":"Den Haag","country":"NL","lat":52.088486,"lon":4.280117,"address":"Stadhouderslaan","postcode":"2517 JB","kind":"park","svc":["parkeren","instap"]},{"id":"bp7406","name":"Pr. Beatrixlaan","city":"Den Haag","country":"NL","lat":52.078712,"lon":4.33638,"address":"Pr. Beatrixlaan","postcode":"2595 BM","kind":"park","svc":["parkeren"]},{"id":"bp1452","name":"Prinsessegracht","city":"Den Haag","country":"NL","lat":52.082783,"lon":4.318216,"address":"Prinsessegracht","postcode":"2514 AN","kind":"park","svc":["parkeren","instap"]},{"id":"bp4164","name":"Sea Life Centre","city":"Den Haag","country":"NL","lat":52.111866,"lon":4.278515,"address":"Scheveningseslag","postcode":"2586 KW","kind":"stop","svc":["instap"],"note":"Max. 5 min."},{"id":"bp4508","name":"Zeestraat","city":"Den Haag","country":"NL","lat":52.085609,"lon":4.302269,"address":"Zeestraat","postcode":"2518 AA","kind":"park","svc":["parkeren","instap"],"hours":"6.00 - 18.00"},{"id":"bp6093","name":"Bokkingshang","city":"Deventer","country":"NL","lat":52.250477,"lon":6.160753,"address":"Bokkingshang","postcode":"7411 EJ","kind":"park","svc":["parkeren","instap"]},{"id":"bp6094","name":"Koepoortwal","city":"Doesburg","country":"NL","lat":52.01656,"lon":6.130525,"address":"Koepoortwal","postcode":"6981 AR","kind":"park","svc":["parkeren","instap"]},{"id":"bp6095","name":"Roosjeweg","city":"Domburg","country":"NL","lat":51.557224,"lon":3.505206,"address":"Roosjeweg","postcode":"4357 ET","kind":"park","svc":["parkeren"]},{"id":"bp6102","name":"Hellingen","city":"Dordrecht","country":"NL","lat":51.811741,"lon":4.662096,"address":"Hellingen","postcode":"3311 VC","kind":"park","svc":["parkeren","instap"]},{"id":"bp15906","name":"Biesboschweg","city":"Drimmelen","country":"NL","lat":51.709842,"lon":4.810113,"address":"Biesboschweg","postcode":"4924 BB","kind":"stop","svc":["parkeren","instap"]},{"id":"bp4168","name":"Matthijs Tinxgracht","city":"Edam","country":"NL","lat":52.516254,"lon":5.046286,"address":"Matthijs Tinxgracht","postcode":"1135 GB","kind":"park","svc":["parkeren","instap"]},{"id":"bp11806","name":"Kennedyboulevard","city":"Egmond aan Zee","country":"NL","lat":52.613032,"lon":4.621951,"address":"Kennedyboulevard","postcode":"1931 XR","kind":"stop","svc":["parkeren","instap"]},{"id":"bp11809","name":"Watertorenweg","city":"Egmond aan Zee","country":"NL","lat":52.622849,"lon":4.633395,"address":"Watertorenweg","postcode":"1931 BA","kind":"park","svc":["parkeren"]},{"id":"bp3686","name":"Antoon Coolenlaan","city":"Eindhoven","country":"NL","lat":51.416515,"lon":5.475215,"address":"Antoon Coolenlaan","postcode":"5644 RX","kind":"park","svc":["parkeren"]},{"id":"bp24077","name":"Bourenslaan","city":"Eindhoven","country":"NL","lat":51.424535,"lon":5.476673,"address":"Boutenslaan","postcode":"5644 TV","kind":"park","svc":["parkeren","instap"]},{"id":"bp26676","name":"Onze Lieve Vrouwestraat","city":"Eindhoven","country":"NL","lat":51.452388,"lon":5.488711,"address":"Onze Lieve Vrouwestraat","postcode":"5612 AW","kind":"park","svc":["parkeren"]},{"id":"bp6103","name":"Het Schootsveld","city":"Elburg","country":"NL","lat":52.446392,"lon":5.837377,"address":"Het Schootsveld","postcode":"8081 CG","kind":"park","svc":["parkeren","instap"]},{"id":"bp9449","name":"Kerkhoflaan","city":"Emmen","country":"NL","lat":52.781857,"lon":6.902947,"address":"Kerkhoflaan","postcode":"7811 HG","kind":"stop","svc":["parkeren","instap"]},{"id":"bp1406","name":"Stationsplein","city":"Enkhuizen","country":"NL","lat":52.699883,"lon":5.287847,"address":"Stationsplein","postcode":"1601 EM","kind":"park","svc":["parkeren","instap","wc"]},{"id":"bp6105","name":"Kummenaedestraat","city":"Geleen","country":"NL","lat":50.96574,"lon":5.831286,"address":"Kummenaedestraat","postcode":"6165 CK","kind":"park","svc":["parkeren"]},{"id":"bp4724","name":"Eendrachtsplein","city":"Giethoorn","country":"NL","lat":52.721354,"lon":6.080152,"address":"Eendrachtsplein","postcode":"8355 DL","kind":"stop","svc":["parkeren","instap"]},{"id":"bp7137","name":"Smit","city":"Giethoorn","country":"NL","lat":52.711765,"lon":6.079503,"address":"Beulakerweg","postcode":"8355 AM","kind":"park","svc":["parkeren","instap"]},{"id":"bp4167","name":"Klein Amerika","city":"Gouda","country":"NL","lat":52.011368,"lon":4.716277,"address":"Klein Amerika","postcode":"2806 CA","kind":"stop","svc":["parkeren","instap"]},{"id":"bp6106","name":"Schouwburg","city":"Gouda","country":"NL","lat":52.015957,"lon":4.713401,"address":"Schouwburgplein","postcode":"2806 AL","kind":"park","svc":["parkeren","instap"]},{"id":"bp4136","name":"Sint-Jansbrug","city":"Gouda","country":"NL","lat":52.010082,"lon":4.710699,"address":"Westhaven","postcode":"2801 PA","kind":"stop","svc":["instap"],"note":"Max. 12 meter"},{"id":"bp3351","name":"P+R Kardinge","city":"Groningen","country":"NL","lat":53.239458,"lon":6.59718,"address":"Kardingerplein","postcode":"9735 AA","kind":"park","svc":["parkeren"]},{"id":"bp9208","name":"Stationsweg","city":"Groningen","country":"NL","lat":53.211691,"lon":6.566559,"address":"Stationsweg","postcode":"9726 AZ","kind":"stop","svc":["instap"]},{"id":"bp7557","name":"Landsraderweg","city":"Gulpen","country":"NL","lat":50.810036,"lon":5.888599,"address":"Landsraderweg","postcode":"6271 NT","kind":"park","svc":["parkeren","instap"]},{"id":"bp1456","name":"Friese Varkenmarkt","city":"Haarlem","country":"NL","lat":52.385833,"lon":4.644826,"address":"Gonnetstraat","postcode":"2011 JA","kind":"park","svc":["parkeren","instap"]},{"id":"bp6108","name":"Oude Ringmuur","city":"Harlingen","country":"NL","lat":53.176716,"lon":5.415192,"address":"Oude Ringmuur","postcode":"8861 SX","kind":"park","svc":["parkeren"]},{"id":"bp6109","name":"Coriovallumstraat","city":"Heerlen","country":"NL","lat":50.88549,"lon":5.97663,"address":"Coriovallumstraat","postcode":"6411 CC","kind":"park","svc":["parkeren","instap"]},{"id":"bp6110","name":"Sumatralaan","city":"Hilversum","country":"NL","lat":52.235527,"lon":5.172165,"address":"Sumatralaan","postcode":"1217 GP","kind":"park","svc":["parkeren","instap"]},{"id":"bp23565","name":"Wullenbergweg","city":"Holten","country":"NL","lat":52.297557,"lon":6.421919,"address":"Wullenbergweg","postcode":"7451 JL","kind":"park","svc":["parkeren","instap"]},{"id":"bp23949","name":"Boot Ameland","city":"Holwerd","country":"NL","lat":53.393941,"lon":5.880423,"address":"Grândyk","postcode":"9151 AE","kind":"park","svc":["parkeren"]},{"id":"bp1407","name":"Nieuwe Wal","city":"Hoorn","country":"NL","lat":52.639637,"lon":5.072075,"address":"Nieuwe Wal","postcode":"1621 MB","kind":"park","svc":["parkeren","instap"]},{"id":"bp6111","name":"Pelmolenpad","city":"Hoorn","country":"NL","lat":52.644272,"lon":5.050599,"address":"Pelmolenpad","postcode":"1622 AB","kind":"park","svc":["parkeren","instap"]},{"id":"bp6112","name":"Transferium","city":"Hoorn","country":"NL","lat":52.645466,"lon":5.055987,"address":"Van Dedemstraat","postcode":"1624 NN","kind":"park","svc":["parkeren"]},{"id":"bp6869","name":"Stationsplein","city":"Hulst","country":"NL","lat":51.276535,"lon":4.048863,"address":"Stationsplein","postcode":"4561 GD","kind":"park","svc":["parkeren","instap"]},{"id":"bp4166","name":"Efteling","city":"Kaatsheuvel","country":"NL","lat":51.652718,"lon":5.041352,"address":"Europalaan","postcode":"5171 KW","kind":"park","svc":["parkeren","wc"]},{"id":"bp4514","name":"Kinderdijk","city":"Kinderdijk","country":"NL","lat":51.889042,"lon":4.640939,"address":"Lekdijk","postcode":"2961 AT","kind":"stop","svc":["instap","wc"]},{"id":"bp6116","name":"Lingedijk","city":"Leerdam","country":"NL","lat":51.886589,"lon":5.087046,"address":"Lingedijk","postcode":"4142 LD","kind":"park","svc":["parkeren"]},{"id":"bp25931","name":"Harlingertrekweg","city":"Leeuwarden","country":"NL","lat":53.198294,"lon":5.773118,"address":"Harlingertrekweg","postcode":"8914 AT","kind":"park","svc":["parkeren"]},{"id":"bp9750","name":"Lange Marktstraat","city":"Leeuwarden","country":"NL","lat":53.197685,"lon":5.790485,"address":"Lange Marktstraat","postcode":"8911 AD","kind":"stop","svc":["instap"]},{"id":"bp9754","name":"Oldehoofsterkerhof","city":"Leeuwarden","country":"NL","lat":53.203342,"lon":5.790761,"address":"Boterhoek","postcode":"8911 DE","kind":"stop","svc":["instap"]},{"id":"bp6117","name":"Lammenschansweg","city":"Leiden","country":"NL","lat":52.14835,"lon":4.492513,"address":"Lammenschansweg","postcode":"2313 DL","kind":"park","svc":["parkeren"]},{"id":"bp4723","name":"Lutinaplein","city":"Lelystad","country":"NL","lat":52.525295,"lon":5.440532,"address":"Lutinaplein","postcode":"8242 PA","kind":"park","svc":["parkeren","adblue"]},{"id":"bp16872","name":"Museumweg","city":"Lelystad","country":"NL","lat":52.525383,"lon":5.440732,"address":"Museumweg","postcode":"8242 PW","kind":"park","svc":["parkeren","adblue"]},{"id":"bp11767","name":"Frontensingel","city":"Maastricht","country":"NL","lat":50.857679,"lon":5.689102,"address":"Frontensingel","postcode":"6211 SC","kind":"stop","svc":["instap"],"note":"Max. 30 min."},{"id":"bp2452","name":"Guesselt Stadion","city":"Maastricht","country":"NL","lat":50.857038,"lon":5.71568,"address":"Stadionplein","postcode":"6225 XS","kind":"park","svc":["parkeren"]},{"id":"bp2451","name":"Maasboulevard","city":"Maastricht","country":"NL","lat":50.84626,"lon":5.695776,"address":"Maasboulevard","postcode":"6211 JW","kind":"stop","svc":["instap"],"note":"Max. 30 min."},{"id":"bp6118","name":"Estrikwerk","city":"Makkum","country":"NL","lat":53.05582,"lon":5.407693,"address":"Estrikwerk","postcode":"8754 CJ","kind":"park","svc":["parkeren"]},{"id":"bp1449","name":"Kruisbaakweg","city":"Marken","country":"NL","lat":52.456631,"lon":5.10581,"address":"Kruisbaakweg","postcode":"1156 DK","kind":"stop","svc":["parkeren","instap"],"price":"€10","note":"10,00 euro + 0,50 euro/passagier"},{"id":"bp20916","name":"Overtoom","city":"Medemblik","country":"NL","lat":52.773592,"lon":5.103738,"address":"Overtoom","postcode":"1671 BV","kind":"stop","svc":["parkeren","instap"]},{"id":"bp3828","name":"Loskade","city":"Middelburg","country":"NL","lat":51.496826,"lon":3.619163,"address":"Loskade","postcode":"4331 HX","kind":"park","svc":["parkeren"]},{"id":"bp6840","name":"Molenwater","city":"Middelburg","country":"NL","lat":51.504349,"lon":3.61688,"address":"Molenwater","postcode":"4331 SG","kind":"park","svc":["parkeren","instap"],"hours":"Alleen van mei t/m september"},{"id":"bp3829","name":"Nieuwe Haven","city":"Middelburg","country":"NL","lat":51.496227,"lon":3.613686,"address":"Nieuwe Haven","postcode":"4331 JZ","kind":"stop","svc":["instap"]},{"id":"bp7171","name":"Energiestraat","city":"Naarden","country":"NL","lat":52.299114,"lon":5.15698,"address":"Energiestraat","postcode":"1411 AN","kind":"park","svc":["parkeren","instap"]},{"id":"bp6258","name":"Kinderdijk","city":"Nieuw-Lekkerland","country":"NL","lat":51.886803,"lon":4.67784,"address":"Planetenlaan","postcode":"2957 SM","kind":"park","svc":["parkeren"]},{"id":"bp6104","name":"Emmaweg","city":"Nieuw-Namen","country":"NL","lat":51.328018,"lon":4.148519,"address":"Emmaweg","postcode":"4568 PT","kind":"park","svc":["parkeren","instap"]},{"id":"bp24888","name":"Nieuwe Dukenburgseweg","city":"Nijmegen","country":"NL","lat":51.819382,"lon":5.816169,"address":"Nieuwe Dukenburgseweg","postcode":"6534 AD","kind":"park","svc":["parkeren"]},{"id":"bp5226","name":"Ubbergseweg","city":"Nijmegen","country":"NL","lat":51.84409,"lon":5.882594,"address":"Ubbergseweg","postcode":"6522 KN","kind":"park","svc":["parkeren"],"hours":"In- en uitstappen mag bij elke gewone bushalte"},{"id":"bp23562","name":"Piet Heinweg","city":"Nijverdal","country":"NL","lat":52.367659,"lon":6.44968,"address":"Piet Heinweg","postcode":"7441 GZ","kind":"park","svc":["parkeren","instap"]},{"id":"bp7587","name":"Rotanstraat","city":"Noordwolde","country":"NL","lat":52.890808,"lon":6.142782,"address":"Rotanstraat","postcode":"8391 CS","kind":"park","svc":["parkeren","instap"]},{"id":"bp10408","name":"Elspeterweg","city":"Nunspeet","country":"NL","lat":52.366937,"lon":5.782839,"address":"Elspeterweg","postcode":"8071 PA","kind":"stop","svc":["parkeren","instap"]},{"id":"bp6119","name":"Kasteel Westhove","city":"Oostkapelle","country":"NL","lat":51.569164,"lon":3.523385,"address":"Domburgseweg","postcode":"4356 NA","kind":"park","svc":["parkeren","instap"]},{"id":"bp15901","name":"Stadsweide","city":"Ootmarsum","country":"NL","lat":52.403509,"lon":6.898397,"address":"Stadsweide","postcode":"7636 PK","kind":"stop","svc":["parkeren","instap"]},{"id":"bp7405","name":"Bezoekerscentrum park Hoge Veluwe","city":"Otterlo","country":"NL","lat":52.099613,"lon":5.827643,"address":"Kronkelweg","postcode":"6731 AV","kind":"stop","svc":["parkeren","instap","restaurant"]},{"id":"bp3691","name":"Kröller-Müller Museum","city":"Otterlo","country":"NL","lat":52.094134,"lon":5.816013,"address":"Wildbaanweg","postcode":"6731 AW","kind":"park","svc":["parkeren","instap"]},{"id":"bp16232","name":"Oosterweg","city":"Ouddorp","country":"NL","lat":51.828258,"lon":3.932939,"address":"Oosterweg","postcode":"3253 BS","kind":"park","svc":["parkeren"]},{"id":"bp6122","name":"Pastoor Hellemonsstraat","city":"Oudenbosch","country":"NL","lat":51.589352,"lon":4.52845,"address":"Pastoor Hellemonsstraat","postcode":"4731 HX","kind":"park","svc":["parkeren","instap"]},{"id":"bp6123","name":"Arminiusplein","city":"Oudewater","country":"NL","lat":52.023624,"lon":4.868707,"address":"Arminiusplein","postcode":"3421 BB","kind":"park","svc":["parkeren","instap"]},{"id":"bp6124","name":"Pieterplein","city":"Pieterburen","country":"NL","lat":53.399258,"lon":6.45369,"address":"Pieterplein","postcode":"9968 AG","kind":"park","svc":["parkeren"]},{"id":"bp4512","name":"De Delftse Pauw","city":"Rijswijk","country":"NL","lat":52.023994,"lon":4.347544,"address":"Delftweg","postcode":"2289 BD","kind":"park","svc":["parkeren","instap"],"hours":"9.00 - 17.00"},{"id":"bp6125","name":"Designer Outlet Roermond","city":"Roermond","country":"NL","lat":51.200172,"lon":5.99177,"address":"Stadsweide","postcode":"6041 TA","kind":"park","svc":["parkeren","instap"]},{"id":"bp6126","name":"Wilhelminaplein","city":"Roermond","country":"NL","lat":51.196701,"lon":5.992924,"address":"Wilhelminaplein","postcode":"6041 CE","kind":"park","svc":["parkeren","instap"]},{"id":"bp3822","name":"Blaak","city":"Rotterdam","country":"NL","lat":51.91787,"lon":4.482213,"address":"Blaak","postcode":"3011 AB","kind":"park","svc":["parkeren","instap"]},{"id":"bp3819","name":"Euromast","city":"Rotterdam","country":"NL","lat":51.904755,"lon":4.466594,"address":"Parkhaven","postcode":"3016 GM","kind":"park","svc":["parkeren","instap"]},{"id":"bp16082","name":"Zalmstraat","city":"Rotterdam","country":"NL","lat":51.910331,"lon":4.482265,"address":"Zalmstraat","postcode":"3016 DR","kind":"park","svc":["parkeren"]},{"id":"bp3911","name":"Zalmstraat","city":"Rotterdam","country":"NL","lat":51.9109,"lon":4.481761,"address":"Zalmstraat","postcode":"3016 DR","kind":"park","svc":["parkeren"]},{"id":"bp5056","name":"Langestraat","city":"Schagen","country":"NL","lat":52.788769,"lon":4.800433,"address":"Langestraat","postcode":"1741 GJ","kind":"park","svc":["parkeren"]},{"id":"bp5032","name":"Menisweg","city":"Schagen","country":"NL","lat":52.785126,"lon":4.791279,"address":"Menisweg","postcode":"1742 NJ","kind":"park","svc":["parkeren","instap"]},{"id":"bp1458","name":"Schiphol Airport Arrivals","city":"Schiphol","country":"NL","lat":52.308983,"lon":4.76104,"address":"Schiphol Boulevard","postcode":"1118 CX","kind":"park","svc":["parkeren","instap"]},{"id":"bp3163","name":"Sint Annastraat","city":"Sluis","country":"NL","lat":51.309494,"lon":3.379171,"address":"Sint Annastraat","postcode":"4524 JB","kind":"park","svc":["parkeren"]},{"id":"bp6127","name":"Veemarktplein","city":"Sneek","country":"NL","lat":53.029366,"lon":5.655287,"address":"Veemarktplein","postcode":"8601 EV","kind":"park","svc":["parkeren","instap"]},{"id":"bp3164","name":"Binnenvaartweg","city":"Terneuzen","country":"NL","lat":51.339175,"lon":3.822156,"address":"Binnenvaartweg","postcode":"4531 AW","kind":"park","svc":["parkeren"]},{"id":"bp6128","name":"Scheldeboulevard","city":"Terneuzen","country":"NL","lat":51.340454,"lon":3.823502,"address":"Scheldeboulevard","postcode":"4531 EJ","kind":"park","svc":["parkeren","instap"]},{"id":"bp6129","name":"Meers","city":"Thorn","country":"NL","lat":51.161621,"lon":5.847269,"address":"Meers","postcode":"6017 BD","kind":"park","svc":["parkeren"]},{"id":"bp6332","name":"Kloosterstraat","city":"Tilburg","country":"NL","lat":51.553761,"lon":5.082097,"address":"Kloosterstraat","postcode":"5038 VP","kind":"park","svc":["parkeren","instap"]},{"id":"bp5507","name":"Stappegoorweg","city":"Tilburg","country":"NL","lat":51.54213,"lon":5.07576,"address":"Stappegoorweg","postcode":"5922 DA","kind":"park","svc":["parkeren"]},{"id":"bp7499","name":"Abstederbrug","city":"Utrecht","country":"NL","lat":52.084395,"lon":5.128755,"address":"Maliesingel","postcode":"3582 AB","kind":"stop","svc":["instap"]},{"id":"bp1408","name":"Janskerkhof","city":"Utrecht","country":"NL","lat":52.093079,"lon":5.121662,"address":"Janskerkhof","postcode":"3512 BN","kind":"stop","svc":["instap"]},{"id":"bp7097","name":"Maliesingel","city":"Utrecht","country":"NL","lat":52.088693,"lon":5.129576,"address":"Maliesingel","postcode":"3581 BH","kind":"stop","svc":["instap"]},{"id":"bp12289","name":"Oudenoord","city":"Utrecht","country":"NL","lat":52.097366,"lon":5.113013,"address":"Oudenoord","postcode":"3513 EM","kind":"stop","svc":["instap"]},{"id":"bp12300","name":"P+R Utrecht Science Park","city":"Utrecht","country":"NL","lat":52.090878,"lon":5.176407,"address":"Uppsalalaan","postcode":"3512 JE","kind":"park","svc":["parkeren","ov"]},{"id":"bp12297","name":"P+R Westraven","city":"Utrecht","country":"NL","lat":52.057249,"lon":5.105033,"address":"Griffioenlaan","postcode":"3526 LA","kind":"park","svc":["parkeren","ov"]},{"id":"bp7098","name":"Reactorweg","city":"Utrecht","country":"NL","lat":52.101067,"lon":5.067293,"address":"Reactorweg","postcode":"3542 AD","kind":"park","svc":["parkeren","instap"]},{"id":"bp12292","name":"Vredenburgknoop","city":"Utrecht","country":"NL","lat":52.092273,"lon":5.112021,"address":"Catharijnesingel","postcode":"3511 DH","kind":"stop","svc":["instap"]},{"id":"bp5294","name":"3landenpunt","city":"Vaals","country":"NL","lat":50.757343,"lon":6.01839,"address":"Viergrenzenweg","postcode":"6291 BM","kind":"park","svc":["parkeren"]},{"id":"bp5296","name":"Tentstraat","city":"Vaals","country":"NL","lat":50.769276,"lon":6.021579,"address":"Tentstraat","postcode":"6291 BH","kind":"stop","svc":["instap"],"note":"Max. 30 min."},{"id":"bp5295","name":"Ultrapost","city":"Vaals","country":"NL","lat":50.76181,"lon":6.017348,"address":"Viergrenzenweg","postcode":"6291 BX","kind":"park","svc":["parkeren","instap","wc"]},{"id":"bp6130","name":"Cauberg","city":"Valkenburg","country":"NL","lat":50.860142,"lon":5.822576,"address":"Cauberg","postcode":"6301 BT","kind":"park","svc":["parkeren","instap"]},{"id":"bp3830","name":"Kanaalweg Westzijde","city":"Veere","country":"NL","lat":51.545513,"lon":3.666749,"address":"Kanaalweg Westzijde","postcode":"4351 RE","kind":"park","svc":["parkeren"]},{"id":"bp6132","name":"Maaskade","city":"Venlo","country":"NL","lat":51.373764,"lon":6.168572,"address":"Maaskade","postcode":"5911 EZ","kind":"park","svc":["parkeren"]},{"id":"bp7160","name":"Baskensburgplein","city":"Vlissingen","country":"NL","lat":51.457382,"lon":3.580716,"address":"Baskensburgplein","postcode":"4383 NE","kind":"park","svc":["parkeren"]},{"id":"bp3853","name":"Cornelis Lampsinsstraat","city":"Vlissingen","country":"NL","lat":51.441636,"lon":3.595077,"address":"Cornelis Lampsinsstraat","postcode":"4381 NH","kind":"park","svc":["parkeren"]},{"id":"bp3854","name":"Zeilmarkt","city":"Vlissingen","country":"NL","lat":51.442129,"lon":3.577493,"address":"Zeilmarkt","postcode":"4383 NE","kind":"stop","svc":["instap"]},{"id":"bp1252","name":"Museum Volendam","city":"Volendam","country":"NL","lat":52.494881,"lon":5.070278,"address":"Julianaweg","postcode":"1131 DD","kind":"stop","svc":["instap"]},{"id":"bp1251","name":"Parallelweg","city":"Volendam","country":"NL","lat":52.498756,"lon":5.078721,"address":"Parallelweg","postcode":"1131 HC","kind":"park","svc":["parkeren","instap"]},{"id":"bp6138","name":"Deltapark","city":"Vrouwenpolder","country":"NL","lat":51.636402,"lon":3.710199,"address":"Faelweg","postcode":"4354 RB","kind":"park","svc":["parkeren","instap"]},{"id":"bp6139","name":"Vrouwenpolderseweg","city":"Vrouwenpolder","country":"NL","lat":51.585293,"lon":3.627363,"address":"Vrouwenpolderseweg","postcode":"4354 ND","kind":"park","svc":["parkeren","instap"]},{"id":"bp21994","name":"Taxandriaweg","city":"Waalwijk","country":"NL","lat":51.692131,"lon":5.064198,"address":"Taxandriaweg","postcode":"5141 PA","kind":"park","svc":["parkeren"]},{"id":"bp22000","name":"Meester D.U. Stikkerlaan","city":"Winschoten","country":"NL","lat":53.147695,"lon":7.041167,"address":"Meester D.U. Stikkerlaan","postcode":"9675 AA","kind":"park","svc":["parkeren"]},{"id":"bp5814","name":"Zaanse Schans","city":"Zaandam","country":"NL","lat":52.473286,"lon":4.821445,"address":"Schansend","postcode":"1509 AW","kind":"park","svc":["parkeren","instap","wc"]},{"id":"bp6140","name":"Boulevard Barnaart","city":"Zandvoort","country":"NL","lat":52.377853,"lon":4.528437,"address":"Boulevard Barnaart","postcode":"2041 HB","kind":"park","svc":["parkeren","instap"]},{"id":"bp6141","name":"Laan van Sint Hilaire","city":"Zierikzee","country":"NL","lat":51.646786,"lon":3.916101,"address":"Laan van Sint Hilaire","postcode":"4675 AS","kind":"park","svc":["parkeren","instap"]},{"id":"bp3855","name":"Westkapelseweg","city":"Zoutelande","country":"NL","lat":51.50388,"lon":3.477532,"address":"Westkapelseweg","postcode":"4374 BB","kind":"park","svc":["parkeren"]},{"id":"bp19703","name":"Nieuwendijk","city":"Zuid-Beijerland","country":"NL","lat":51.754551,"lon":4.31726,"address":"Nieuwendijk","postcode":"3284 KR","kind":"stop","svc":["parkeren","instap","wc"]},{"id":"bp10257","name":"IJsselkade","city":"Zutphen","country":"NL","lat":52.141718,"lon":6.190894,"address":"IJsselkade","postcode":"7201 HB","kind":"stop","svc":["parkeren","instap"]},{"id":"bp6142","name":"Eekwal","city":"Zwolle","country":"NL","lat":52.511209,"lon":6.088692,"address":"Eekwal","postcode":"8011 LD","kind":"stop","svc":["instap"]}];
 const HOTEL_NAMES = ["Hotel Duinzicht","Stayline Inn","Hotel De Poort","Citylodge","Hotel Rivierhof","Comfort Rooms","Hotel Kruispunt","Gasthof Am Ring","Hôtel du Parc","Pension Lindenhof","Hotel Westerkade","Motel Snelweg"];
 // 2-4 voorbeeldhotels rondom elke parking
@@ -951,8 +1032,10 @@ function buildSvg(){
 const BIG=["Amsterdam","Parijs","Berlijn","Praag","Wenen","Brussel","Keulen","Frankfurt","München","Hamburg"];
 const cityEls=CITIES.map(c=>{const e=el("div",{class:"city"},c[0]);ov.appendChild(e);return{e,xy:P(c[1],c[2]),big:BIG.includes(c[0])}});
 const countryEls=COUNTRIES.map(c=>{const e=el("div",{class:"country"},c[0]);ov.appendChild(e);return{e,xy:P(c[1],c[2])}});
-let hotelEls=[];
-let pinEls=[];function rebuildPins(){pinEls.forEach(o=>o.e.remove());pinEls=PARKINGS.map(p=>{const st=p.kind==="stop";const b=el("button",{class:"pin logo"+(st?" stop":""),"aria-label":(st?"Stopplaats ":"Busparking ")+p.name+", "+p.city,onclick:e=>{e.stopPropagation();select(p.id,true)}},el("img",{src:st?STOP_LOGO:PARK_LOGO,alt:"",draggable:"false"}));ov.appendChild(b);return{e:b,p,xy:P(p.lat,p.lon)}})}rebuildPins();
+let hotelEls=[];const DEST={e:null};
+function destEl(){if(!DEST.e)DEST.e=el("div",{class:"destpin",title:"Bestemming"},el("span",{},"📍"));return DEST.e}
+function placeDest(){if(!S.dest){if(DEST.e)DEST.e.remove();return}const e=destEl();if(e.parentNode!==ov)ov.appendChild(e);place(e,P(S.dest.lat,S.dest.lon))}
+let pinEls=[];function rebuildPins(){pinEls.forEach(o=>o.e.remove());pinEls=PARKINGS.map(p=>{const st=isStopP(p);const b=el("button",{class:"pin logo"+(st?" stop":""),"aria-label":(st?"Stopplaats ":"Busparking ")+p.name+", "+p.city,onclick:e=>{e.stopPropagation();select(p.id,true)}},el("img",{src:st?STOP_LOGO:PARK_LOGO,alt:"",draggable:"false"}));ov.appendChild(b);return{e:b,p,xy:P(p.lat,p.lon)}})}rebuildPins();
 const size=()=>[wrap.clientWidth,wrap.clientHeight];
 function toPx(xy){const[W,H]=size();return[(xy[0]-V.cx)*V.s+W/2,(xy[1]-V.cy)*V.s+H/2]}
 function place(e,xy){const[x,y]=toPx(xy);e.style.left=x+"px";e.style.top=y+"px"}
@@ -965,7 +1048,7 @@ function gmSync(){if(!GM.map)return;const c=GM.map.getCenter(),z=GM.map.getZoom(
 function gmRender(){if(!GM.ov||!GM.layer)return;wrap.classList.toggle("far",(GM.map.getZoom()||0)<9);const pr=GM.ov.getProjection();if(!pr)return;
   const pos=(e,lat,lng)=>{const p=pr.fromLatLngToDivPixel(new google.maps.LatLng(lat,lng));e.style.left=p.x+"px";e.style.top=p.y+"px";if(e.parentNode!==GM.layer){GM.layer.append(e);google.maps.OverlayView.preventMapHitsAndGesturesFrom(e)}};
   const vis=new Set(filtered().map(p=>p.id));
-  pinEls.forEach(o=>{pos(o.e,o.p.lat,o.p.lon);o.e.classList.toggle("closed",!!activeClosure(o.p));o.e.classList.toggle("sel",o.p.id===S.sel);o.e.classList.toggle("dim",!vis.has(o.p.id))});
+  pinEls.forEach(o=>{pos(o.e,o.p.lat,o.p.lon);o.e.classList.toggle("closed",!!activeClosure(o.p));o.e.classList.toggle("sel",o.p.id===S.sel);o.e.hidden=!vis.has(o.p.id)&&o.p.id!==S.sel});if(S.dest)pos(destEl(),S.dest.lat,S.dest.lon);else if(DEST.e)DEST.e.remove();
   hotelEls.forEach(h=>h.remove());hotelEls=[];
   if(S.hotels){const list=S.sel?availHotels(S.sel):(GM.map.getZoom()>=15?availHotels(null):[]);
     list.forEach(h=>{const b=el("button",{class:"hpin",title:h.name+" · "+h.rooms+" kamers vrij",onclick:e=>{e.stopPropagation();nav(()=>{S.hotel=h.id;renderSheet();draw()})}},icon("i-bed"),"€"+h.price);if(S.hotel===h.id)b.classList.add("sel");pos(b,h.lat,h.lon);hotelEls.push(b)})}}
@@ -1000,7 +1083,8 @@ function render(){
   cityEls.forEach(c=>{place(c.e,c.xy);c.e.hidden=V.s<1.1&&!c.big});
   countryEls.forEach(c=>{place(c.e,c.xy);c.e.hidden=V.s>6});
   const vis=new Set(filtered().map(p=>p.id));wrap.classList.toggle("far",V.s<9);
-  pinEls.forEach(o=>{place(o.e,o.xy);o.e.classList.toggle("closed",!!activeClosure(o.p));o.e.classList.toggle("sel",o.p.id===S.sel);o.e.classList.toggle("dim",!vis.has(o.p.id))});
+  pinEls.forEach(o=>{place(o.e,o.xy);o.e.classList.toggle("closed",!!activeClosure(o.p));o.e.classList.toggle("sel",o.p.id===S.sel);o.e.hidden=!vis.has(o.p.id)&&o.p.id!==S.sel});
+  placeDest();
   hotelEls.forEach(h=>h.remove());hotelEls=[];
   if(S.hotels){
     const list=S.sel?availHotels(S.sel):(V.s>90?availHotels(null):[]);
@@ -1038,26 +1122,57 @@ document.getElementById("zfit").onclick=()=>{S.sel=null;renderSheet();fitTo(PARK
 const tH=document.getElementById("tHotels");if(!HOTELS_ON){tH.hidden=true;tH.classList.remove("acc")}tH.onclick=()=>{S.hotels=!S.hotels;tH.setAttribute("aria-pressed",S.hotels);tH.classList.toggle("acc",S.hotels);draw()};
 new ResizeObserver(draw).observe(wrap);
 
+const kmBetween=(a,b,c,d)=>{const R=6371,r=Math.PI/180,x=Math.sin((c-a)*r/2)**2+Math.cos(a*r)*Math.cos(c*r)*Math.sin((d-b)*r/2)**2;return 2*R*Math.asin(Math.sqrt(x))};
+const fmtKm=k=>k<1?Math.round(k*1000/50)*50+" m":(k<10?k.toFixed(1).replace(".",","):Math.round(k))+" km";
+function placeIndex(){const m=new Map();PARKINGS.forEach(p=>{if(!p.city)return;const k=norm(p.city);const o=m.get(k)||{name:p.city,lat:0,lon:0,n:0};o.lat+=p.lat;o.lon+=p.lon;o.n++;m.set(k,o)});
+  const out=[...m.values()].map(o=>({name:o.name,lat:o.lat/o.n,lon:o.lon/o.n,n:o.n}));
+  CITIES.forEach(c=>{if(!m.has(norm(c[0])))out.push({name:c[0],lat:c[1],lon:c[2],n:0})});return out}
+const GEO={cache:{},t:0,q:"",items:[],busy:false};
+function geoSearch(q){clearTimeout(GEO.t);if(q.length<3){GEO.items=[];GEO.q=q;return}
+  if(GEO.cache[q]){GEO.items=GEO.cache[q];GEO.q=q;return}
+  GEO.t=setTimeout(async()=>{GEO.busy=true;try{const r=await fetch("https://nominatim.openstreetmap.org/search?format=jsonv2&limit=6&addressdetails=1&countrycodes=nl,be,de,fr,lu,at,cz&accept-language=nl&q="+encodeURIComponent(q));
+      const js=await r.json();const items=js.map(x=>{const a=x.address||{};const name=x.name||(x.display_name||"").split(",")[0];const place=a.city||a.town||a.village||a.municipality||"";
+        return{type:"g",label:name,sub:[x.type==="city"||x.type==="town"||x.addresstype==="city"?"Plaats":null,place&&place!==name?place:null,a.country].filter(Boolean).join(" · "),lat:+x.lat,lon:+x.lon,city:x.addresstype==="city"||x.addresstype==="town"||x.addresstype==="village"}});
+      GEO.cache[q]=items;if(norm(qi.value.trim())===q){GEO.items=items;GEO.q=q;showResults()}}catch(e){}finally{GEO.busy=false}},450)}
+function setDest(d){S.dest=d;S.sel=null;S.expanded=false;S.hideNearby=false;renderSheet();
+  const near=filtered().map(p=>({p,k:kmBetween(d.lat,d.lon,p.lat,p.lon)})).sort((a,b)=>a.k-b.k).slice(0,d.city?8:5).filter((x,i)=>i<3||x.k<25);
+  fitTo([d.lat,...near.map(x=>x.p.lat)],[d.lon,...near.map(x=>x.p.lon)],50);draw()}
+function clearDest(){S.dest=null;qi.value="";renderSheet();draw()}
+function renderDest(){const d=S.dest;const all=filtered().map(p=>({p,k:kmBetween(d.lat,d.lon,p.lat,p.lon)})).sort((a,b)=>a.k-b.k);
+  let list=all.filter(x=>x.k<=25).slice(0,20);const far=!list.length;if(far)list=all.slice(0,5);
+  const panel=el("div",{class:"panel destpanel"},el("div",{class:"grab"}));const sc=el("div",{class:"pscroll"});
+  sc.append(el("div",{class:"ptop"},el("div",{style:"min-width:0"},el("div",{class:"lbl2"},"Bestemming"),el("h2",{style:"margin:0;font-size:18px;font-weight:800"},"📍 "+d.name),d.sub?el("div",{class:"pm"},d.sub):null),
+    el("button",{class:"roundbtn","aria-label":"Bestemming wissen",onclick:clearDest},icon("i-x","i"))));
+  sc.append(el("div",{class:"sec",style:"margin:0"},far?"Geen busparking binnen 25 km. Dichtstbijzijnde:":list.length+" busparking"+(list.length===1?"":"s")+" in de buurt"));
+  const L=el("div",{class:"list"});list.forEach(({p,k})=>L.append(el("button",{class:"lrow",onclick:()=>select(p.id,true)},thumb(p,true),
+    el("div",{style:"min-width:0"},el("h3",{},p.name),el("div",{class:"loc"},p.city+" · "+subOf(p))),el("div",{class:"meta"},el("span",{class:"dist"},fmtKm(k)),el("span",{class:"pm"},"hemelsbreed")))));
+  sc.append(L);panel.append(sc);sheet.append(panel)}
 /* ---------- filters ---------- */
 const qi=document.getElementById("q"),res=document.getElementById("results");
 function norm(t){return t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")}
 function searchHits(){const q=norm(qi.value.trim());if(!q)return[];
   const rank=t=>{t=norm(t);return t.startsWith(q)?0:new RegExp("(^|[\\s\\-/(])"+q.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")).test(t)?1:2};
-  const ps=PARKINGS.filter(p=>norm(p.name+" "+p.city).includes(q)).map(p=>({type:"p",p,label:p.name,sub:p.city+" · "+kindOf(p),r:Math.min(rank(p.name),rank(p.city))})).sort((a,b)=>a.r-b.r||a.label.localeCompare(b.label));
-  const cs=CITIES.filter(c=>norm(c[0]).includes(q)&&!ps.some(h=>norm(h.sub)===norm(c[0]))).map(c=>({type:"c",c,label:c[0],sub:"Plaats"}));
-  return[...ps,...cs].slice(0,7)}
+  const places=placeIndex().filter(c=>norm(c.name).includes(q)).map(c=>({type:"c",label:c.name,sub:c.n?c.n+" busparking"+(c.n===1?"":"s"):"Plaats",lat:c.lat,lon:c.lon,city:true,r:rank(c.name)})).filter(c=>c.r<2).sort((a,b)=>a.r-b.r||(b.sub>a.sub?1:-1)).slice(0,3);
+  const ps=PARKINGS.filter(p=>norm(p.name+" "+p.city+" "+(p.address||"")).includes(q)).map(p=>({type:"p",p,label:p.name,sub:p.city+" · "+kindOf(p),r:rank(p.name)})).sort((a,b)=>a.r-b.r||a.label.localeCompare(b.label)).slice(0,6);
+  const geo=(GEO.q===q?GEO.items:[]).filter(g=>!places.some(c=>norm(c.label)===norm(g.label))).slice(0,4);
+  return[...places,...geo,...ps]}
 function goHit(h){res.hidden=true;qi.blur();
-  if(h.type==="p"){select(h.p.id,true)}else{S.sel=null;renderSheet();flyTo(P(h.c[1],h.c[2]),14);setTimeout(refreshNearby,500)}}
-function showResults(){const hits=searchHits();res.replaceChildren();
-  if(!qi.value.trim()){res.hidden=true;return}
-  if(!hits.length)res.append(el("div",{class:"empty",style:"padding:12px 14px"},"Geen busparking of plaats gevonden."));
-  hits.forEach(h=>res.append(el("button",{class:"hit",onpointerdown:e=>e.preventDefault(),onclick:()=>goHit(h)},h.type==="p"?el("span",{class:"cic img"},el("img",{src:h.p.kind==="stop"?STOP_LOGO:PARK_LOGO,alt:""})):el("span",{class:"cic"},icon("i-pin")),el("span",{class:"ct"},el("span",{class:"hl2"},markMatch(h.label,qi.value)),el("span",{},h.sub)))));
+  if(h.type==="p"){S.dest=null;select(h.p.id,true);return}
+  qi.value=h.label;setDest({name:h.label,sub:h.type==="c"?(h.sub||""):h.sub,lat:h.lat,lon:h.lon,city:!!h.city})}
+function showResults(){const raw=qi.value.trim();res.replaceChildren();if(!raw){res.hidden=true;return}
+  geoSearch(norm(raw));const hits=searchHits();
+  const grp=(title,arr)=>{if(!arr.length)return;res.append(el("div",{class:"hgroup"},title));arr.forEach(h=>res.append(el("button",{class:"hit",onpointerdown:e=>e.preventDefault(),onclick:()=>goHit(h)},
+    h.type==="p"?el("span",{class:"cic img"},el("img",{src:isStopP(h.p)?STOP_LOGO:PARK_LOGO,alt:""})):el("span",{class:"cic"+(h.type==="c"?" cplace":"")},icon(h.type==="c"?"i-map":"i-pin")),
+    el("span",{class:"ct"},el("span",{class:"hl2"},markMatch(h.label,raw)),el("span",{},h.sub||"")))))};
+  grp("Plaatsen",hits.filter(h=>h.type==="c"));grp("Adressen en bestemmingen",hits.filter(h=>h.type==="g"));grp("Busparkings",hits.filter(h=>h.type==="p"));
+  if(!hits.length)res.append(el("div",{class:"empty",style:"padding:12px 14px"},GEO.busy||raw.length>=3&&GEO.q!==norm(raw)?"Zoeken…":"Niets gevonden. Probeer een plaats, adres of bezienswaardigheid."));
+  res.append(el("div",{class:"hfoot"},"Tip: zoek op de bestemming van je groep, dan zie je de busparkings in de buurt."));
   res.hidden=false}
 qi.addEventListener("input",showResults);qi.addEventListener("focus",showResults);
 qi.addEventListener("blur",()=>setTimeout(()=>res.hidden=true,150));
 qi.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();const h=searchHits()[0];if(h)goHit(h)}if(e.key==="Escape"){qi.value="";res.hidden=true}});
 function filtered(){const q=S.q.trim().toLowerCase();return PARKINGS.filter(p=>(!q||(p.name+" "+p.city).toLowerCase().includes(q))&&[...S.filters].every(f=>p.svc.includes(f)))}
-function nearby(){const c=[V.cx,V.cy];return filtered().map(p=>{const xy=P(p.lat,p.lon);return{p,d:Math.hypot(xy[0]-c[0],xy[1]-c[1])}}).sort((a,b)=>a.d-b.d).map(o=>o.p)}
+function nearby(){const c=S.dest?P(S.dest.lat,S.dest.lon):[V.cx,V.cy];return filtered().map(p=>{const xy=P(p.lat,p.lon);return{p,d:Math.hypot(xy[0]-c[0],xy[1]-c[1])}}).sort((a,b)=>a.d-b.d).map(o=>o.p)}
 function buildChips(){
   const c=document.getElementById("chips");c.replaceChildren();
   c.append(el("button",{class:"chip addchip",onclick:()=>openSubmit("new")},"＋ Parking toevoegen"));
@@ -1067,7 +1182,7 @@ function buildChips(){
 /* ---------- sheet ---------- */
 const sheet=document.getElementById("sheet");
 const KIND={park:"Parkeerplaats",stop:"Stopplaats",paid:"Betaalde parkeerplaats"};
-const kindOf=p=>KIND[p.kind]||"Busparking";
+const kindOf=p=>{const sv=p.svc||[];if(sv.includes("parkeren"))return sv.includes("betaald")||p.kind==="paid"?"Betaalde parkeerplaats":"Parkeerplaats";if(sv.includes("instap"))return"Stopplaats";return KIND[p.kind]||"Parkeerplaats"};
 const subOf=p=>{const c=activeClosure(p);if(c)return c.type==="perm"?"⛔ Gesloten":"🚧 Tijdelijk gesloten";return p.spots?p.spots+" plekken":kindOf(p)};
 function thumb(p,small){const hv=availHotels(p.id);return el("div",{class:"thumb"},photo("ph",p),!small&&el("span",{class:"badge"},subOf(p)),null)}
 function priceEl(s){if(!s)return el("span",{class:"price unk"},"Onbekend");const[a,b]=priceParts(s);return el("span",{class:"price"},a,b?el("small",{},b):null)}
@@ -1082,6 +1197,7 @@ function _renderSheet(){
   sheet.replaceChildren();
   if(S.hotel){const h=availHotels(null).find(x=>x.id===S.hotel);if(h)return renderHotel(h);S.hotel=null}
   if(S.sel)return renderDetail(PARKINGS.find(p=>p.id===S.sel));
+  if(S.dest)return renderDest();
   const list=nearby();
   if(S.expanded||isDesk()){
     const panel=el("div",{class:"panel"},el("div",{class:"grab"}));
@@ -1138,19 +1254,19 @@ function renderDetail(p){
   const navUrl=`https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lon}&travelmode=driving`;
   const gal=photosOf(p);const him=photo("ph",p);if(gal.length)him.dataset.gal=JSON.stringify(gal);
   sc.append(el("div",{class:"dhero"+(gal.length?" zoomable":" nophero")},him,gal.length>1?el("span",{class:"phcount"},"📷 "+gal.length):null,
-    el("button",{class:"roundbtn back","aria-label":"Terug",onclick:()=>navBack(()=>{S.sel=null;renderSheet();draw()})},icon("i-back","i")),
+    el("button",{class:"roundbtn back","aria-label":"Sluiten",onclick:()=>closeDetail()},icon("i-x","i")),
     el("a",{class:"roundbtn nav","aria-label":"Navigeer",href:`https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lon}&travelmode=driving`,target:"_blank",rel:"noopener"},icon("i-nav","i"))));
   const country={NL:"Nederland",BE:"België",FR:"Frankrijk",DE:"Duitsland",CZ:"Tsjechië",AT:"Oostenrijk",LU:"Luxemburg"}[p.country];
-  sc.append(el("div",{class:"dtitle"},el("span",{},el("span",{class:"tag"},kindOf(p))),el("h2",{},p.name),el("div",{class:"addr"},el("span",{},icon("i-pin")," "+(p.address?p.address+", ":"")+(p.postcode?p.postcode+" ":"")+p.city+(country&&country!=="Nederland"?", "+country:"")),
+  sc.append(el("div",{class:"dtitle"},el("span",{},el("span",{class:"tag"},kindOf(p))),el("div",{class:"dname"},el("h2",{},p.name),(()=>{const r=ratingOf(p.id);return el("button",{class:"drate"+(r.n?"":" none"),type:"button",onclick:()=>{S.dtab="rev";renderSheet()}},"★ "+(r.n?fmtAvg(r.avg)+" ("+r.n+")":"Review"))})()),el("div",{class:"addr"},el("span",{},icon("i-pin")," "+(p.address?p.address+", ":"")+(p.postcode?p.postcode+" ":"")+p.city+(country&&country!=="Nederland"?", "+country:"")),
     el("a",{class:"gmaps",href:"https://www.google.com/maps/search/?api=1&query="+p.lat+","+p.lon,target:"_blank",rel:"noopener"},"Open in Google Maps ↗"))));
   sc.append(el("div",{class:"stats"},
-    (()=>{const r=ratingOf(p.id);return el("button",{class:"stat",style:"border:0;background:none;padding:0",onclick:()=>{S.dtab="rev";renderSheet()}},el("span",{class:"ic",style:"color:var(--yellow-ink);background:#FFF1CC"},"★"),r.n?fmtAvg(r.avg)+" ("+r.n+")":"Nog geen reviews")})(),
+    p.price?el("div",{class:"stat"},el("span",{class:"ic"},"€"),priceEl(p.price)):null,
     p.spots?el("div",{class:"stat"},el("span",{class:"ic"},icon("i-car")),p.spots+" plekken"):null,
     p.maxh?el("div",{class:"stat"},el("span",{class:"ic"},icon("i-clock")),p.maxh==="geen"?"Geen max. duur":"Max. "+p.maxh):null,
-    p.kind==="stop"?el("div",{class:"stat"},el("span",{class:"ic"},icon("i-bus")),"In- en uitstappen"):null,
+    isStopP(p)?el("div",{class:"stat"},el("span",{class:"ic"},icon("i-bus")),"Alleen in- en uitstappen"):null,
   ));
   {const cb=closureBanner(p);if(cb)sc.append(cb)}
-  if(S.closeForm===p.id)sc.append(closeForm(p));
+  if(S.closeForm===p.id)sc.append(closureForm(p));
   sc.append(el("div",{class:"r sugrow"},el("button",{class:"btn sm",onclick:()=>openSubmit("edit",p)},"✏️ Wijziging doorgeven"),activeClosure(p)?null:el("button",{class:"btn sm",onclick:()=>{if(!C.me){alertMsg("Log in om een sluiting te melden.");return}S.closeForm=S.closeForm===p.id?false:p.id;renderSheet()}},"🚧 Gesloten melden"),el("button",{class:"btn sm",onclick:()=>{openSubmit("edit",p);setTimeout(()=>{const b=document.querySelector(".phadd");b&&b.scrollIntoView({block:"center"})},50)}},"📷 Foto toevoegen")));
   const nq=C.posts.filter(x=>x.place&&x.place.id===p.id).length;
   const nr=ratingOf(p.id).n;const seg=el("div",{class:"seg",role:"tablist",style:"grid-template-columns:repeat(2,1fr)"});
@@ -1179,15 +1295,18 @@ function renderDetail(p){
   }
   {const ad=adBlock("parking");if(ad)sc.append(ad)}
   panel.append(sc);
-  panel.append(el("div",{class:"bookbar"+(p.price?"":" noprice")},p.price?el("div",{},el("div",{class:"lbl"},"Tarief"),priceEl(p.price)):null,el("a",{class:"btn primary wide",href:navUrl,target:"_blank",rel:"noopener"},icon("i-nav","i"),"Navigeer")));
+  /* grote navigeerknop weg: navigeren via het icoon rechtsboven of "Open in Google Maps" */
   sheet.append(panel);
 }
+function closeDetail(){const t=NAV.stack[NAV.stack.length-1];S.ptall=false;S.closeForm=false;
+  if(t&&t.tab==="mapView"&&!t.sel&&Date.now()-(NAV.lastPop||0)>700){history.back();return}
+  NAV.replace=true;nav(()=>{S.sel=null;S.hotel=null;renderSheet();draw()})}
 function select(id,fly){S.hotel=null;if(S.sel!==id){S.ptall=false;S.closeForm=false}S.sel=id;if(fly)S.dtab="svc";renderSheet();const p=PARKINGS.find(x=>x.id===id);if(fly)flyTo(P(p.lat,p.lon));else draw()}
 
 /* ---------- foto, reviews, profielen ---------- */
 
 const REVIEW_TAGS=["Veilig","Schoon","Ruim","Rustig 's nachts","Makkelijk in te rijden","Vaak vol","Duur","Krap"];
-const photo=(cls,p)=>{const ph=photosOf(p);if(ph[0])return el("img",{class:cls,src:ph[0],alt:p?"Foto van "+p.name:"Busparking",decoding:"async"});return el("span",{class:cls+" nophoto"+(p&&p.kind==="stop"?" stop":""),"aria-hidden":"true"},el("img",{src:p&&p.kind==="stop"?STOP_LOGO:PARK_LOGO,alt:""}))};
+const photo=(cls,p)=>{const ph=photosOf(p);if(ph[0])return el("img",{class:cls,src:ph[0],alt:p?"Foto van "+p.name:"Busparking",decoding:"async"});return el("span",{class:cls+" nophoto"+(p&&isStopP(p)?" stop":""),"aria-hidden":"true"},el("img",{src:p&&isStopP(p)?STOP_LOGO:PARK_LOGO,alt:""}))};
 const starStr=n=>"★★★★★".slice(0,Math.round(n))+"☆☆☆☆☆".slice(0,5-Math.round(n));
 const fmtAvg=a=>a.toFixed(1).replace(".",",");
 function ratingOf(pid){const rs=(C.reviews||[]).filter(r=>r.parking===pid).sort((a,b)=>b.createdAt-a.createdAt);return{n:rs.length,avg:rs.length?rs.reduce((a,r)=>a+(r.stars||0),0)/rs.length:0,rs}}
@@ -1248,6 +1367,7 @@ function renderUser(){
   if(isMod(C.me)&&id!==C.me&&!isMod(id))comm.append(isBanned(id)?el("button",{class:"btn sm",style:"align-self:flex-start",onclick:()=>banUser(id,false)},"✅ Deblokkeren"):confirmBtn("🚫 Blokkeren (Banned)",()=>banUser(id,true)));
   if(isMod(C.me)&&!isMod(id))comm.append(el("button",{class:"btn sm",style:"align-self:flex-start",onclick:()=>setPro(id,isPro(id)?null:{plan:"manual",until:0})},isPro(id)?"⭐ Pro intrekken":"⭐ Pro geven"));
   if(isMod(C.me)&&id!==C.me&&!isMod(id))comm.append(el("button",{class:"btn sm",style:"align-self:flex-start",onclick:()=>setEditor(id,!isEditor(id))},isEditor(id)?"✍️ Redacteursrol intrekken":"✍️ Maak redacteur (direct nieuws plaatsen)"));
+  {const fb=friendButtons(id);if(fb)comm.append(fb)}
   if(isMod(C.me)&&id!==C.me){if(C.modEditUser===id)comm.append(modUserForm(id,p));else comm.append(el("button",{class:"btn sm",style:"align-self:flex-start",onclick:()=>{C.modEditUser=id;renderComm()}},"🛡 Naam of gebruikersnaam aanpassen"))}
   const facts=[p.base&&["Standplaats",p.base],p.since&&["Rijdt sinds",p.since],p.joinedAt&&["Lid sinds",new Date(p.joinedAt).toLocaleDateString("nl-NL",{month:"long",year:"numeric"})]].filter(Boolean);
   if(facts.length)comm.append(el("div",{class:"card facts2"},facts.map(([k,v])=>el("div",{},el("span",{},k),el("b",{},v)))));
@@ -1342,7 +1462,7 @@ async function submitForm(){const d=F.data,isNew=F.mode==="new";F.err="";
   closeForm();thanks("Bedankt voor jouw bijdrage! Een moderator bekijkt het zo snel mogelijk.");if(!document.getElementById("accView").hidden)renderAcc()}
 
 /* ---------- moderatie: tabbladen ---------- */
-const MODTABS=[["acts","Actiepunten"],["users","Gebruikers"],["parks","Parkings"],["cos","Bedrijven"],["cats","Categorieën"],["pro","Pro"],["fac","Voorzieningen"],["ads","Advertenties"],["bans","Geblokkeerd"]];
+const MODTABS=[["acts","Actiepunten"],["users","Gebruikers"],["parks","Parkings"],["cos","Bedrijven"],["cats","Categorieën"],["pro","Pro"],["push","Push"],["fac","Voorzieningen"],["theme","Uiterlijk"],["ads","Advertenties"],["bans","Geblokkeerd"]];
 function renderModTabs(){const acts=actionItems().length;
   const row=el("div",{class:"chips modchips"});MODTABS.forEach(([k,t])=>{const n=k==="acts"?acts:0;
     row.append(el("button",{class:"chip","aria-pressed":C.modTab===k,onclick:()=>{C.modTab=k;renderMod()}},t,n?el("span",{class:"cnum"},String(n)):null))});return row}
@@ -1473,7 +1593,7 @@ function updateModTab(){const t=document.querySelector('nav.tabs [data-tab="modV
   if(!document.getElementById("modView").hidden)renderMod(true)}
 const FIELD_NL={address:"Adres",name:"Naam",price:"Tarief",spots:"Plekken",maxh:"Max. duur",svc:"Voorzieningen"};
 function renderMod(fromSnap){
-  if(fromSnap===true&&(C.coEdit||C.catEdit||C.muEdit||C.adEdit||C.facEdit)&&modIn.querySelector("form"))return;if(fromSnap===true&&document.activeElement&&modIn.contains(document.activeElement)&&/INPUT|TEXTAREA/.test(document.activeElement.tagName))return;
+  if(fromSnap===true&&C.modTab==="theme")return;if(fromSnap===true&&(C.coEdit||C.catEdit||C.muEdit||C.adEdit||C.facEdit)&&modIn.querySelector("form"))return;if(fromSnap===true&&document.activeElement&&modIn.contains(document.activeElement)&&/INPUT|TEXTAREA/.test(document.activeElement.tagName))return;
   modIn.replaceChildren();if(!isMod(C.me))return;
   const subs=pendingSubs();if(!C.modTab||C.modTab==="subs"||C.modTab==="reps")C.modTab="acts";
   modIn.append(el("h1",{},"Moderatie"),renderModTabs());
@@ -1486,6 +1606,8 @@ function renderMod(fromSnap){
   if(C.modTab==="bans")return renderModBans();
   if(C.modTab==="ads")return renderModAds();
   if(C.modTab==="fac")return renderModFac();
+  if(C.modTab==="theme"){renderModTheme();modIn.append(appIconCard());return}
+  if(C.modTab==="push")return renderModPush();
   if(C.modTab==="users")return renderModUsers();
   if(!subs.length)modIn.append(el("div",{class:"card empty"},"Geen inzendingen om te controleren."));
   subs.forEach(s=>modIn.append(subCard(s)));
@@ -1551,8 +1673,14 @@ function showTab(id){const was=curTab();
   if(SEC_OF[was]&&was!==id&&!NAV.restoring){C.secMem=C.secMem||{};C.secMem[SEC_OF[was]]={screen:C.screen,open:C.open,cat:C.cat,viewUser:C.viewUser,viewCompany:C.viewCompany,newsOpen:C.newsOpen,ffilter:C.ffilter}}
   if(SEC_OF[id]&&was!==id&&!NAV.restoring){const m=(C.secMem||{})[SEC_OF[id]]||{};Object.assign(C,{screen:"home",open:null,cat:null,viewUser:null,viewCompany:null,newsOpen:null},m,{section:SEC_OF[id]});if(C.screen==="thread"&&C.open){setTimeout(()=>{NAV.restoring=true;try{openThread(C.open)}finally{NAV.restoring=false}},0)}}
   const view=SEC_OF[id]?"commView":id;
-  tabs.forEach(t=>t.setAttribute("aria-selected",t.dataset.tab===id));["mapView","commView","accView","modView"].forEach(v=>document.getElementById(v).hidden=v!==view);if(was!==id){const pi=document.querySelector("#"+view+" .page-in");if(pi&&view!=="commView")animateIn(pi)}if(id==="modView")renderMod();if(id==="mapView")draw();if(id==="accView"){C.err="";renderAcc()}if(view==="commView")renderComm();try{localStorage.setItem("cp-tab",id)}catch(e){}}
-tabs.forEach(t=>t.onclick=()=>showTab(t.dataset.tab));
+  tabs.forEach(t=>t.setAttribute("aria-selected",t.dataset.tab===id));setTimeout(placeHinput,0);["mapView","commView","accView","modView"].forEach(v=>document.getElementById(v).hidden=v!==view);if(was!==id){const pi=document.querySelector("#"+view+" .page-in");if(pi&&view!=="commView")animateIn(pi)}if(id==="modView")renderMod();if(id==="mapView")draw();if(id==="accView"){C.err="";renderAcc()}if(view==="commView")renderComm();try{localStorage.setItem("cp-tab",id)}catch(e){}}
+function tabHome(id){if(SEC_OF[id]&&C.secMem)delete C.secMem[SEC_OF[id]];
+  nav(()=>{showTabRaw(id);
+    if(SEC_OF[id]){if(C.screen!=="home"||C.open||C.viewUser||C.cat||C.newsOpen){Object.assign(C,{open:null,cat:null,viewUser:null,viewCompany:null,newsOpen:null,edit:null,replyTo:null,section:SEC_OF[id]});go("home")}}
+    if(id==="mapView"&&(S.sel||S.dest||S.expanded||S.hotel)){S.sel=null;S.dest=null;S.expanded=false;S.hotel=null;S.closeForm=false;S.ptall=false;try{qi.value=""}catch(e){}renderSheet();draw()}
+    if(id==="modView"&&(C.adEdit||C.coEdit||C.facEdit||C.catEdit||C.muEdit)){C.adEdit=C.coEdit=C.facEdit=C.catEdit=C.muEdit=null;renderMod()}});
+  const v=document.getElementById(SEC_OF[id]?"commView":id);if(v)v.scrollTop=0}
+tabs.forEach(t=>t.onclick=()=>tabHome(t.dataset.tab));
 
 /* ---------- forum + account ---------- */
 const DEFAULT_CATS=[
@@ -1654,7 +1782,26 @@ function saleActive(){const s=proSettings().sale;if(!s.active)return false;if(s.
 const euro=n=>"€"+Number(n||0).toFixed(2).replace(".",",");
 function isPro(id){if(isMod(id))return true;const p=(C.pro||{})[id];return!!(p&&(!p.until||p.until>Date.now()))}
 function proStar(id){if(isMod(id))return null;return isPro(id)?el("span",{class:"prostar",title:"Pro"},"⭐"):null}
-function openPro(){C.showPro=true;showTab("accView");setTimeout(()=>{const n=document.getElementById("procard");n&&n.scrollIntoView({behavior:"smooth",block:"start"})},80)}
+/* ---------- aparte Pro-pagina ---------- */
+function proTeaser(where){if(isPro(C.me)&&!isMod(C.me))return null;if(isMod(C.me)&&where!=="account")return null;
+  const s=proSettings(),sale=saleActive();const from=euro(sale?s.sale.monthly:s.monthly);
+  return el("button",{class:"proteaser",type:"button",onclick:()=>openPro()},el("span",{class:"pt-star"},"⭐"),el("span",{class:"pt-txt"},el("b",{},isMod(C.me)?"Coachpilot Pro":"Word Pro"),el("span",{},isMod(C.me)?"Bekijk de Pro-pagina":"Geen advertenties en een ⭐ bij je naam · vanaf "+from+"/maand")),el("span",{class:"pt-go"},"›"))}
+function openPro(){nav(()=>{C.proOpen=true;renderProPage()})}
+function closePro(){const t=NAV.stack[NAV.stack.length-1];if(t&&!t.pro&&Date.now()-(NAV.lastPop||0)>700){history.back();return}C.proOpen=false;renderProPage()}
+function renderProPage(){let v=document.getElementById("proView");if(!v){v=el("section",{class:"proview",id:"proView"});document.body.append(v)}
+  v.hidden=!C.proOpen;if(!C.proOpen){v.replaceChildren();return}
+  const s=proSettings(),sale=saleActive();
+  const inner=el("div",{class:"pp-in"});
+  inner.append(el("div",{class:"pp-top"},el("button",{class:"roundbtn","aria-label":"Sluiten",onclick:closePro},icon("i-x","i"))));
+  inner.append(el("div",{class:"pp-hero"},el("div",{class:"pp-badge"},"⭐"),el("h1",{},"Coachpilot Pro"),el("p",{},"Voor chauffeurs die de app elke rit gebruiken. Zonder advertenties, met een ⭐ bij je naam, en je helpt de app groeien.")));
+  const benefits=[["🚫","Geen advertenties","Nergens in de app: niet op de kaart, niet in de community en niet bij het nieuws."],["⭐","Pro-ster bij je naam","Collega's zien in de community en de Hangout dat je Pro bent."],["🛠","Steun de ontwikkeling","Je bijdrage gaat naar nieuwe parkeerplekken, functies en onderhoud."],["❤️","Gewoon opzegbaar","Maandelijks opzegbaar, zonder kleine lettertjes."]];
+  inner.append(el("div",{class:"pp-ben"},...benefits.map(([e,t,d])=>el("div",{class:"pp-b"},el("span",{class:"pp-e"},e),el("div",{},el("b",{},t),el("span",{},d))))));
+  const card=proCard();card.classList.add("pp-card");card.querySelector(".prohead")?.remove();card.querySelector(".proul")?.remove();
+  inner.append(el("h2",{class:"pp-h2"},isPro(C.me)?"Jouw abonnement":"Kies je abonnement"),card);
+  const faq=[["Kan ik altijd opzeggen?","Ja. Een maandabonnement zeg je per maand op, een jaarabonnement loopt tot het einde van het jaar."],["Wat zie ik nog wel?","Alles. Pro haalt alleen de advertenties weg en geeft je een ⭐. Alle functies blijven voor iedereen gratis."],["Hoe betaal ik?","Online betalen wordt binnenkort gekoppeld. Tot die tijd kan een admin Pro voor je aanzetten."]];
+  inner.append(el("h2",{class:"pp-h2"},"Veelgestelde vragen"),el("div",{class:"pp-faq"},...faq.map(([q,a])=>el("details",{},el("summary",{},q),el("p",{},a)))));
+  v.replaceChildren(inner);v.scrollTop=0}
+
 function proCard(){const s=proSettings(),sale=saleActive(),me=(C.pro||{})[C.me];const card=el("div",{class:"card procard",id:"procard"});
   card.append(el("div",{class:"prohead"},el("span",{class:"proicon"},"⭐"),el("div",{},el("h2",{},"Coachpilot Pro"),el("span",{class:"pm"},"Steun de app en gebruik hem zonder advertenties"))));
   if(isMod(C.me)){card.append(el("div",{class:"proactive"},"👑 Als admin heb je automatisch alle Pro-voordelen."));return card}
@@ -1672,7 +1819,7 @@ async function buyPro(plan){
   const until=Date.now()+(plan==="yearly"?365:31)*86400000;await setPro(C.me,{plan,until});thanks("Welkom bij Pro! (proefversie: er is niet echt betaald)","⭐")}
 async function setPro(id,v){C.pro={...(C.pro||{})};if(v)C.pro[id]={...v,by:C.me,at:Date.now()};else delete C.pro[id];
   if(C.db){try{v?await C.db.collection("pro").doc(id).set(C.pro[id]):await C.db.doc("pro/"+id).delete()}catch(e){alertMsg("Opslaan lukte niet.")}}
-  renderComm();renderAcc();renderSheet();if(!document.getElementById("modView").hidden)renderMod()}
+  renderComm();renderAcc();renderSheet();if(C.proOpen)renderProPage();if(!document.getElementById("modView").hidden)renderMod()}
 /* ---------- gesloten melden (tijdelijk / permanent) ---------- */
 const CLOSE_REASONS=["Onderhoud","Werkzaamheden","Evenement","Afgesloten door gemeente","Vol / niet bereikbaar","Anders"];
 function activeClosure(p){const c=(C.closures||{})[p.id];
@@ -1699,7 +1846,7 @@ function closureBanner(p){const c=activeClosure(p);if(!c)return null;const perm=
 async function approveClosure(pid){const c=(C.closures||{})[pid];if(!c)return;
   await saveParkingDoc(pid,{closed:true,closedReason:[c.reason,c.note].filter(Boolean).join(" – "),closedAt:c.at||Date.now(),closedBy:c.by||""});
   await saveClosure(pid,{...c,id:undefined,approved:true});thanks("Permanent gesloten bevestigd","⛔");renderSheet();draw();updateModTab();if(!document.getElementById("modView").hidden)renderMod()}
-function closeForm(p){const d={type:"temp",reason:"",until:"",note:""};const f=el("form",{class:"closeform"});const msg=el("div",{class:"status"});
+function closureForm(p){const d={type:"temp",reason:"",until:"",note:""};const f=el("form",{class:"closeform"});const msg=el("div",{class:"status"});
   const types=el("div",{class:"seg",style:"grid-template-columns:1fr 1fr"});const reasons=el("div",{class:"chips wrap"});const untilWrap=el("label",{class:"fl",for:"clUntil"});
   const draw2=()=>{types.replaceChildren(...[["temp","🚧 Tijdelijk"],["perm","⛔ Permanent"]].map(([k,t])=>el("button",{type:"button","aria-selected":d.type===k,onclick:()=>{d.type=k;draw2()}},t)));
     reasons.replaceChildren(...CLOSE_REASONS.filter(r=>d.type==="temp"||!["Evenement","Vol / niet bereikbaar"].includes(r)).map(r=>el("button",{type:"button",class:"chip","aria-pressed":d.reason===r,onclick:()=>{d.reason=r;draw2()}},r)));untilWrap.hidden=d.type!=="temp"};
@@ -1751,15 +1898,121 @@ function renderModFac(){const docs=C.facDocs||{};
       el("div",{class:"r",style:"gap:6px"},el("button",{class:"like",onclick:()=>{C.facEdit=k;renderMod()}},"✏️"),
         el("button",{class:"like",onclick:()=>saveFac(k,{hidden:on})},on?"Verbergen":"Tonen"))))});
   modIn.append(box)}
+/* ---------- huisstijlkleur (admin) ---------- */
+const THEME_DEFAULT="#3D5AFE";const THEME_SWATCHES=["#3D5AFE","#2563EB","#0284C7","#0D9488","#16A34A","#7C3AED","#C026D3","#E11D48","#EA580C","#1F2937"];
+function hexOk(h){return/^#[0-9a-f]{6}$/i.test(h||"")}
+function mixHex(h,w,t){const a=[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)),b=[1,3,5].map(i=>parseInt(w.slice(i,i+2),16));return"#"+a.map((v,i)=>Math.round(v+(b[i]-v)*t).toString(16).padStart(2,"0")).join("")}
+function inkFor(h){const [r,g,b]=[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)/255).map(c=>c<=.03928?c/12.92:((c+.055)/1.055)**2.4);const L=.2126*r+.7152*g+.0722*b;return L>.45?"#14161F":"#FFFFFF"}
+function applyTheme(h){h=hexOk(h)?h:THEME_DEFAULT;const r=document.documentElement.style;
+  if(h.toUpperCase()===THEME_DEFAULT){["--accent","--accent-soft","--accent-ink"].forEach(k=>r.removeProperty(k))}
+  else{r.setProperty("--accent",h);r.setProperty("--accent-soft",mixHex(h,"#FFFFFF",.88));r.setProperty("--accent-ink",inkFor(h))}
+  const m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content",h);try{localStorage.setItem("cp-theme",h)}catch(e){}}
+try{const t=localStorage.getItem("cp-theme");if(hexOk(t))applyTheme(t)}catch(e){}
+async function saveTheme(h){C.theme={accent:h};applyTheme(h);if(C.db){try{await C.db.collection("settings").doc("theme").set({accent:h,by:C.me,at:Date.now()})}catch(e){alertMsg("Opslaan lukte niet.");return false}}return true}
+function renderModTheme(){const saved=(C.theme&&C.theme.accent)||THEME_DEFAULT;let cur=C.themeDraft||saved;
+  modIn.append(el("div",{class:"sec",style:"margin:0"},"Huisstijlkleur"),el("p",{class:"note",style:"margin:-6px 0 0"},"Dit is de hoofdkleur van de hele app: knoppen, links, het menu en accenten. De kleuren van de parkeer-icoontjes (blauw) en stopplaatsen (oranje) op de kaart blijven altijd hetzelfde."));
+  const card=el("div",{class:"card compose"});const hex=el("input",{id:"thHex",value:cur,maxlength:"7",autocomplete:"off",spellcheck:"false",style:"font-family:ui-monospace,monospace;text-transform:uppercase"});
+  const pick=el("input",{id:"thPick",type:"color",value:cur,"aria-label":"Kies een kleur"});const msg=el("div",{class:"status"});
+  const sw=el("div",{class:"swatches"});
+  const set=(h,from)=>{if(!hexOk(h))return;cur=h;C.themeDraft=h;applyTheme(h);if(from!=="hex")hex.value=h.toUpperCase();if(from!=="pick")pick.value=h;
+    sw.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.c.toUpperCase()===h.toUpperCase()));prev.style.setProperty("--pv",h)};
+  THEME_SWATCHES.forEach(c=>{const b=el("button",{type:"button",class:"swatch","aria-label":c,"data-c":c,style:"background:"+c,onclick:()=>set(c)});sw.append(b)});
+  hex.addEventListener("input",()=>{let v=hex.value.trim();if(v&&v[0]!=="#")v="#"+v;if(hexOk(v)){msg.textContent="";set(v,"hex")}else msg.textContent=v.length>=7?"Gebruik een kleurcode zoals #3D5AFE.":""});
+  pick.addEventListener("input",()=>set(pick.value,"pick"));
+  const prev=el("div",{class:"thprev"},el("span",{class:"tag"},"Voorbeeld"),el("button",{type:"button",class:"btn primary sm"},"Knop"),el("span",{class:"pvlink"},"Link"),el("span",{class:"pvtab"},"Menu"));
+  card.append(el("div",{class:"fl"},"Kies een kleur",sw),el("div",{class:"r2"},el("label",{class:"fl",for:"thHex"},"Kleurcode",hex),el("label",{class:"fl",for:"thPick"},"Of kies zelf",pick)),prev,msg,
+    el("div",{class:"r",style:"gap:8px;flex-wrap:wrap"},el("button",{class:"btn primary",type:"button",onclick:async()=>{if(!hexOk(cur)){msg.textContent="Gebruik een kleurcode zoals #3D5AFE.";return}if(await saveTheme(cur.toUpperCase())){C.themeDraft=null;thanks("Kleur opgeslagen voor iedereen","🎨");renderMod()}}},"Opslaan voor iedereen"),
+      el("button",{class:"btn",type:"button",onclick:()=>{C.themeDraft=null;applyTheme(saved);renderMod()}},"Annuleren"),
+      el("button",{class:"btn",type:"button",onclick:()=>set(THEME_DEFAULT)},"Standaardkleur")));
+  modIn.append(card);set(cur);
+  if(cur!==saved)modIn.append(el("p",{class:"note"},"Je ziet nu een voorbeeld. Andere gebruikers zien de nieuwe kleur pas als je op Opslaan tikt."))}
+/* ---------- pushmeldingen ---------- */
+const PUSH={reg:null,sub:null,state:"?",busy:false};
+const PUSH_PREFS=[["mention","Als iemand mij noemt (@)"],["reply","Reacties op mijn onderwerpen en berichten"],["dm","Privéberichten (binnenkort)"],["admin","Nieuws en meldingen van Coachpilot"]];
+const isIOS=()=>/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+const isStandalone=()=>matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+const pushSupported=()=>LIVE&&"serviceWorker" in navigator&&"PushManager" in window&&"Notification" in window;
+const subKey=s=>"s"+hash(s.endpoint).toString(36)+s.endpoint.length.toString(36);
+function b64ToU8(b){const p="=".repeat((4-b.length%4)%4);const r=atob((b+p).replace(/-/g,"+").replace(/_/g,"/"));return Uint8Array.from([...r].map(c=>c.charCodeAt(0)))}
+async function pushInit(){if(!pushSupported())return;try{PUSH.reg=await navigator.serviceWorker.register("/sw.js");PUSH.sub=await PUSH.reg.pushManager.getSubscription();PUSH.state=PUSH.sub?"on":(Notification.permission==="denied"?"denied":"off");
+  if(PUSH.sub&&C.me&&C.db)await savePushSub(PUSH.sub,null,true)}catch(e){PUSH.state="error"}
+  navigator.serviceWorker.addEventListener("message",e=>{if(e.data&&e.data.type==="open"){try{openDeepLink(new URL(e.data.url).searchParams.get("open"))}catch(err){}}});
+  if(!document.getElementById("accView").hidden)renderAcc()}
+async function savePushSub(sub,prefs,keep){const id=subKey(sub);const cur=(C.pushDoc&&C.pushDoc.id===id)?C.pushDoc:null;
+  const d={user:C.me,sub:sub.toJSON(),prefs:prefs||(cur&&cur.prefs)||{mention:true,reply:true,dm:true,admin:true},ua:navigator.userAgent.slice(0,120),at:Date.now()};
+  if(keep&&cur&&cur.user===C.me)return;try{await C.db.collection("pushsubs").doc(id).set(d);C.pushDoc={id,...d}}catch(e){}}
+async function enablePush(){if(PUSH.busy)return;PUSH.busy=true;renderAcc();
+  try{const perm=await Notification.requestPermission();if(perm!=="granted"){PUSH.state=perm==="denied"?"denied":"off";return}
+    PUSH.reg=PUSH.reg||await navigator.serviceWorker.register("/sw.js");await navigator.serviceWorker.ready;
+    const r=await fetch("/api/push");const js=await r.json();if(!js.publicKey)throw new Error(js.error||"Geen sleutel ontvangen");
+    PUSH.sub=await PUSH.reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64ToU8(js.publicKey)});
+    await savePushSub(PUSH.sub);PUSH.state="on";thanks("Pushmeldingen staan aan","🔔")}
+  catch(e){PUSH.state="error";alertMsg("Meldingen aanzetten lukte niet: "+(e.message||e))}finally{PUSH.busy=false;renderAcc()}}
+async function disablePush(){try{if(PUSH.sub){const id=subKey(PUSH.sub);await PUSH.sub.unsubscribe();try{await C.db.doc("pushsubs/"+id).delete()}catch(e){}}}catch(e){}PUSH.sub=null;C.pushDoc=null;PUSH.state="off";renderAcc()}
+async function setPushPref(k,v){if(!PUSH.sub)return;const prefs={...((C.pushDoc&&C.pushDoc.prefs)||{mention:true,reply:true,dm:true,admin:true}),[k]:v};await savePushSub(PUSH.sub,prefs);renderAcc()}
+async function authToken(){try{const{data}=await sbc.auth.getSession();return data.session&&data.session.access_token}catch(e){return null}}
+async function sendPush(payload){if(!LIVE)return null;const t=await authToken();if(!t)return null;
+  try{const r=await fetch("/api/push",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+t},body:JSON.stringify(payload)});return await r.json()}catch(e){return{error:e.message}}}
+function pushCard(){const card=el("div",{class:"card pushcard"},el("div",{class:"prohead"},el("span",{class:"proicon",style:"background:var(--accent-soft)"},"🔔"),el("div",{},el("h2",{},"Pushmeldingen"),el("span",{class:"pm"},"Krijg een seintje op je telefoon, ook als de app dicht is."))));
+  if(!LIVE){card.append(el("p",{class:"note",style:"margin:0"},"Pushmeldingen werken op de live site, niet in deze voorbeeldweergave."));return card}
+  if(isIOS()&&!isStandalone()){card.append(el("div",{class:"iosguide"},el("b",{},"Op een iPhone eerst de app op je beginscherm zetten:"),el("ol",{},el("li",{},"Tik onderin Safari op het deel-icoon (vierkantje met pijl)."),el("li",{},"Kies ‘Zet op beginscherm’ en tik op ‘Voeg toe’."),el("li",{},"Open Coachpilot vanaf je beginscherm en zet hier de meldingen aan."))));return card}
+  if(!pushSupported()){card.append(el("p",{class:"note",style:"margin:0"},"Je browser ondersteunt geen pushmeldingen."));return card}
+  if(PUSH.state==="denied"){card.append(el("p",{class:"note",style:"margin:0"},"Je hebt meldingen voor deze site geblokkeerd. Zet ze aan in de instellingen van je telefoon of browser."));return card}
+  if(PUSH.state!=="on"){card.append(el("button",{class:"btn primary",type:"button",disabled:PUSH.busy,onclick:enablePush},PUSH.busy?"Bezig…":"🔔 Meldingen aanzetten"));return card}
+  const prefs=(C.pushDoc&&C.pushDoc.prefs)||{mention:true,reply:true,dm:true,admin:true};
+  PUSH_PREFS.forEach(([k,t])=>{const c=el("input",{type:"checkbox",id:"pp-"+k});c.checked=prefs[k]!==false;c.addEventListener("change",()=>setPushPref(k,c.checked));card.append(el("label",{class:"toggle-row",for:"pp-"+k},c,el("span",{},t)))});
+  card.append(el("button",{class:"like",type:"button",onclick:disablePush},"Meldingen op dit apparaat uitzetten"));return card}
+function openDeepLink(v){if(!v)return;const[k,id]=String(v).split(":");
+  if(k==="post"){const p=(C.posts||[]).find(x=>x.id===id);showTab("commView");if(p)openThread(p);else{C.pendingOpen=v}}
+  else if(k==="news"){const n=(C.news||[]).find(x=>x.id===id);showTab("newsTab");if(n)go("newsitem",{newsOpen:n,section:"news"});else C.pendingOpen=v}
+  else if(k==="chat"){const u=otherOf(id);if(u)openChat(u)}
+  else if(k==="friends"){nav(()=>{showTabRaw("hangTab");C.section="hangout";go("friends")})}
+  else if(k==="tab"&&["mapView","commView","newsTab","hangTab","accView"].includes(id)){tabHome(id)}}
+function checkDeepLink(){try{const u=new URL(location.href);const v=u.searchParams.get("open");if(v){C.pendingOpen=v;u.searchParams.delete("open");history.replaceState(history.state,"",u.pathname+u.search+u.hash);
+  let n=0;const t=setInterval(()=>{if(C.me)tryPendingOpen();if(!C.pendingOpen||++n>60)clearInterval(t)},500)}}catch(e){}}
+function tryPendingOpen(){if(!C.pendingOpen)return;const v=C.pendingOpen;const[k,id]=v.split(":");
+  if((k==="post"&&(C.posts||[]).some(x=>x.id===id))||(k==="news"&&(C.news||[]).some(x=>x.id===id))||k==="chat"||k==="tab"||k==="friends"){C.pendingOpen=null;openDeepLink(v)}}
+/* app-icoon (beheer) */
+function applyAppIcon(d){if(!d||!d.i180&&!d.i512)return;const set=(rel,href,sizes)=>{let l=document.querySelector('link[rel="'+rel+'"]'+(sizes?'[sizes="'+sizes+'"]':""));if(!l){l=document.createElement("link");l.rel=rel;if(sizes)l.setAttribute("sizes",sizes);document.head.append(l)}l.href=href};
+  set("apple-touch-icon",blob(d.i180||d.i512));set("icon",blob(d.i192||d.i512),"192x192")}
+function squareIcon(file,size){return new Promise((res,rej)=>{const img=new Image();const url=URL.createObjectURL(file);img.onload=()=>{const c=document.createElement("canvas");c.width=c.height=size;const x=c.getContext("2d");const m=Math.min(img.width,img.height);
+  x.drawImage(img,(img.width-m)/2,(img.height-m)/2,m,m,0,0,size,size);URL.revokeObjectURL(url);c.toBlob(b=>res({blob:b,data:c.toDataURL("image/png")}),"image/png")};img.onerror=()=>{URL.revokeObjectURL(url);rej(new Error("Geen afbeelding"))};img.src=url})}
+function pickAppIcon(cb){const inp=el("input",{type:"file",accept:"image/*",style:"position:fixed;left:-100px;top:0;width:1px;height:1px;opacity:0"});document.body.append(inp);
+  inp.addEventListener("change",async()=>{const f=inp.files&&inp.files[0];inp.remove();if(!f)return;try{const out={};for(const s of [512,192,180]){const r=await squareIcon(f,s);const v=await storeImage(r.blob,r.data);if(!v)return;out["i"+s]=v}cb(out)}catch(e){alertMsg("Dit bestand kan niet als icoon gebruikt worden.")}});inp.click()}
+async function saveAppIcon(d){C.appIcon=d;applyAppIcon(d);if(C.db){try{await C.db.collection("settings").doc("appicon").set({...d,by:C.me,at:Date.now()})}catch(e){alertMsg("Opslaan lukte niet.");return false}}return true}
+function appIconCard(){const d=C.appIcon||{};const card=el("div",{class:"card compose"});
+  card.append(el("b",{},"App-icoon"),el("p",{class:"note",style:"margin:0"},"Dit icoon zie je op het beginscherm van de telefoon en bij pushmeldingen. Gebruik een vierkant plaatje van minstens 512 × 512 pixels, zonder tekst aan de randen."));
+  const prev=el("div",{class:"iconprev"},el("img",{src:d.i512?blob(d.i512):"icon-512.png",alt:"App-icoon",onerror:e=>{e.currentTarget.style.visibility="hidden"}}),el("div",{class:"pm"},d.i512?"Eigen icoon":"Standaardicoon"));
+  card.append(prev,el("div",{class:"r",style:"gap:8px;flex-wrap:wrap"},el("button",{class:"btn primary sm",type:"button",onclick:()=>pickAppIcon(async out=>{if(await saveAppIcon(out)){thanks("App-icoon opgeslagen","📱");renderMod()}})},"📷 Nieuw icoon kiezen"),
+    d.i512?el("button",{class:"btn sm",type:"button",onclick:async()=>{await saveAppIcon({});C.appIcon=null;if(C.db){try{await C.db.doc("settings/appicon").delete()}catch(e){}}renderMod()}},"Standaard terugzetten"):null),
+    el("span",{class:"uhint"},"Al geïnstalleerde apps nemen een nieuw icoon pas over als iemand de app opnieuw op het beginscherm zet."));
+  return card}
+/* admin: pushmelding versturen */
+function renderModPush(){modIn.append(el("div",{class:"sec",style:"margin:0"},"Pushmelding versturen"),el("p",{class:"note",style:"margin:-6px 0 0"},"Stuur een melding naar iedereen die meldingen van Coachpilot heeft aangezet."));
+  const d=C.pushForm=C.pushForm||{title:"",body:"",url:"/"};const f=el("form",{class:"card compose"});const msg=el("div",{class:"status"});
+  const ti=el("input",{id:"puTitle",maxlength:"60",value:d.title,placeholder:"Bijv. Nieuwe busparkings in Utrecht"});ti.addEventListener("input",()=>d.title=ti.value);
+  const tx=el("textarea",{id:"puBody",maxlength:"180",rows:"3",placeholder:"Korte tekst, maximaal 180 tekens"});tx.value=d.body;tx.addEventListener("input",()=>d.body=tx.value);
+  const to=el("select",{id:"puUrl",class:"bigselect"},el("option",{value:"/"},"Openen: de app"),el("option",{value:"/?open=tab:commView"},"Openen: Community"),el("option",{value:"/?open=tab:newsTab"},"Openen: Nieuws"),el("option",{value:"/?open=tab:mapView"},"Openen: Kaart"));to.value=d.url;to.addEventListener("change",()=>d.url=to.value);
+  f.append(el("label",{class:"fl",for:"puTitle"},"Titel",ti),el("label",{class:"fl",for:"puBody"},"Bericht",tx),el("label",{class:"fl",for:"puUrl"},"Bij tikken",to),msg,el("button",{class:"btn primary",type:"submit"},"Versturen naar iedereen"));
+  f.addEventListener("submit",async e=>{e.preventDefault();if(!d.title.trim()||!d.body.trim()){msg.textContent="Vul een titel en een bericht in.";return}
+    if(!LIVE){msg.textContent="Versturen kan alleen op de live site.";return}
+    if(!C.pushConfirm){C.pushConfirm=true;msg.textContent="Tik nogmaals op Versturen om het naar iedereen te sturen.";setTimeout(()=>C.pushConfirm=false,4000);return}C.pushConfirm=false;
+    const b=f.querySelector("button[type=submit]");b.disabled=true;const r=await sendPush({broadcast:{title:d.title.trim(),body:d.body.trim(),url:d.url}});b.disabled=false;
+    if(!r||r.error){msg.textContent="Versturen lukte niet: "+((r&&r.error)||"geen verbinding");return}C.pushForm=null;thanks("Verstuurd naar "+r.sent+" apparaat"+(r.sent===1?"":"en"),"🔔");renderMod()});
+  modIn.append(f);
+  const log=Object.values(C.pushLog||{}).sort((a,b)=>b.at-a.at).slice(0,10);
+  if(log.length){modIn.append(el("div",{class:"sec"},"Laatst verstuurd"));const box=el("div",{class:"card list0"});log.forEach(l=>box.append(el("div",{class:"prow"},el("span",{class:"cic"},"🔔"),el("div",{class:"tbody"},el("h3",{},l.title),el("div",{class:"pm"},l.body+" · "+ago(l.at)+" · "+(l.sent||0)+" apparaten")))));modIn.append(box)}}
+function pushToggle(id){if(!isMod(C.me)||!LIVE)return null;const c=el("input",{type:"checkbox",id});return el("label",{class:"toggle-row pushtoggle",for:id},c,el("span",{},"🔔 Pushmelding naar iedereen sturen"))}
 /* ---------- advertenties (beheer door admin) ---------- */
 const AD_SLOTS=[["parking","Parkeerplek (kaart)"],["community","Community"],["categorie","Categoriepagina"],["nieuws","Nieuws"]];
 const adSettings=()=>({mode:"rotate",placeholder:true,...(C.adSettings||{})});
 const AD_NODE={},AD_PICK={};
 function adsFor(slot){return Object.values(C.ads||{}).filter(a=>a&&a.active&&(a.kind==="code"?(a.code||"").trim():a.image)&&(!a.slots||!a.slots.length||a.slots.includes(slot)))}
-function chooseAd(slot){let list=adsFor(slot);if(!list.length)return null;
+function chooseAd(key,slot){slot=slot||key;let list=adsFor(slot);if(!list.length)return null;
   if(adSettings().mode==="prio"){const top=Math.max(...list.map(a=>+a.prio||0));list=list.filter(a=>(+a.prio||0)===top)}
-  const prev=AD_PICK[slot];if(prev&&Date.now()-prev.at<120000){const keep=list.find(a=>a.id===prev.id);if(keep)return keep}
-  const a=list[Math.floor(Math.random()*list.length)];AD_PICK[slot]={id:a.id,at:Date.now()};return a}
+  const prev=AD_PICK[key];if(prev&&Date.now()-prev.at<120000){const keep=list.find(a=>a.id===prev.id);if(keep)return keep}
+  const used=new Set(Object.entries(AD_PICK).filter(([k,v])=>k!==key&&k.split("#")[0]===slot&&Date.now()-v.at<120000).map(([k,v])=>v.id));const fresh=list.filter(a=>!used.has(a.id));const pool=fresh.length?fresh:list;
+  const a=pool[Math.floor(Math.random()*pool.length)];AD_PICK[key]={id:a.id,at:Date.now()};return a}
 function runAdCode(box,code){const t=document.createElement("template");t.innerHTML=code;
   t.content.querySelectorAll("script").forEach(old=>{const s=document.createElement("script");[...old.attributes].forEach(at=>s.setAttribute(at.name,at.value));s.text=old.textContent;old.replaceWith(s)});
   box.append(t.content)}
@@ -1767,12 +2020,14 @@ function adManageBtn(a){return el("button",{class:"adpro",type:"button",onclick:
 function adContent(a){if(a.kind==="code"){const box=el("div",{class:"adcode"});runAdCode(box,a.code||"");return box}
   const img=el("img",{src:blob(a.image),alt:a.title||"Advertentie",loading:"lazy"});
   return a.link?el("a",{class:"adimg",href:a.link,target:"_blank",rel:"noopener sponsored"},img):el("div",{class:"adimg"},img)}
-function adBlock(slot){const adm=isMod(C.me);if(isPro(C.me)&&!adm)return null;const a=chooseAd(slot);
+function adEvery(){const n=parseInt(adSettings().every,10);return n>=2&&n<=50?n:6}
+function feedFill(feed,items,render,slot){const N=adEvery();let k=0;items.forEach((it,i)=>{feed.append(render(it,i));if((i+1)%N===0&&i<items.length-1){k++;const x=(k%4===0)?proTeaser(slot):adBlock(slot,k);if(x)feed.append(x)}})}
+function adBlock(slot,idx){const adm=isMod(C.me);if(isPro(C.me)&&!adm)return null;const a=chooseAd(slot+(idx?"#"+idx:""),slot);
   if(!a){if(!adSettings().placeholder)return null;
     return el("div",{class:"adbox","data-slot":slot},el("span",{class:"adlabel"},"Advertentie"),el("div",{class:"adph"},el("b",{},"Ruimte voor een advertentie"),el("span",{},"Plek: "+slot)),
       adm?adManageBtn(null):el("button",{class:"adpro",type:"button",onclick:()=>openPro()},"Geen advertenties? Word Pro ⭐"))}
   if(adm)return el("div",{class:"adbox filled","data-slot":slot},el("span",{class:"adlabel"},"Advertentie · "+(a.title||"")),adContent(a),adManageBtn(a));
-  const key=slot+"|"+a.id+"|"+(a.updatedAt||0);let n=AD_NODE[key];
+  const key=slot+(idx?"#"+idx:"")+"|"+a.id+"|"+(a.updatedAt||0);let n=AD_NODE[key];
   if(!n){n=el("div",{class:"adbox filled","data-slot":slot},el("span",{class:"adlabel"},"Advertentie"),adContent(a),el("button",{class:"adpro",type:"button",onclick:()=>openPro()},"Geen advertenties? Word Pro ⭐"));AD_NODE[key]=n}
   return n}
 async function saveAd(id,d){d={...d,updatedAt:Date.now(),by:C.me};C.ads={...(C.ads||{})};
@@ -1817,7 +2072,9 @@ function renderModAds(){const s=adSettings();
     el("button",{class:"chip","aria-pressed":s.mode==="prio",onclick:()=>saveAdSettings({mode:"prio"})},"⬆️ Hoogste prioriteit")),
     el("span",{class:"uhint"},s.mode==="rotate"?"Alle actieve advertenties wisselen elkaar af.":"Alleen de advertentie(s) met de hoogste prioriteit worden getoond. Bij gelijke prioriteit wisselen ze af."));
   const ph=el("input",{type:"checkbox",id:"adPh"});ph.checked=s.placeholder;ph.addEventListener("change",()=>saveAdSettings({placeholder:ph.checked}));
-  set.append(el("label",{class:"toggle-row",for:"adPh"},ph,el("span",{},"Lege advertentieplek tonen als er geen advertentie is")));modIn.append(set);
+  set.append(el("label",{class:"toggle-row",for:"adPh"},ph,el("span",{},"Lege advertentieplek tonen als er geen advertentie is")));
+  const ev=el("select",{id:"adEvery",class:"bigselect"},...[3,4,5,6,7,8,9,10,12,15,20].map(n=>el("option",{value:String(n)},"Na elke "+n+" berichten")));ev.value=String(adEvery());ev.addEventListener("change",()=>saveAdSettings({every:+ev.value}));
+  set.append(el("label",{class:"fl",for:"adEvery"},"Hoe vaak in lijsten (nieuws, community, zoekresultaten)",ev),el("span",{class:"uhint"},"Elke vierde plek toont de Pro-balk in plaats van een advertentie."));modIn.append(set);
   if(C.adEdit==="new")modIn.append(adEditor(null,ok=>{C.adEdit=null;renderMod();if(ok)thanks("Advertentie opgeslagen","📣")}));
   const ads=Object.values(C.ads||{}).sort((a,b)=>(b.active?1:0)-(a.active?1:0)||(+b.prio||0)-(+a.prio||0)||(b.createdAt||0)-(a.createdAt||0));
   modIn.append(el("div",{class:"sec"},ads.length+" advertentie"+(ads.length===1?"":"s")));
@@ -1860,7 +2117,7 @@ function catIcon(c){const h=catHue(c);return el("span",{class:"cic catic",style:
 function catChip(id,small){const c=catOf(id),h=catHue(c);return el("span",{class:"cchip"+(small?" sm":""),style:"background:hsl("+h+" 85% 95%);color:hsl("+h+" 55% 38%)"},c.t)}
 const isNew=p=>Date.now()-(p.createdAt||0)<86400000;
 function unanswered(){return C.posts.filter(p=>!(p.replyCount>0)&&p.author!==C.me)}
-function updateBadge(){const n=unreadN();const t=document.querySelector('nav.tabs [data-tab="commView"]');if(!t)return;let b=t.querySelector(".tbadge");if(!b){b=el("span",{class:"tbadge"});t.append(b)}b.textContent=n>9?"9+":String(n);b.hidden=!n}
+function updateBadge(){try{updateDmBadge()}catch(e){}const n=unreadN();const t=document.querySelector('nav.tabs [data-tab="commView"]');if(!t)return;let b=t.querySelector(".tbadge");if(!b){b=el("span",{class:"tbadge"});t.append(b)}b.textContent=n>9?"9+":String(n);b.hidden=!n}
 function threadRow(p,hideCat){
   const n=p.replyCount||0,likes=(p.likes||[]).length;
   const card=el("article",{class:"tcard"+(p.pinned?" pinned":"")});
@@ -1881,7 +2138,7 @@ function renderComm(){
   const sv=document.getElementById("commView"),keep=sv.scrollTop,key=screenKey(),changed=key!==lastScreenKey;lastScreenKey=key;
   const hgF=document.activeElement&&document.activeElement.id==="hgText";HG.stick=changed||sv.scrollHeight-sv.scrollTop-sv.clientHeight<160;
   if(!changed&&(["new","newsedit"].includes(C.screen)||(C.screen==="user"&&C.modEditUser))&&comm.querySelector("form")&&!C.forceRender)return;C.forceRender=false;
-  comm.replaceChildren();if(changed)animateIn(comm);
+  comm.replaceChildren();if(!(C.section==="hangout"&&["home","chat",undefined,null,""].includes(C.screen)))clearChatInput();if(!(C.section==="hangout"&&C.screen==="chat")&&DM.unsub){DM.unsub();DM.unsub=null;DM.pid=null}comm.classList.toggle("threadv",C.screen==="thread");sv.classList.toggle("thv",C.screen==="thread");if(changed)animateIn(comm);
   const sc=C.screen;
   if(sc!=="newsitem"&&C.unsubNC){C.unsubNC();C.unsubNC=null;C.ncFor=null}
   if(sc==="thread"&&C.open){const fid=document.activeElement&&document.activeElement.classList.contains("ed-area")?document.activeElement.id:null;renderThread();if(!changed)sv.scrollTop=keep;if(fid){const n=document.getElementById(fid);n&&n.parentElement.focusEnd()}return}
@@ -1897,18 +2154,23 @@ function renderComm(){
   const ttl={forum:"Community",news:"Nieuws",hangout:"Hangout"}[C.section||"forum"];
   comm.append(el("div",{class:"fhead"},el("div",{class:"phead"},el("h1",{},ttl),C.section==="forum"||!C.section?bellBtn():null)));
   if(C.section==="news"){renderNewsHome();if(!changed)sv.scrollTop=keep;return}
-  if(C.section==="hangout"){renderHangout(changed);if(!HG.stick)sv.scrollTop=keep;if(hgF){const t=document.getElementById("hgText");if(t){t.focus({preventScroll:true});t.setSelectionRange(t.value.length,t.value.length)}}return}
+  if(C.section==="hangout"&&C.screen==="chat"){comm.lastChild&&comm.lastChild.classList.contains("fhead")&&comm.lastChild.remove();renderChat();return}
+  if(C.section==="hangout"&&(C.screen==="dms"||C.screen==="friends")){comm.append(hangSeg());C.screen==="dms"?renderDms():renderFriends();if(!changed)sv.scrollTop=keep;return}
+  if(C.section==="hangout"){comm.append(hangSeg());renderHangout(changed);if(!HG.stick)sv.scrollTop=keep;if(hgF){const t=document.getElementById("hgText");if(t){t.focus({preventScroll:true});t.setSelectionRange(t.value.length,t.value.length)}}return}
   renderForumHome();if(!changed)sv.scrollTop=keep;
 }
 function askBox(cat){if(isBanned(C.me))return bannedNote();return el("button",{class:"askbox",onclick:()=>go("new",{newCat:cat||null})},avatar(C.me),el("span",{},"Stel je vraag"),el("span",{class:"askbtn"},"Vraag"))}
 function renderForumHome(){
   comm.append(commSearch());
   comm.append(askBox(null));
-  if(C.q.trim()){const hits=searchPosts(C.q);comm.append(el("div",{class:"sec"},hits.length+" zoekresultaten voor “"+C.q+"”"));const f=el("div",{class:"feed"});hits.forEach(p=>f.append(threadRow(p)));comm.append(f)}
+  if(C.q.trim()){const hits=searchPosts(C.q);
+    comm.append(el("div",{class:"phead",style:"align-items:center"},el("button",{class:"backlink",style:"margin:0",onclick:()=>{C.q="";C.forceRender=true;renderComm();document.getElementById("commView").scrollTop=0}},"‹ Terug"),el("span",{class:"pm"},hits.length+" resultaten voor “"+C.q+"”")));
+    const f=el("div",{class:"feed"});feedFill(f,hits,p=>threadRow(p),"community");comm.append(f);
+    if(!hits.length)comm.append(el("div",{class:"card empty"},"Niets gevonden. Stel je vraag hierboven, dan helpen collega's je verder."));return}
   const recent=C.posts.slice().sort((a,b)=>(b.lastAt||b.createdAt||0)-(a.lastAt||a.createdAt||0)).slice(0,8);
-  if(recent.length){comm.append(el("div",{class:"sec"},"Recent actief"));const feed=el("div",{class:"feed"});recent.forEach(p=>feed.append(threadRow(p)));comm.append(feed)}
+  if(recent.length){comm.append(el("div",{class:"sec"},"Recent actief"));const feed=el("div",{class:"feed"});feedFill(feed,recent,p=>threadRow(p),"community");comm.append(feed)}
   else comm.append(el("div",{class:"card empty"},C.ready||C.local?"Nog geen vragen. Stel de eerste!":"Community laden…"));
-  const ad=adBlock("community");if(ad)comm.append(ad);
+  const ad=adBlock("community");if(ad)comm.append(ad);{const t=proTeaser("comm");if(t)comm.append(t)}
   comm.append(el("div",{class:"phead",style:"align-items:center"},el("div",{class:"sec",style:"margin:0"},"Categorieën"),isMod(C.me)?el("button",{class:"link",style:"box-shadow:none",onclick:()=>{C.modTab="cats";showTab("modView")}},"✏️ Beheren"):null));
   const box=el("div",{class:"card list0 catlist"});
   CATS.forEach(c=>{const ps=C.posts.filter(p=>p.cat===c.id);const last=ps.slice().sort((a,b)=>(b.lastAt||0)-(a.lastAt||0))[0];const open=ps.filter(p=>!(p.replyCount>0)).length;
@@ -1930,7 +2192,7 @@ function renderCatPage(){const c=catOf(C.cat);
   if(F==="open")list=list.filter(p=>!(p.replyCount>0));
   if(F==="top")list.sort((a,b)=>((b.replyCount||0)*2+(b.likes||[]).length)-((a.replyCount||0)*2+(a.likes||[]).length));
   list=[...list.filter(p=>p.pinned),...list.filter(p=>!p.pinned)];
-  const feed=el("div",{class:"feed"});list.forEach((p,i)=>{feed.append(threadRow(p,true));if(i===3){const ad=adBlock("categorie");if(ad)feed.append(ad)}});
+  const feed=el("div",{class:"feed"});feedFill(feed,list,p=>threadRow(p,true),"categorie");
   if(!list.length)feed.append(el("div",{class:"card empty"},F==="open"?"Alle vragen in deze categorie hebben een antwoord.":"Nog geen onderwerpen in deze categorie. Stel de eerste vraag."));
   comm.append(feed)}
 function renderCat(){go("home")}
@@ -1967,7 +2229,7 @@ function renderNewsHome(){
   comm.append(isBanned(C.me)?bannedNote():el("button",{class:"askbox",onclick:()=>go("newsedit",{newsDraft:null})},avatar(C.me),el("span",{},"Deel een nieuwsbericht"),el("span",{class:"askbtn"},isEditor(C.me)?"Plaats":"Insturen")));
   const list=newsList();
   if(!list.length){comm.append(el("div",{class:"card empty"},"Nog geen nieuws. Deel het eerste bericht."));return}
-  const feed=el("div",{class:"feed"});list.forEach((n,i)=>{feed.append(newsCard(n));if(i%3===2){const ad=adBlock("nieuws");if(ad)feed.append(ad)}});comm.append(feed)}
+  const feed=el("div",{class:"feed"});feedFill(feed,list,n=>newsCard(n),"nieuws");comm.append(feed);{const t=proTeaser("news");if(t)comm.append(t)}}
 function openNews(n){go("newsitem",{newsOpen:n})}
 function renderNewsItem(){const n=(C.news||[]).find(x=>x.id===C.newsOpen.id)||C.newsOpen;
   comm.append(el("button",{class:"backlink",onclick:()=>backTo(t=>t.tab==="newsTab"&&t.screen==="home",()=>go("home",{section:"news"}))},"‹ Nieuws"));
@@ -1987,14 +2249,14 @@ function renderNewsEdit(){if(isBanned(C.me)){comm.append(bannedNote());return}co
   const ed=editor("news-body","Wat is er aan de hand? Wat verandert er, voor wie, vanaf wanneer?");
   f.append(inp("title","Titel *",{maxlength:"140",placeholder:"Bijv. Nieuwe parkeerregels voor touringcars in Antwerpen"}),el("div",{class:"fl"},"Bericht",ed),el("div",{class:"fl"},"Foto (optioneel)",pv),
     el("div",{class:"r2"},inp("source","Link naar bron (optioneel)",{maxlength:"300",placeholder:"https://…",inputmode:"url"}),inp("sourceName","Naam van de bron",{maxlength:"60",placeholder:"Bijv. Stad Antwerpen"})),msg,
-    el("button",{class:"btn primary",type:"submit"},src.id?"Opslaan":pub?"Publiceren":"Insturen ter beoordeling"));
+    !src.id?pushToggle("nPush"):null,el("button",{class:"btn primary",type:"submit"},src.id?"Opslaan":pub?"Publiceren":"Insturen ter beoordeling"));
   f.addEventListener("submit",async e=>{e.preventDefault();const t=d.title.trim();const v=ed.value();if(!t){msg.textContent="Geef het bericht een titel.";return}
     if(!v.text&&!d.photo){msg.textContent="Schrijf iets of voeg een foto toe.";return}
     const s=d.source.trim();if(s&&!/^https?:\/\//i.test(s)){msg.textContent="Laat de link beginnen met https://";return}
     const base={title:t,body:v.text,bodyHtml:v.html,source:s,sourceName:d.sourceName.trim(),photo:d.photo};
     try{
       if(pub){const author=src.author||(C.tipSub&&C.tipSub.by)||C.me;const n={...(src.id?src:{}),...base,author,createdAt:src.createdAt||Date.now(),editedAt:src.id?Date.now():null};
-        const id=await saveNews(n);if(C.tipSub){await reviewSub(C.tipSub,"approved");C.tipSub=null}ed.clear();thanks(src.id?"Bericht bijgewerkt":"Nieuwsbericht gepubliceerd","📰");NAV.replace=true;go("newsitem",{newsOpen:{...n,id}})}
+        const id=await saveNews(n);{const pt=f.querySelector("#nPush");if(pt&&pt.checked)sendPush({broadcast:{title:"📰 "+t,body:(v.text||"").slice(0,140),url:"/?open=news:"+id}})}if(C.tipSub){await reviewSub(C.tipSub,"approved");C.tipSub=null}ed.clear();thanks(src.id?"Bericht bijgewerkt":"Nieuwsbericht gepubliceerd","📰");NAV.replace=true;go("newsitem",{newsOpen:{...n,id}})}
       else{const sub={kind:"newspost",parking:null,parkingName:t,data:base,note:"",photos:[],by:C.me,createdAt:Date.now(),status:"pending"};
         if(C.db)await C.db.collection("submissions").add(sub);else{C.subs=[...(C.subs||[]),{id:"l"+Date.now(),...sub}];updateModTab()}
         ed.clear();NAV.replace=true;go("home",{section:"news"});thanks("Bedankt! Een moderator bekijkt je bericht.","📰")}
@@ -2045,6 +2307,106 @@ function renderNewsComments(n){subNewsComments(n.id);const all=C.ncomments||[];c
     comm.append(g)});
   comm.append(newsCommentForm(n,null))}
 
+/* ---------- niet inzoomen ---------- */
+document.addEventListener("gesturestart",e=>{if(!e.target.closest||!e.target.closest(".mapwrap"))e.preventDefault()},{passive:false});
+document.addEventListener("touchmove",e=>{if(e.touches&&e.touches.length>1&&!(e.target.closest&&e.target.closest(".mapwrap")))e.preventDefault()},{passive:false});
+/* ---------- invoerbalk (Hangout en privéchat) buiten de animerende pagina ---------- */
+const HGHOST=el("div",{id:"hgHost"});document.body.append(HGHOST);
+function clearChatInput(){if(HGHOST.firstChild){HGHOST.replaceChildren();delete HGHOST.dataset.k}}
+function chatInput(key,onSend,placeholder){if(isBanned(C.me)){clearChatInput();return}
+  if(HGHOST.dataset.k===key&&HGHOST.firstChild){requestAnimationFrame(placeHinput);return}
+  HGHOST.dataset.k=key;const att=attacher("ci-"+key);att.classList.add("hatt");const dk="draft-"+key;
+  const ta=el("textarea",{id:"hgText",rows:"1",maxlength:"1000",placeholder:placeholder||"Bericht…",enterkeyhint:"send"});ta.value=HG[dk]||"";
+  const grow=()=>{ta.style.height="auto";ta.style.height=Math.min(ta.scrollHeight,120)+"px"};
+  ta.addEventListener("input",()=>{HG[dk]=ta.value;grow();placeHinput()});ta.addEventListener("focus",()=>{setTimeout(placeHinput,50);setTimeout(placeHinput,350)});ta.addEventListener("blur",()=>setTimeout(placeHinput,100));setTimeout(grow,0);
+  const warn=el("div",{class:"hwarn",hidden:true});
+  const send=async()=>{const text=ta.value.trim(),photos=att.get();if(!text&&!photos.length)return;const ok=await onSend(text,photos,warn);if(ok===false)return;
+    HG[dk]="";ta.value="";att.clear();grow();setTimeout(()=>{const v=document.getElementById("commView");v.scrollTop=v.scrollHeight},60)};
+  ta.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey&&!e.isComposing){e.preventDefault();send()}});
+  ta.addEventListener("beforeinput",e=>{if(e.inputType==="insertLineBreak"||e.inputType==="insertParagraph"){e.preventDefault();send()}});
+  HGHOST.replaceChildren(el("div",{class:"hinput"},warn,att,el("div",{class:"hrow"},el("button",{class:"hbtn",type:"button","aria-label":"Foto toevoegen",onclick:()=>att.querySelector("button.like")&&att.querySelector("button.like").click()},"📷"),ta,el("button",{class:"hsend",type:"button","aria-label":"Versturen",onclick:send},"➤"))));
+  requestAnimationFrame(placeHinput);setTimeout(placeHinput,300)}
+
+/* ---------- vrienden ---------- */
+const pairId=(a,b)=>[a,b].sort().join("~");
+const otherOf=pid=>String(pid).split("~").find(x=>x!==C.me);
+const friendDoc=uid=>(C.friends||{})[pairId(C.me,uid)];
+function friendState(uid){const f=friendDoc(uid);if(!f)return"none";if(f.status==="accepted")return"friends";return f.from===C.me?"sent":"received"}
+const myFriends=()=>Object.values(C.friends||{}).filter(f=>f.status==="accepted"&&(f.users||[]).includes(C.me)).map(f=>(f.users||[]).find(u=>u!==C.me)).filter(Boolean);
+const friendRequests=()=>C.me?Object.values(C.friends||{}).filter(f=>f.status==="pending"&&f.to===C.me):[];
+async function putFriend(id,d){C.friends={...(C.friends||{})};if(d)C.friends[id]={id,...d};else delete C.friends[id];
+  if(C.db){try{d?await C.db.collection("friends").doc(id).set(d):await C.db.doc("friends/"+id).delete()}catch(e){alertMsg("Opslaan lukte niet: "+(e.message||"onbekende fout"));return false}}renderComm();updateDmBadge();return true}
+async function addFriend(uid){if(!C.me||uid===C.me)return;const id=pairId(C.me,uid);if(await putFriend(id,{users:[C.me,uid].sort(),from:C.me,to:uid,status:"pending",at:Date.now()})){notify([{to:uid,type:"friendreq",title:nameOf(C.me)}]);thanks("Vriendschapsverzoek verstuurd","🤝")}}
+async function acceptFriend(uid){const f=friendDoc(uid);if(!f)return;const{id,...d}=f;if(await putFriend(pairId(C.me,uid),{...d,status:"accepted",acceptedAt:Date.now()})){notify([{to:uid,type:"friendok",title:nameOf(C.me)}]);thanks("Jullie zijn nu vrienden","🤝")}}
+async function removeFriend(uid){await putFriend(pairId(C.me,uid),null)}
+function friendButtons(uid){if(!C.me||uid===C.me)return null;const st=friendState(uid);const row=el("div",{class:"r frow",style:"gap:8px;flex-wrap:wrap"});
+  if(st==="none")row.append(el("button",{class:"btn primary sm",onclick:()=>addFriend(uid)},"➕ Vriend toevoegen"));
+  if(st==="sent")row.append(el("button",{class:"btn sm",disabled:true},"⏳ Verzoek verstuurd"),confirmBtn("Intrekken",()=>removeFriend(uid)));
+  if(st==="received")row.append(el("button",{class:"btn primary sm",onclick:()=>acceptFriend(uid)},"✓ Verzoek accepteren"),confirmBtn("Weigeren",()=>removeFriend(uid)));
+  if(st==="friends")row.append(el("button",{class:"btn primary sm",onclick:()=>openChat(uid)},"💬 Bericht sturen"),el("span",{class:"fbadge"},"✓ Vrienden"),confirmBtn("Ontvrienden",()=>removeFriend(uid)));
+  return row}
+
+/* ---------- privéchat ---------- */
+const DM={unsub:null,pid:null};
+const chatUnread=c=>!c||!c.unread||!c.unread[C.me]?0:Math.max(1,(c.unreadN&&c.unreadN[C.me])||1);
+function unreadChats(){if(!C.me)return 0;return Object.values(C.chats||{}).filter(c=>c&&(c.users||[]).includes(C.me)).reduce((a,c)=>a+chatUnread(c),0)}
+function updateDmBadge(){const t=document.querySelector('nav.tabs [data-tab="hangTab"]');if(!t)return;const n=unreadChats()+friendRequests().length;let b=t.querySelector(".tbadge");if(!b){b=el("span",{class:"tbadge"});t.append(b)}b.textContent=n>9?"9+":String(n);b.hidden=!n}
+function openChat(uid){nav(()=>{showTabRaw("hangTab");Object.assign(C,{section:"hangout"});go("chat",{chatWith:uid})})}
+function subChat(pid){if(DM.pid===pid)return;if(DM.unsub){DM.unsub();DM.unsub=null}DM.pid=pid;C.dmMsgs=[];
+  if(C.db)DM.unsub=C.db.collection("chats/"+pid+"/messages").orderBy("createdAt","asc").onSnapshot(s=>{C.dmMsgs=s.docs.map(d=>({id:d.id,...d.data()}));if(C.screen==="chat")renderComm()},()=>{});
+  else C.dmMsgs=(C.localDm||{})[pid]||[]}
+async function markChatRead(pid){const c=(C.chats||{})[pid];if(!c||!c.unread||!c.unread[C.me])return;const{id,...d}=c;const nd={...d,unread:{...(d.unread||{}),[C.me]:false},unreadN:{...(d.unreadN||{}),[C.me]:0}};C.chats={...C.chats,[pid]:{id:pid,...nd}};updateDmBadge();
+  if(C.db){try{await C.db.collection("chats").doc(pid).set(nd)}catch(e){}}}
+async function sendDm(uid,text,photos){const pid=pairId(C.me,uid);const m={text,photos,author:C.me,createdAt:Date.now()};
+  const prevN=(((C.chats||{})[pid]||{}).unreadN||{})[uid]||0;
+  const meta={users:[C.me,uid].sort(),lastAt:m.createdAt,lastText:text?text.slice(0,120):"📷 Foto",lastBy:C.me,unread:{[uid]:true,[C.me]:false},unreadN:{[uid]:prevN+1,[C.me]:0}};
+  try{if(C.db){await C.db.collection("chats").doc(pid).set(meta);await C.db.collection("chats/"+pid+"/messages").add(m)}
+    else{C.localDm={...(C.localDm||{}),[pid]:[...((C.localDm||{})[pid]||[]),{id:"l"+Date.now(),...m}]};C.dmMsgs=C.localDm[pid];C.chats={...(C.chats||{}),[pid]:{id:pid,...meta}};renderComm()}}
+  catch(e){alertMsg("Versturen lukte niet: "+(e.message||"onbekende fout"));return false}
+  notify([{to:uid,type:"dm",chatId:pid,title:text?text.slice(0,80):"📷 Foto"}]);return true}
+function hangSeg(){const n1=unreadChats(),n2=friendRequests().length;const sc=C.screen||"home";const seg=el("div",{class:"seg hseg",role:"tablist",style:"grid-template-columns:repeat(3,1fr)"});
+  [["home","Hangout",0],["dms","Berichten",n1],["friends","Vrienden",n2]].forEach(([k,t,n])=>seg.append(el("button",{role:"tab","aria-selected":sc===k,onclick:()=>{if(sc!==k)go(k)}},t,n?el("span",{class:"segb"},String(n)):null)));return seg}
+function renderDms(){if(!C.me){comm.append(needAccount("Log in om privéberichten te sturen."));return}
+  const list=Object.values(C.chats||{}).filter(c=>c&&(c.users||[]).includes(C.me)).sort((a,b)=>(b.lastAt||0)-(a.lastAt||0));
+  if(!list.length){comm.append(el("div",{class:"card empty"},myFriends().length?"Nog geen gesprekken. Tik op een vriend bij Vrienden om een bericht te sturen.":"Nog geen gesprekken. Voeg eerst collega's toe als vriend, dan kun je ze een bericht sturen."),el("button",{class:"btn primary",onclick:()=>go("friends")},"🤝 Naar Vrienden"));return}
+  const box=el("div",{class:"card list0"});list.forEach(c=>{const u=otherOf(c.id);const un=chatUnread(c);
+    box.append(el("button",{class:"crow dmrow"+(un?" unread":""),onclick:()=>openChat(u)},avatar(u),el("div",{class:"tbody"},el("h3",{},nameOf(u)),el("div",{class:"pm"},(c.lastBy===C.me?"Jij: ":"")+(c.lastText||""))),
+      el("div",{class:"dmmeta"},el("span",{class:"pm"},c.lastAt?ago(c.lastAt):""),un?el("span",{class:"segb",style:"margin:0"},un>9?"9+":String(un)):null)))});comm.append(box)}
+function renderFriends(){if(!C.me){comm.append(needAccount("Log in om vrienden toe te voegen."));return}
+  const req=friendRequests();if(req.length){comm.append(el("div",{class:"sec"},"Verzoeken ("+req.length+")"));const b=el("div",{class:"card list0"});
+    req.forEach(f=>{const u=f.from;b.append(el("div",{class:"prow"},el("button",{class:"avbtn",onclick:()=>openUser(u)},avatar(u)),el("div",{class:"tbody"},el("h3",{},nameOf(u)),el("div",{class:"pm"},"wil vrienden worden · "+ago(f.at))),
+      el("div",{class:"r",style:"gap:6px"},el("button",{class:"btn primary sm",onclick:()=>acceptFriend(u)},"✓"),confirmBtn("✕",()=>removeFriend(u)))))});comm.append(b)}
+  const fr=myFriends();comm.append(el("div",{class:"sec"},"Mijn vrienden ("+fr.length+")"));
+  if(fr.length){const b=el("div",{class:"card list0"});fr.sort((a,b)=>nameOf(a).localeCompare(nameOf(b))).forEach(u=>{const p=prof(u)||{};b.append(el("div",{class:"prow"},el("button",{class:"avbtn",onclick:()=>openUser(u)},avatar(u)),
+    el("button",{class:"tbody",style:"border:0;background:none;text-align:left;padding:0",onclick:()=>openUser(u)},el("h3",{},nameOf(u)),el("div",{class:"pm"},[p.username&&"@"+p.username,p.company].filter(Boolean).join(" · "))),
+    el("button",{class:"btn sm primary",onclick:()=>openChat(u)},"💬")))});comm.append(b)}
+  else comm.append(el("div",{class:"card empty"},"Nog geen vrienden. Zoek hieronder een collega, of open iemands profiel in de community en tik op ‘Vriend toevoegen’."));
+  comm.append(el("div",{class:"sec"},"Collega zoeken"));const inp=el("input",{id:"frq",type:"search",placeholder:"Naam of @gebruikersnaam",value:C.frq||"",autocomplete:"off"});const res=el("div",{class:"card list0"});
+  const draw=()=>{const q=norm((C.frq||"").replace(/^@/,""));res.replaceChildren();if(q.length<2){res.hidden=true;return}res.hidden=false;
+    const hits=Object.entries(C.profiles||{}).filter(([id,p])=>id!==C.me&&p&&p.name&&norm([p.name,p.username,p.company].filter(Boolean).join(" ")).includes(q)).slice(0,10);
+    if(!hits.length)res.append(el("div",{class:"empty"},"Niemand gevonden."));
+    hits.forEach(([id,p])=>{const st=friendState(id);res.append(el("div",{class:"prow"},el("button",{class:"avbtn",onclick:()=>openUser(id)},avatar(id)),el("div",{class:"tbody"},el("h3",{},p.name),el("div",{class:"pm"},[p.username&&"@"+p.username,p.company].filter(Boolean).join(" · "))),
+      st==="none"?el("button",{class:"btn sm primary",onclick:()=>addFriend(id)},"➕"):el("span",{class:"pm"},{sent:"Verstuurd",received:"Wacht op jou",friends:"✓ Vriend"}[st])))})};
+  inp.addEventListener("input",()=>{C.frq=inp.value;draw()});comm.append(el("label",{class:"search flat",for:"frq"},icon("i-search","i"),inp),res);draw()}
+function renderChat(){const uid=C.chatWith;if(!uid||!C.me){go("dms");return}const pid=pairId(C.me,uid);subChat(pid);markChatRead(pid);
+  comm.append(el("div",{class:"thbar chatbar"},el("button",{class:"thback","aria-label":"Terug",onclick:()=>backTo(t=>t.tab==="hangTab"&&t.screen==="dms",()=>go("dms"))},icon("i-back","i")),
+    el("button",{class:"chatwho",onclick:()=>openUser(uid)},avatar(uid),el("div",{class:"thbar-t"},el("b",{style:"color:var(--ink)"},nameOf(uid)),el("span",{},friendState(uid)==="friends"?"Vrienden":"Geen vrienden meer")))));
+  const msgs=(C.dmMsgs||[]).slice().sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));const box=el("div",{class:"chat"});let lastDay="";
+  msgs.slice(-300).forEach(m=>{const day=new Date(m.createdAt).toLocaleDateString("nl-NL",{weekday:"long",day:"numeric",month:"long"});if(day!==lastDay){box.append(el("div",{class:"daysep"},day));lastDay=day}
+    const mine=m.author===C.me;box.append(el("div",{class:"msg"+(mine?" mine":"")},mine?null:el("button",{class:"avbtn",onclick:()=>openUser(m.author)},avatar(m.author)),
+      el("div",{class:"mcol"},el("div",{class:"bubble"},photoGrid(m),m.text?el("div",{class:"btext"},m.text):null,el("span",{class:"btime"},new Date(m.createdAt).toLocaleTimeString("nl-NL",{hour:"2-digit",minute:"2-digit"}))))))});
+  if(!msgs.length)box.append(el("div",{class:"card empty"},"Stuur "+nameOf(uid).split(" ")[0]+" een eerste bericht 👋"));comm.append(box);
+  if(friendState(uid)!=="friends"){clearChatInput();comm.append(el("div",{class:"card nudge"},el("b",{},"Jullie zijn (nog) geen vrienden"),el("span",{},"Alleen vrienden kunnen elkaar berichten sturen.")),friendButtons(uid));return}
+  chatInput("dm-"+pid,(text,photos)=>sendDm(uid,text,photos),"Bericht aan "+nameOf(uid).split(" ")[0]+"…");
+  if(C.lastChat!==pid){C.lastChat=pid;setTimeout(()=>{const v=document.getElementById("commView");v.scrollTop=v.scrollHeight},40)}}
+/* ---------- hangout: invoerbalk netjes boven menu of toetsenbord ---------- */
+function placeHinput(){HGHOST.hidden=document.getElementById("commView").hidden;const h=HGHOST.querySelector(".hinput");if(!h||HGHOST.hidden){document.body.classList.remove("kbopen");return}
+  const vv=window.visualViewport;const kb=vv?Math.max(0,window.innerHeight-vv.height-vv.offsetTop):0;const nav=document.querySelector("nav.tabs");
+  if(kb>80&&document.activeElement&&document.activeElement.id==="hgText"){document.body.classList.add("kbopen");h.style.bottom=(kb+8)+"px"}
+  else{document.body.classList.remove("kbopen");const r=nav?nav.getBoundingClientRect():null;h.style.bottom=(r&&r.height?Math.max(8,window.innerHeight-r.top+8):92)+"px"}
+  const chat=document.querySelector(".chat");if(chat)chat.style.paddingBottom=(h.offsetHeight+24)+"px"}
+if(window.visualViewport){visualViewport.addEventListener("resize",placeHinput);visualViewport.addEventListener("scroll",placeHinput)}
+window.addEventListener("resize",placeHinput);
 /* ---------- hangout: chat met foto's ---------- */
 const HG={};
 function renderHangout(changed){
@@ -2053,6 +2415,9 @@ function renderHangout(changed){
   if(V2==="photos"){const all=[];msgs.slice().reverse().forEach(m=>(m.photos||[]).forEach(p=>all.push({src:blob(p),m})));
     if(!all.length){comm.append(el("div",{class:"card empty"},"Nog geen foto's gedeeld. Stuur de eerste via de chat."));return}
     const g=el("div",{class:"hgrid zoomable"});const srcs=all.map(x=>x.src);all.forEach(x=>{const im=el("img",{src:x.src,alt:"Foto van "+nameOf(x.m.author),loading:"lazy"});im.dataset.gal=JSON.stringify(srcs);g.append(im)});comm.append(g);return}
+  if(isMod(C.me)&&msgs.length){const bar=el("div",{class:"hclear"});
+    if(HG.clr)bar.append(el("span",{},"Alle "+msgs.length+" berichten verwijderen?"),el("button",{class:"btn sm",onclick:()=>{HG.clr=false;renderComm()}},"Annuleren"),el("button",{class:"btn sm danger",onclick:async e=>{e.currentTarget.disabled=true;await clearHangout();HG.clr=false;renderComm();thanks("De chat is leeggemaakt","🧹")}},"Ja, alles wissen"));
+    else bar.append(el("button",{class:"like",onclick:()=>{HG.clr=true;renderComm()}},"🧹 Chat leegmaken"));comm.append(bar)}
   const box=el("div",{class:"chat"});let lastDay="",prev=null;
   msgs.slice(-200).forEach(m=>{const day=new Date(m.createdAt).toLocaleDateString("nl-NL",{weekday:"long",day:"numeric",month:"long"});
     if(day!==lastDay){box.append(el("div",{class:"daysep"},day));lastDay=day;prev=null}
@@ -2065,24 +2430,13 @@ function renderHangout(changed){
       el("div",{class:"mcol"},bub,open?el("div",{class:"macts"},canDel?confirmBtn("🗑 Verwijder",async()=>{if(C.db){try{await C.db.doc("hangout/"+m.id).delete()}catch(e){}}else{C.hangout=C.hangout.filter(x=>x!==m);renderComm()}}):null,!mine?el("button",{class:"like",onclick:()=>reportHangout(m)},"⚑ Melden"):null):null)))});
   if(!msgs.length)box.append(el("div",{class:"card empty"},"Nog stil hier. Zeg hallo! 👋"));
   comm.append(box);
-  // invoer
-  const att=attacher("hangout");att.classList.add("hatt");
-  const ta=el("textarea",{id:"hgText",rows:"1",maxlength:"500",placeholder:"Bericht…",enterkeyhint:"send"});ta.value=HG.draft||"";
-  const grow=()=>{ta.style.height="auto";ta.style.height=Math.min(ta.scrollHeight,120)+"px"};
-  ta.addEventListener("input",()=>{HG.draft=ta.value;grow()});setTimeout(grow,0);
-  const warn=el("div",{class:"hwarn",hidden:true});
-  const send=async()=>{const text=ta.value.trim(),photos=att.get();if(!text&&!photos.length)return;
-    if(text.startsWith("/")&&isMod(C.me)){const err=await hangoutCommand(text);if(err){warn.textContent=err;warn.hidden=false;return}HG.draft="";ta.value="";grow();return}
-    if(isBanned(C.me)){warn.textContent="Je account is geblokkeerd.";warn.hidden=false;return}
-    const why=spamCheck(text);if(why){warn.textContent=why;warn.hidden=false;clearTimeout(HG.wt);HG.wt=setTimeout(()=>warn.hidden=true,3500);return}warn.hidden=true;
-    HG.sent=[...(HG.sent||[]).filter(t=>Date.now()-t.at<120000),{at:Date.now(),text}];
-    const m={text,photos,author:C.me,createdAt:Date.now()};HG.draft="";ta.value="";att.clear();grow();
-    try{if(C.db)await C.db.collection("hangout").add(m);else{C.hangout=[...(C.hangout||[]),{id:"l"+Date.now(),...m}];renderComm()}}catch(e){alertMsg("Versturen lukte niet.")}
-    setTimeout(()=>{const v=document.getElementById("commView");v.scrollTop=v.scrollHeight},60)};
-  ta.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey&&!e.isComposing){e.preventDefault();send()}});
-  ta.addEventListener("beforeinput",e=>{if(e.inputType==="insertLineBreak"||e.inputType==="insertParagraph"){e.preventDefault();send()}});
   if(isBanned(C.me)){comm.append(bannedNote());return}
-  comm.append(el("div",{class:"hinput"},warn,att,el("div",{class:"hrow"},el("button",{class:"hbtn",type:"button","aria-label":"Foto toevoegen",onclick:()=>att.querySelector("button.like")&&att.querySelector("button.like").click()},"📷"),ta,el("button",{class:"hsend",type:"button","aria-label":"Versturen",onclick:send},"➤"))));
+  chatInput("hangout",async(text,photos,warn)=>{
+    if(text.startsWith("/")&&isMod(C.me)){const err=await hangoutCommand(text);if(err){warn.textContent=err;warn.hidden=false;return false}return true}
+    const why=spamCheck(text);if(why){warn.textContent=why;warn.hidden=false;clearTimeout(HG.wt);HG.wt=setTimeout(()=>warn.hidden=true,3500);return false}warn.hidden=true;
+    HG.sent=[...(HG.sent||[]).filter(t=>Date.now()-t.at<120000),{at:Date.now(),text}];
+    const m={text,photos,author:C.me,createdAt:Date.now()};
+    try{if(C.db)await C.db.collection("hangout").add(m);else{C.hangout=[...(C.hangout||[]),{id:"l"+Date.now(),...m}];renderComm()}}catch(e){alertMsg("Versturen lukte niet.");return false}return true});
   if(HG.stick)setTimeout(()=>{const v=document.getElementById("commView");v.scrollTop=v.scrollHeight},30);
 }
 /* anti-spam: max 5 berichten per minuut, minstens 4 sec ertussen, geen herhaling, max 2 links */
@@ -2100,15 +2454,16 @@ async function reportHangout(m){const rep={postId:null,postTitle:"Hangout",reply
 /* ---------- navigatie: terug-swipe (iOS) en knoppen ---------- */
 const NAV={stack:[],restoring:false,depth:0};
 function curTab(){const t=document.querySelector('nav.tabs [aria-selected="true"]');return t?t.dataset.tab:"mapView"}
-function navSnap(){return{tab:curTab(),section:C.section||"forum",screen:C.screen,cat:C.cat,open:C.open,viewUser:C.viewUser,viewCompany:C.viewCompany,newsOpen:C.newsOpen,newsDraft:C.newsDraft,ffilter:C.ffilter,
-  sel:S.sel,hotel:S.hotel,dtab:S.dtab,expanded:S.expanded,modTab:C.modTab,form:!formView.hidden}}
-const navKey=s=>[s.tab,s.section,s.screen,s.cat,s.open&&s.open.id,s.viewUser,s.viewCompany,s.newsOpen&&s.newsOpen.id,s.sel,s.hotel,s.dtab,s.expanded,s.modTab,s.form].join("|");
+function navSnap(){return{tab:curTab(),section:C.section||"forum",screen:C.screen,cat:C.cat,open:C.open,viewUser:C.viewUser,viewCompany:C.viewCompany,newsOpen:C.newsOpen,newsDraft:C.newsDraft,ffilter:C.ffilter,chatWith:C.chatWith,
+  sel:S.sel,hotel:S.hotel,dtab:S.dtab,expanded:S.expanded,modTab:C.modTab,form:!formView.hidden,pro:!!C.proOpen}}
+const navKey=s=>[s.pro?"pro":"",s.chatWith||"",s.tab,s.section,s.screen,s.cat,s.open&&s.open.id,s.viewUser,s.viewCompany,s.newsOpen&&s.newsOpen.id,s.sel,s.hotel,s.dtab,s.expanded,s.modTab,s.form].join("|");
 function nav(fn){if(NAV.restoring||NAV.depth)return fn();NAV.depth++;const before=navSnap();let r;try{r=fn()}finally{NAV.depth--;
   const top=NAV.stack[NAV.stack.length-1];
   if(NAV.replace){NAV.replace=false}else if(navKey(before)!==navKey(navSnap())&&!(top&&navKey(top)===navKey(before))){NAV.stack.push(before);try{history.pushState({cp:NAV.stack.length},"")}catch(e){}}}return r}
 function navRestore(s){NAV.restoring=true;try{
+  if(!!s.pro!==!!C.proOpen){C.proOpen=!!s.pro;renderProPage()}
   if(!s.form&&!formView.hidden)closeForm();
-  showTabRaw(s.tab);Object.assign(C,{screen:s.screen||"home",open:s.open||null,section:s.section,cat:s.cat,viewUser:s.viewUser,viewCompany:s.viewCompany,newsOpen:s.newsOpen,newsDraft:s.newsDraft,ffilter:s.ffilter,modTab:s.modTab});
+  showTabRaw(s.tab);Object.assign(C,{chatWith:s.chatWith||null,screen:s.screen||"home",open:s.open||null,section:s.section,cat:s.cat,viewUser:s.viewUser,viewCompany:s.viewCompany,newsOpen:s.newsOpen,newsDraft:s.newsDraft,ffilter:s.ffilter,modTab:s.modTab});
   if(SEC_OF[s.tab]){C.section=SEC_OF[s.tab];if(s.screen==="thread"&&s.open)openThread(s.open);else go(s.screen||"home")}
   if(s.tab==="modView")renderMod();
   S.hotel=s.hotel;S.dtab=s.dtab;S.expanded=s.expanded;
@@ -2149,7 +2504,7 @@ function renderNew(){if(isBanned(C.me)){comm.append(bannedNote());return}
     hits.forEach(h=>dup.append(el("button",{type:"button",class:"dup",onclick:()=>openThread(h)},el("span",{},h.title),el("small",{},(h.replyCount||0)+" reacties · "+catOf(h.cat).t))))};
   ti.addEventListener("input",showDup);setTimeout(showDup,0);
   const ed=editor("new","Beschrijf je situatie: route, datum, buslengte, wat je al geprobeerd hebt…");
-  f.append(el("div",{class:"fl"},"Bericht",ed));const att=attacher("new");f.append(att);
+  f.append(el("div",{class:"fl"},"Bericht",ed));const att=attacher("new");f.append(att);{const pt=pushToggle("cPush");if(pt)f.append(pt)}
   if(C.place)f.append(el("span",{class:"place-tag"},"📍 "+C.place.name,el("button",{type:"button","aria-label":"Plek weghalen",onclick:()=>{C.place=null;C.forceRender=true;renderComm()}},"×")));
   const msg=el("div",{class:"status"});f.append(msg);
   f.append(el("button",{class:"btn primary",type:"submit"},"Vraag plaatsen"));
@@ -2157,6 +2512,7 @@ function renderNew(){if(isBanned(C.me)){comm.append(bannedNote());return}
     const post={title,body:v.text,bodyHtml:v.html,mentions:v.mentions,photos:att.get(),cat,place:C.place,author:C.me,createdAt:Date.now(),lastAt:Date.now(),replyCount:0,likes:[]};
     try{if(C.db){const ref=await C.db.collection("posts").add(post);post.id=ref.id}else{post.id="l"+Date.now();C.posts.unshift(post)}
       notify(v.mentions.map(m=>({to:m.id,type:"mention",postId:post.id,title:post.title})));
+      {const pt=f.querySelector("#cPush");if(pt&&pt.checked&&C.db)sendPush({broadcast:{title:"💬 "+post.title,body:(v.text||"").slice(0,140),url:"/?open=post:"+post.id}})}
       ed.clear();att.clear();delete drafts["new-title"];C.place=null;C.newCat=null;NAV.replace=true;openThread(post)}catch(err){msg.textContent="Plaatsen lukte niet: je hebt alleen leesrechten op deze app."}});
   comm.append(f);
 }
@@ -2172,19 +2528,23 @@ function openThread(p,focusReply){C.open=p;C.replies=p.localReplies||[];if(C.uns
   if(focusReply)setTimeout(()=>{const r=document.getElementById("replyBox");if(r){r.scrollIntoView({behavior:"smooth",block:"center"});const ed=r.querySelector(".ed");ed&&ed.focusEnd()}},120)}
 function renderThread(){
   const p=C.open;
-  comm.append(el("button",{class:"backlink",onclick:()=>backTo(t=>t.tab==="commView"&&t.section!=="news",()=>go("cat",{cat:p.cat,section:"forum"}))},"‹ "+catOf(p.cat).t));
-  comm.append(el("div",{class:"thtop"},el("div",{class:"pm"},catChip(p.cat),p.place?el("button",{class:"place-tag",onclick:()=>{showTab("mapView");select(p.place.id,true)}},"📍 "+p.place.name+" → kaart"):null),el("h1",{style:"font-size:22px;line-height:1.25"},p.title)));
-  if(p.locked)comm.append(el("div",{class:"card nudge"},el("b",{},"🔒 Dit onderwerp is gesloten"),el("span",{},"Een moderator heeft het gesloten. Je kunt nog lezen, maar niet meer reageren.")));
+  const cv="--cat:hsl("+catHue(catOf(p.cat))+" 62% 46%)";const nR=C.replies.length;
+  comm.append(el("div",{class:"thbar",style:cv},el("button",{class:"thback","aria-label":"Terug naar Community",onclick:()=>backTo(t=>t.tab==="commView"&&t.section!=="news",()=>go("cat",{cat:p.cat,section:"forum"}))},icon("i-back","i")),
+    el("div",{class:"thbar-t"},el("b",{},catOf(p.cat).t),el("span",{},nR?nR+" "+(nR===1?"reactie":"reacties"):"Nog geen reacties")),
+    el("button",{class:"thjump",onclick:()=>{const r=document.getElementById("replyBox");r&&r.scrollIntoView({behavior:"smooth",block:"center"});r&&r.querySelector(".ed")&&r.querySelector(".ed").focusEnd()}},"Reageer")));
+  const hero=el("section",{class:"thhero",style:cv});comm.append(hero);
+  hero.append(el("div",{class:"thtop"},el("div",{class:"pm"},catChip(p.cat),p.place?el("button",{class:"place-tag",onclick:()=>{showTab("mapView");select(p.place.id,true)}},"📍 "+p.place.name+" → kaart"):null),el("h1",{},p.title)));
+  if(p.locked)comm.append(el("div",{class:"card nudge"},el("b",{},"🔒 Dit onderwerp is gesloten")));
   const canEditP=isMod(C.me)||p.author===C.me;
-  if(C.edit&&C.edit.id===p.id)comm.append(editForm(p,null));
-  else comm.append(el("article",{class:"card fpost op"},authorLine(p.author,p.createdAt),readMore(decorateMentions(rich(p,"body"),p),"p-"+p.id,plain(p,"body")),photoGrid(p),editedNote(p),
+  if(C.edit&&C.edit.id===p.id)hero.append(editForm(p,null));
+  else hero.append(el("article",{class:"fpost op"},authorLine(p.author,p.createdAt),readMore(decorateMentions(rich(p,"body"),p),"p-"+p.id,plain(p,"body")),photoGrid(p),editedNote(p),
     el("div",{class:"pfoot"},el("div",{class:"r"},likeBtn(p,()=>toggleLike("posts/"+p.id,p)),!p.locked?el("button",{class:"like",onclick:()=>{const r=document.getElementById("replyBox");r&&r.scrollIntoView({behavior:"smooth",block:"center"});r&&r.querySelector(".ed").focusEnd()}},"💬 Reageer"):null),
       el("div",{class:"r"},reportBtn(p,null),canEditP?el("button",{class:"like",onclick:()=>{C.edit={id:p.id};drafts["edit-"+p.id]=p.bodyHtml||escHtml(p.body||"");renderComm()}},"✏️ Bewerk"):null))));
   const ids=new Set(C.replies.map(r=>r.id));
   const tops=C.replies.filter(r=>!r.parent||!ids.has(r.parent));
   const kids=id=>C.replies.filter(r=>r.parent===id);
-  const best=C.replies.reduce((m,r)=>((r.likes||[]).length>((m&&m.likes||[]).length)?r:m),null);
-  comm.append(el("div",{class:"sec"},C.replies.length?C.replies.length+" "+(C.replies.length===1?"reactie":"reacties"):"Nog geen reacties"));
+  const best=bestOf(p);
+  comm.append(el("div",{class:"thdiv"},el("span",{},C.replies.length?C.replies.length+" "+(C.replies.length===1?"reactie":"reacties"):"Nog geen reacties")));
   if(!C.replies.length&&p.author!==C.me&&!p.locked)comm.append(el("div",{class:"card nudge"},el("b",{},"Jij kunt de eerste zijn"),el("span",{},nameOf(p.author).split(" ")[0]+" wacht op een antwoord. Ook een kleine tip helpt.")));
   tops.forEach(r=>{const grp=el("div",{class:"rgroup"});grp.append(replyArticle(p,r,false,best));
     const ch=kids(r.id);const showForm=!p.locked&&(C.replyTo===r.id||ch.some(c=>c.id===C.replyTo));
@@ -2225,18 +2585,20 @@ let unsubN=null;
 function subNotifs(){if(unsubN){unsubN();unsubN=null}C.notifs=[];
   if(C.db&&C.me)unsubN=C.db.collection("notifications").where("to","==",C.me).onSnapshot(s=>{C.notifs=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>b.createdAt-a.createdAt);updateBadge();if(C.screen==="home"||C.screen==="notifs")renderComm()},()=>{});
   else C.notifs=(C.localNotifs||[]).filter(n=>n.to===C.me);updateBadge()}
-async function notify(list){const seen=new Set();for(const n of list){if(!n.to||n.to===C.me)continue;const k=n.to+n.type;if(seen.has(n.to))continue;seen.add(n.to);
+async function notify(list){const seen=new Set(),ids=[];for(const n of list){if(!n.to||n.to===C.me)continue;const k=n.to+n.type;if(seen.has(n.to))continue;seen.add(n.to);
   const doc={...n,from:C.me,createdAt:Date.now(),read:false};
-  if(C.db){try{await C.db.collection("notifications").add(doc)}catch(e){}}else{C.localNotifs=[...(C.localNotifs||[]),{id:"l"+Date.now()+Math.random(),...doc}]}}}
-const unreadN=()=>(C.notifs||[]).filter(n=>!n.read).length;
+  if(C.db){try{const r=await C.db.collection("notifications").add(doc);if(r&&r.id)ids.push(r.id)}catch(e){}}else{C.localNotifs=[...(C.localNotifs||[]),{id:"l"+Date.now()+Math.random(),...doc}]}}
+  if(ids.length)sendPush({ids})}
+const unreadN=()=>(C.notifs||[]).filter(n=>!n.read&&n.type!=="dm").length;
 function notifText(n){const who=nameOf(n.from);const t=n.title?"“"+n.title+"”":"";
-  return{mention:who+" noemde je in "+t,ncomment:who+" reageerde op je nieuwsbericht "+t,nreply:who+" antwoordde op je reactie bij "+t,reply:who+" reageerde op je vraag "+t,rreply:who+" antwoordde op je reactie in "+t,like:who+" vond je bericht nuttig in "+t,renamed:"Een moderator heeft je profielnaam of gebruikersnaam aangepast ("+(n.title||"")+")",approved:"Je inzending voor "+(n.title||"een parking")+" is goedgekeurd en staat live",rejected:"Je inzending voor "+(n.title||"een parking")+" is afgewezen"}[n.type]||who+" deed iets in "+t}
+  return{friendreq:who+" wil vrienden met je worden",friendok:who+" heeft je vriendschapsverzoek geaccepteerd",dm:who+" stuurde je een bericht",mention:who+" noemde je in "+t,ncomment:who+" reageerde op je nieuwsbericht "+t,nreply:who+" antwoordde op je reactie bij "+t,reply:who+" reageerde op je vraag "+t,rreply:who+" antwoordde op je reactie in "+t,like:who+" vond je bericht nuttig in "+t,renamed:"Een moderator heeft je profielnaam of gebruikersnaam aangepast ("+(n.title||"")+")",approved:"Je inzending voor "+(n.title||"een parking")+" is goedgekeurd en staat live",rejected:"Je inzending voor "+(n.title||"een parking")+" is afgewezen"}[n.type]||who+" deed iets in "+t}
 async function markRead(list){for(const n of list){if(n.read)continue;n.read=true;if(C.db&&!String(n.id).startsWith("l")){try{await C.db.doc("notifications/"+n.id).update({read:true})}catch(e){}}}updateBadge()}
 function renderNotifs(){
   comm.append(el("button",{class:"backlink",onclick:()=>backTo(t=>t.tab==="commView"&&t.screen==="home",()=>go("home",{section:"forum"}))},"‹ Community"));
   comm.append(el("div",{class:"phead"},el("h1",{},"Meldingen"),unreadN()?el("button",{class:"btn sm",onclick:async()=>{await markRead(C.notifs||[]);renderComm()}},"Alles gelezen"):null));
   const box=el("div",{class:"card list0"});
-  (C.notifs||[]).forEach(n=>box.append(el("button",{class:"nrow"+(n.read?"":" unread"),onclick:async()=>{await markRead([n]);
+  (C.notifs||[]).filter(n=>n.type!=="dm").forEach(n=>box.append(el("button",{class:"nrow"+(n.read?"":" unread"),onclick:async()=>{await markRead([n]);
+      if(n.type==="friendreq"){nav(()=>{showTabRaw("hangTab");C.section="hangout";go("friends")});return}if(n.type==="friendok"&&n.from){openUser(n.from);return}
       if(n.newsId){const nw=(C.news||[]).find(x=>x.id===n.newsId);if(nw){nav(()=>{showTab("newsTab");go("newsitem",{newsOpen:nw})});return}}
       if(n.postId){const p=C.posts.find(x=>x.id===n.postId);if(p){C.scrollTo=n.replyId||null;openThread(p);return}}
       if(n.type==="approved"&&n.parking){showTab("mapView");select(n.parking,true);return}renderComm()}},
@@ -2253,7 +2615,7 @@ async function submitReply(p,parent,ed,att,msg){
   const r={text:v.text,textHtml:v.html,mentions:v.mentions,photos,author:C.me,createdAt:Date.now(),likes:[],parent:top,replyTo:parent?parent.author:null};
   try{if(C.db&&!String(p.id).startsWith("l")){await C.db.collection("posts/"+p.id+"/replies").add(r);await C.db.doc("posts/"+p.id).update({replyCount:(p.replyCount||0)+1,lastAt:Date.now()})}
     else{p.localReplies=[...(p.localReplies||[]),{...r,id:"l"+Date.now()}];p.replyCount=(p.replyCount||0)+1;p.lastAt=Date.now();C.replies=p.localReplies}}
-  catch(err){msg.textContent="Reageren lukte niet: je hebt alleen leesrechten.";return false}
+  catch(err){msg.textContent="Reageren lukte niet: "+((err&&err.message)||"onbekende fout")+".";return false}
   const base={postId:p.id,title:p.title};
   await notify([...v.mentions.map(m=>({...base,to:m.id,type:"mention"})),parent?{...base,to:parent.author,type:"rreply"}:null,{...base,to:p.author,type:"reply"}].filter(Boolean));
   ed.clear();att.clear();C.replyTo=null;renderComm();return true}
@@ -2267,14 +2629,26 @@ function replyForm(p,parent){if(isBanned(C.me))return bannedNote();
   f.addEventListener("submit",async e=>{e.preventDefault();await submitReply(p,parent,ed,att,msg)});
   if(parent&&!drafts[key])drafts[key]="";
   return f}
+function bestOf(p){if(p.bestReply){const r=C.replies.find(x=>x.id===p.bestReply);if(r)return r}
+  const m=C.replies.reduce((m,r)=>((r.likes||[]).length>((m&&m.likes||[]).length)?r:m),null);return m&&(m.likes||[]).length>=2?m:null}
 function replyArticle(p,r,child,best){const canEd=isMod(C.me)||r.author===C.me;
   if(C.edit&&C.edit.id===r.id)return editForm(p,r);
-  const body=decorateMentions(rich(r,"text"),r);
-  const art=el("article",{class:"card fpost"+(child?" child":"")+(best===r?" best":""),id:"r-"+r.id},best===r?el("span",{class:"bestb"},"★ Meest nuttig"):null,authorLine(r.author,r.createdAt),
-    child&&r.replyTo&&r.replyTo!==(p.author)?el("div",{class:"replyto"},"↪ antwoord aan ",el("button",{class:"mention",type:"button",onclick:()=>openUser(r.replyTo)},nameOf(r.replyTo))):null,
-    readMore(body,"r-"+r.id,plain(r,"text")),photoGrid(r),editedNote(r),
-    el("div",{class:"pfoot"},el("div",{class:"r"},likeBtn(r,()=>toggleLike("posts/"+p.id+"/replies/"+r.id,r)),!p.locked?el("button",{class:"like",onclick:()=>{C.replyTo=r.id;renderComm();setTimeout(()=>{const f=document.getElementById("rr-"+r.id);if(f){f.scrollIntoView({behavior:"smooth",block:"center"});f.querySelector(".ed").focusEnd()}},60)}},"↩ Antwoord"):null),
-      el("div",{class:"r"},reportBtn(p,r),canEd?el("button",{class:"like",onclick:()=>{C.edit={id:r.id};drafts["edit-"+r.id]=r.textHtml||escHtml(r.text||"");renderComm()}},"✏️"):null,canEd?confirmBtn("🗑",()=>deleteReply(p,r)):null)));
+  const body=decorateMentions(rich(r,"text"),r);const likes=r.likes||[];const mine=C.me&&likes.includes(C.me);const canBest=!p.locked&&(isMod(C.me)||p.author===C.me);const isBest=best===r;
+  const act=(label,fn,cls)=>el("button",{class:"fbact"+(cls?" "+cls:""),type:"button",onclick:fn},label);
+  const bubble=el("div",{class:"fbb"},el("button",{class:"fbname",type:"button",onclick:()=>openUser(r.author)},nameOf(r.author),isMod(r.author)?el("span",{class:"modb"},"👑 Admin"):proStar(r.author)),
+    readMore(body,"r-"+r.id,plain(r,"text")),likes.length?el("span",{class:"fblikes"},"👍 "+likes.length):null);
+  const acts=el("div",{class:"fba"},el("span",{class:"fbtime"},ago(r.createdAt)),
+    act(mine?"Nuttig ✓":"Nuttig",()=>toggleLike("posts/"+p.id+"/replies/"+r.id,r),mine?"on":""),
+    !p.locked?act("Antwoorden",()=>{C.replyTo=r.id;renderComm();setTimeout(()=>{const f=document.getElementById("rr-"+r.id);if(f){f.scrollIntoView({behavior:"smooth",block:"center"});f.querySelector(".ed").focusEnd()}},60)}):null,
+    act("•••",()=>{C.rmore=C.rmore===r.id?null:r.id;renderComm()},"more"));
+  const more=C.rmore===r.id?el("div",{class:"fbmore"},
+    canBest?act(isBest&&p.bestReply===r.id?"★ Niet meer meest nuttig":"★ Markeer als meest nuttig",()=>{C.rmore=null;setPost(p,{bestReply:isBest&&p.bestReply===r.id?null:r.id})},"best"):null,
+    canEd?act("✏️ Bewerken",()=>{C.rmore=null;C.edit={id:r.id};drafts["edit-"+r.id]=r.textHtml||escHtml(r.text||"");renderComm()}):null,
+    canEd?(()=>{const b=confirmBtn("🗑 Verwijderen",()=>deleteReply(p,r));b.className="fbact del";return b})():null,
+    (()=>{const b=reportBtn(p,r);if(b&&b.tagName==="BUTTON")b.className="fbact";return b})()):null;
+  const art=el("article",{class:"fbr"+(child?" child":"")+(isBest?" best":""),id:"r-"+r.id},
+    el("button",{class:"avbtn","aria-label":"Profiel van "+nameOf(r.author),onclick:()=>openUser(r.author)},avatar(r.author)),
+    el("div",{class:"fbc"},isBest?el("span",{class:"bestb"},"★ Meest nuttig"):null,bubble,photoGrid(r),editedNote(r),acts,more));
   return art}
 
 /* zoeken met suggesties (vet = match, ✓ = beantwoord, ? = open) */
@@ -2321,15 +2695,17 @@ function editForm(p,r){
   const key="edit-"+(r?r.id:p.id);const f=el("form",{class:"card compose editbox"});
   f.append(el("b",{},r?"Reactie bewerken":"Onderwerp bewerken"+(isMod(C.me)&&p.author!==C.me?" (als moderator)":"")));
   let ti=null;if(!r){ti=el("input",{id:"eTitle",maxlength:"140",value:drafts[key+"-t"]??p.title});ti.addEventListener("input",()=>drafts[key+"-t"]=ti.value);f.append(el("label",{class:"fl",for:"eTitle"},"Titel",ti))}
-  const ed=editor(key,"Tekst");f.append(ed);const msg=el("div",{class:"status"});f.append(msg);
-  f.append(el("div",{class:"r"},el("button",{class:"btn primary",type:"submit"},"Opslaan"),el("button",{class:"btn",type:"button",onclick:()=>{C.edit=null;delete drafts[key];renderComm()}},"Annuleren")));
+  const ed=editor(key,"Tekst");f.append(ed);
+  const src=r||p;if(PHD[key]===undefined)PHD[key]=(src.photos||[]).map(v=>({v,src:blob(v)}));const att=attacher(key);f.append(att);
+  const msg=el("div",{class:"status"});f.append(msg);
+  f.append(el("div",{class:"r"},el("button",{class:"btn primary",type:"submit"},"Opslaan"),el("button",{class:"btn",type:"button",onclick:()=>{C.edit=null;delete drafts[key];delete PHD[key];renderComm()}},"Annuleren")));
   f.addEventListener("submit",async e=>{e.preventDefault();const v=ed.value();if(!v.text){msg.textContent="De tekst mag niet leeg zijn.";return}
-    const meta={editedAt:Date.now(),editedBy:C.me};
+    const meta={editedAt:Date.now(),editedBy:C.me,photos:att.get()};
     if(r){const patch={text:v.text,textHtml:v.html,...meta};Object.assign(r,patch);
       if(C.db&&!String(r.id).startsWith("l")){try{await C.db.doc("posts/"+p.id+"/replies/"+r.id).update(patch)}catch(err){msg.textContent="Opslaan lukte niet.";return}}}
     else{const t=ti.value.trim();if(!t){msg.textContent="Geef een titel.";return}const patch={title:t,body:v.text,bodyHtml:v.html,...meta};Object.assign(p,patch);
       if(C.db&&!String(p.id).startsWith("l")){try{await C.db.doc("posts/"+p.id).update(patch)}catch(err){msg.textContent="Opslaan lukte niet.";return}}}
-    C.edit=null;delete drafts[key];delete drafts[key+"-t"];renderComm()});
+    C.edit=null;delete drafts[key];delete drafts[key+"-t"];delete PHD[key];renderComm()});
   setTimeout(()=>ed.focusEnd(),30);return f}
 
 function modUserForm(id,p,done){done=done||(()=>{C.modEditUser=null;renderComm()});const f=el("form",{class:"card compose modbar"});const msg=el("div",{class:"status"});
@@ -2429,7 +2805,8 @@ async function banUser(id,on,info){C.bans={...(C.bans||{})};const p=info||prof(i
   if(on)C.bans[id]={by:C.me,at:Date.now(),username:p.username||"",name:p.name||""};else delete C.bans[id];
   if(C.db){try{on?await C.db.collection("bans").doc(id).set(C.bans[id]):await C.db.doc("bans/"+id).delete()}catch(e){alertMsg("Opslaan lukte niet.");return}}
   renderComm();if(!document.getElementById("modView").hidden)renderMod()}
-async function hangoutCommand(text){const m=text.match(/^\/(ban|unban)\s+@?(\S+)/i);if(!m)return"Onbekend commando. Gebruik /ban gebruikersnaam of /unban gebruikersnaam.";
+async function clearHangout(){const all=(C.hangout||[]).slice();if(C.db){for(const m of all){if(String(m.id).startsWith("l"))continue;try{await C.db.doc("hangout/"+m.id).delete()}catch(e){}}}C.hangout=[]}
+async function hangoutCommand(text){if(/^\/(clear|leeg)\b/i.test(text)){await clearHangout();renderComm();return null}const m=text.match(/^\/(ban|unban)\s+@?(\S+)/i);if(!m)return"Onbekend commando. Gebruik /ban gebruikersnaam of /unban gebruikersnaam.";
   const hit=findByUsername(m[2]);if(!hit)return"Gebruiker @"+cleanU(m[2])+" niet gevonden.";const[id,p]=hit;
   if(isMod(id))return"Je kunt geen moderator blokkeren.";
   const on=m[1].toLowerCase()==="ban";await banUser(id,on,p);thanks((on?"@"+p.username+" is geblokkeerd":"@"+p.username+" is gedeblokkeerd"),on?"🚫":"✅");return null}
@@ -2657,7 +3034,8 @@ function renderAcc(){
   const mine=C.posts.filter(x=>x.author===C.me);
   const myRev=(C.reviews||[]).filter(r=>r.author===C.me&&PARKINGS.some(x=>x.id===r.parking));
   acc.append(el("div",{class:"tacho"},el("div",{class:"tile"},el("span",{},"Onderwerpen"),el("b",{},String(mine.length))),el("div",{class:"tile"},el("span",{},"Parking-reviews"),el("b",{},String(myRev.length)))));
-  acc.append(proCard());
+  {const t=proTeaser("account");if(t)acc.append(t);else acc.append(proCard())}
+  if(C.me)acc.append(pushCard());
   renderMySubs();
   acc.append(el("div",{class:"sec"},"Mijn onderwerpen"));
   const mb=el("div",{class:"card list0"});mine.forEach(x=>mb.append(threadRow(x)));if(!mine.length)mb.append(el("div",{class:"empty"},"Je hebt nog niets geplaatst."));acc.append(mb);
@@ -2679,7 +3057,7 @@ function pickImage(kind,cb){const inp=el("input",{type:"file",accept:"image/*",s
     img.onerror=()=>{URL.revokeObjectURL(url);alertMsg("Dit bestand kan niet als afbeelding gelezen worden.")};img.src=url});
   inp.click()}
 function alertMsg(t){const d=el("div",{class:"toast"},t);document.body.append(d);setTimeout(()=>d.remove(),3500)}
-async function storeImage(b,data){if(C.assets){try{const r=await C.assets.upload(b);return r.id}catch(e){alertMsg("Uploaden lukte niet ("+(e&&e.code||"fout")+").");return null}}
+async function storeImage(b,data){if(C.assets){try{const r=await C.assets.upload(b);return r.id}catch(e){alertMsg("Foto uploaden lukte niet: "+((e&&e.message)||(e&&e.code)||"onbekende fout"));return null}}
   if(C.db){alertMsg("Je hebt geen rechten om foto's te uploaden.");return null}return data}
 function renderEdit(p){
   acc.append(el("h1",{},"Profiel bewerken"));
@@ -2715,10 +3093,14 @@ async function initComm(){
     db.collection("categories").onSnapshot(s=>{const m={};s.docs.forEach(d=>m[d.id]={id:d.id,...d.data()});C.catDocs=m;applyCats();renderComm();if(!document.getElementById("modView").hidden)renderMod(true)},()=>{});
     db.collection("bans").onSnapshot(s=>{const m={};s.docs.forEach(d=>m[d.id]=d.data());C.bans=m;renderComm();if(!document.getElementById("modView").hidden)renderMod(true)},()=>{});
     db.collection("pro").onSnapshot(s=>{const m={};s.docs.forEach(d=>m[d.id]=d.data());C.pro=m;renderComm();renderSheet();if(!document.getElementById("accView").hidden)renderAcc()},()=>{});
+    db.collection("pushlog").onSnapshot(s=>{const m={};s.docs.forEach(d=>m[d.id]=d.data());C.pushLog=m;if(C.modTab==="push"&&!document.getElementById("modView").hidden)renderMod(true)},()=>{});
+    pushInit();
+    db.collection("friends").onSnapshot(s=>{const m={};s.docs.forEach(d=>{const v=d.data();if(v)m[d.id]={id:d.id,...v}});C.friends=m;updateDmBadge();if(C.section==="hangout"&&!document.getElementById("commView").hidden)renderComm()},()=>{});
+    db.collection("chats").onSnapshot(s=>{const m={};s.docs.forEach(d=>{const v=d.data();if(v)m[d.id]={id:d.id,...v}});C.chats=m;updateDmBadge();if(C.section==="hangout"&&(C.screen==="dms")&&!document.getElementById("commView").hidden)renderComm()},()=>{});
     db.collection("closures").onSnapshot(s=>{const m={};s.docs.forEach(d=>m[d.id]={id:d.id,...d.data()});C.closures=m;renderSheet();draw();updateModTab()},()=>{});
     db.collection("facilities").onSnapshot(s=>{const m={};s.docs.forEach(d=>m[d.id]=d.data());C.facDocs=m;applySvc();buildChips();renderSheet();if(!document.getElementById("modView").hidden)renderMod(true)},()=>{});
     db.collection("ads").onSnapshot(s=>{const m={};s.docs.forEach(d=>m[d.id]={id:d.id,...d.data()});C.ads=m;renderComm();renderSheet();if(!document.getElementById("modView").hidden)renderMod(true)},()=>{});
-    db.collection("settings").onSnapshot(s=>{s.docs.forEach(d=>{if(d.id==="pro")C.proSettings=d.data();if(d.id==="ads")C.adSettings=d.data()});if(!document.getElementById("modView").hidden)renderMod(true);if(!document.getElementById("accView").hidden)renderAcc()},()=>{});
+    db.collection("settings").onSnapshot(s=>{s.docs.forEach(d=>{if(d.id==="pro")C.proSettings=d.data();if(d.id==="ads")C.adSettings=d.data();if(d.id==="theme"){C.theme=d.data();if(!C.themeDraft)applyTheme(C.theme.accent)}if(d.id==="appicon"){C.appIcon=d.data();applyAppIcon(C.appIcon)}});if(!document.getElementById("modView").hidden)renderMod(true);if(!document.getElementById("accView").hidden)renderAcc()},()=>{});
     db.collection("editors").onSnapshot(s=>{C.editors=new Set(s.docs.map(d=>d.id));if(!document.getElementById("commView").hidden)renderComm()},()=>{});
     db.collection("news").orderBy("createdAt","desc").limit(200).onSnapshot(s=>{C.news=s.docs.map(d=>({id:d.id,...d.data()}));if((C.section==="news"||C.screen==="newsitem")&&!document.getElementById("commView").hidden)renderComm()},()=>{});
     db.collection("hangout").orderBy("createdAt","desc").limit(200).onSnapshot(s=>{C.hangout=s.docs.map(d=>({id:d.id,...d.data()}));if(C.section==="hangout"&&C.screen==="home"&&!document.getElementById("commView").hidden)renderComm()},()=>{});
@@ -2745,7 +3127,7 @@ document.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.matches('in
 /* navigatie-wrappers: elke stap vooruit komt in de geschiedenis (iOS terug-swipe) */
 const showTabRaw=showTab;showTab=function(id){return nav(()=>showTabRaw(id))};
 {const _go=go;go=function(...a){return nav(()=>_go(...a))};
- const _sel=select;select=function(...a){return nav(()=>_sel(...a))};
+ const _sel=select;select=function(...a){if(S.sel&&a[0]!==S.sel&&curTab()==="mapView")NAV.replace=true;return nav(()=>_sel(...a))};
  const _ot=openThread;openThread=function(...a){return nav(()=>_ot(...a))};
  const _os=openSubmit;openSubmit=function(...a){return nav(()=>_os(...a))};
  const _ou=openUser;openUser=function(...a){return nav(()=>_ou(...a))};
@@ -2768,6 +3150,7 @@ const showTabRaw=showTab;showTab=function(id){return nav(()=>showTabRaw(id))};
 buildSvg();buildChips();
 requestAnimationFrame(()=>{fitTo([53.0,50.8],[3.4,6.2],30);renderSheet()});
 if(LIVE)gmLoad();
+checkDeepLink();
 matchMedia("(min-width:700px)").addEventListener("change",()=>renderSheet());
 let startTab="mapView";try{startTab=localStorage.getItem("cp-tab")||"mapView"}catch(e){}
 showTab(["mapView","commView","newsTab","hangTab","accView","modView"].includes(startTab)?startTab:"mapView");
