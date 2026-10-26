@@ -72,6 +72,25 @@ svg.i{width:18px;height:18px;flex:none}
 body.picking .mapside{display:none}
 .locbtn{width:44px;height:44px;border-radius:14px;border:0;background:var(--card);color:var(--ink,#14161F);display:grid;place-items:center;box-shadow:var(--shadow);cursor:pointer}
 .locbtn svg{width:22px;height:22px}.locbtn.on{color:#1A73E8}.locbtn.wait svg{animation:spSpin 1.2s linear infinite}
+.laypop{position:absolute;right:56px;top:0;width:260px;background:var(--card);border-radius:18px;box-shadow:0 12px 32px rgb(20 22 31 / .2);padding:10px;display:flex;flex-direction:column;gap:2px;z-index:20}
+.layhd{font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;padding:4px 8px 6px}
+.layrow{display:flex;align-items:center;gap:10px;border:0;background:none;padding:9px 8px;border-radius:12px;text-align:left;cursor:pointer;width:100%;color:inherit}
+.layrow:active{background:var(--soft)}.layic{width:30px;height:30px;display:grid;place-items:center;font-size:20px;flex:none}.layic img{width:30px;height:30px;border-radius:8px}
+.laytx{flex:1;min-width:0;display:flex;flex-direction:column}.laytx b{font-size:14px}.laytx small{font-size:12px;color:var(--muted)}
+.sw{width:40px;height:24px;border-radius:12px;background:#D5D9E3;position:relative;flex:none;transition:background .2s}.sw::after{content:"";position:absolute;left:3px;top:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgb(0 0 0 / .25);transition:transform .2s}
+.sw.on{background:var(--accent)}.sw.on::after{transform:translateX(16px)}
+.laynote{margin:4px 8px 2px;font-size:12px;color:var(--muted)}
+.zlabel{position:absolute;transform:translate(-50%,-50%);display:flex;align-items:center;gap:5px;padding:3px 9px 3px 4px;border-radius:999px;background:#fff;box-shadow:0 2px 8px rgb(0 0 0 / .2);font-size:12px;font-weight:800;color:#166534;white-space:nowrap;z-index:4;cursor:pointer;pointer-events:auto;border:2px solid #16A34A}
+.zlabel.ze{color:#5B21B6;border-color:#7C3AED}.zlabel.fut{border-style:dashed}
+.zlabel .zl-ic{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:11px;background:#E8F5E9}.zlabel.ze .zl-ic{background:#F1E9FF}
+.zlabel.dot{padding:2px}.zlabel.dot .zl-tx{display:none}
+.zlegend{position:absolute;left:16px;top:120px;z-index:8;display:flex;gap:9px;align-items:center;max-width:calc(100% - 92px);background:var(--card);border-radius:10px;padding:5px 9px;box-shadow:var(--shadow);font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden}
+.zlegend .lg{display:flex;align-items:center;gap:5px}.zlegend i{width:14px;height:10px;border-radius:3px;background:rgb(22 163 74 / .3);border:2px solid #15803D}.zlegend i.ze{background:rgb(124 58 237 / .3);border-color:#6D28D9}.zlegend i.fut{background:none;border:2px dashed #6B7280}
+.zlegend .lgtip{flex-basis:100%;font-size:11px;font-weight:600;color:var(--muted)}
+body.picking .zlegend{display:none}
+.ztag.fut{background:#FFF7E6;color:#92400E;box-shadow:inset 0 0 0 1.5px #F59E0B}.ztag.now{background:#E8F5E9;color:#166534}
+.zfuture{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:16px;background:#FFF7E6;border:1.5px dashed #F59E0B}.zfuture b{display:block;color:#92400E}.zfuture span{font-size:13px;color:#78350F}.zf-ic{font-size:20px}
+.zactive{display:inline-flex;align-self:flex-start;align-items:center;gap:7px;font-size:13px;font-weight:800;color:#166534;background:#E8F5E9;padding:5px 10px;border-radius:999px}.zdot{width:8px;height:8px;border-radius:50%;background:#16A34A;box-shadow:0 0 0 3px rgb(22 163 74 / .25)}
 .mepin{position:absolute;width:0;height:0;pointer-events:none;z-index:8}
 .mepin .me-dot{position:absolute;left:-9px;top:-9px;width:18px;height:18px;border-radius:50%;background:#1A73E8;border:3px solid #fff;box-shadow:0 1px 6px rgb(0 0 0 / .35)}
 .mepin .me-acc{position:absolute;left:-26px;top:-26px;width:52px;height:52px;border-radius:50%;background:rgb(26 115 232 / .22);animation:mePulse 2s ease-out infinite}
@@ -855,7 +874,7 @@ html,body{touch-action:manipulation}
 .carousel{scroll-padding-inline:max(16px,env(safe-area-inset-left,0px))}
 @media (max-width:699px){.sheet{bottom:calc(var(--navh,64px) + 4px)!important}.panel{margin-bottom:calc(-4px - var(--navh,64px))!important;padding-bottom:calc(4px + var(--navh,64px))!important}}
 .chatv{padding-top:0!important}.chatv .chatbar{margin-left:calc(-1 * max(16px,env(safe-area-inset-left,0px)));margin-right:calc(-1 * max(16px,env(safe-area-inset-right,0px)))}
-.zpath{fill:#16A34A;fill-opacity:.13;stroke:#15803D;stroke-width:1.6;cursor:pointer}.zpath.ze{fill:#7C3AED;stroke:#6D28D9}.zpath.sel{fill-opacity:.3;stroke-width:3}
+.zpath{fill:#16A34A;fill-opacity:.24;stroke:#15803D;stroke-width:2.5;cursor:pointer}.zpath.fut{fill-opacity:.1;stroke-dasharray:6 5}.zpath.ze{fill:#7C3AED;stroke:#6D28D9}.zpath.sel{fill-opacity:.3;stroke-width:3}
 .chip.zonechip[aria-pressed="true"]{background:#E8F5E9;color:#166534;box-shadow:inset 0 0 0 1.5px #16A34A}
 .ztag{display:inline-block;font-size:11px;font-weight:800;padding:3px 8px;border-radius:7px;background:#E8F5E9;color:#166534}.ztag.ze{background:#F1E9FF;color:#5B21B6}
 .zrule{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:16px;background:var(--soft)}.zrule p{margin:0;line-height:1.5;font-weight:600}.zic{font-size:20px}
@@ -961,6 +980,7 @@ try{splashTheme(localStorage.getItem("cp-theme"))}catch(e){}
       <button id="zout" aria-label="Uitzoomen">−</button>
       <button id="zfit" aria-label="Alles tonen"><svg class="i"><use href="#i-fit"/></svg></button>
     </div>
+    <button class="locbtn" id="layBtn" aria-label="Kaartlagen" title="Kaartlagen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2.5 8 12 13l9.5-5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="m2.5 12.2 9.5 5 9.5-5M2.5 16.4l9.5 5 9.5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button>
     <button class="locbtn" id="locBtn" aria-label="Mijn locatie" title="Mijn locatie"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v3M12 19v3M2 12h3M19 12h3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="2.6" fill="currentColor"/></svg></button>
     <button class="addfab" id="addFab" aria-label="Parking toevoegen" title="Parking toevoegen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button>
     </div>
@@ -1125,6 +1145,17 @@ const BIG=["Amsterdam","Parijs","Berlijn","Praag","Wenen","Brussel","Keulen","Fr
 const cityEls=CITIES.map(c=>{const e=el("div",{class:"city"},c[0]);ov.appendChild(e);return{e,xy:P(c[1],c[2]),big:BIG.includes(c[0])}});
 const countryEls=COUNTRIES.map(c=>{const e=el("div",{class:"country"},c[0]);ov.appendChild(e);return{e,xy:P(c[1],c[2])}});
 let hotelEls=[];const DEST={e:null};
+/* kaartlagen */
+function toggleLayers(e){if(e)e.stopPropagation();let p=document.getElementById("layPop");if(p){p.remove();return}
+  p=el("div",{class:"laypop",id:"layPop",onclick:ev=>ev.stopPropagation()});
+  const row=(ic,label,sub,on,fn)=>el("button",{type:"button",class:"layrow","aria-pressed":on,onclick:()=>{fn();renderLayers()}},el("span",{class:"layic"},ic),el("span",{class:"laytx"},el("b",{},label),sub?el("small",{},sub):null),el("span",{class:"sw"+(on?" on":"")}));
+  function renderLayers(){p.replaceChildren(el("div",{class:"layhd"},"Wat zie je op de kaart?"),
+    row(el("img",{src:PARK_LOGO,alt:""}),"Busparkings","Parkeerplaatsen voor bussen",S.lp!==false,()=>{S.lp=S.lp===false;draw()}),
+    row(el("img",{src:STOP_LOGO,alt:""}),"In- en uitstapplaatsen",null,S.ls!==false,()=>{S.ls=S.ls===false;draw()}),
+    row("🌿","Milieuzones","Milieu- en zero-emissiezones",ZN.on,()=>{toggleZones().then(()=>{if(document.getElementById("layPop"))renderLayers()})}),
+    ...(S.lp===false&&S.ls===false?[el("p",{class:"laynote"},"Alle parkings zijn verborgen.")]:[]))}
+  renderLayers();document.querySelector(".mapside").append(p)}
+document.addEventListener("click",e=>{const p=document.getElementById("layPop");if(p&&!e.target.closest("#layPop,#layBtn"))p.remove()});
 /* GPS: eigen locatie */
 const ME={lat:null,lon:null,acc:0,watch:null,e:null,follow:false};
 function meEl(){if(!ME.e)ME.e=el("div",{class:"mepin",title:"Jij bent hier"},el("span",{class:"me-acc"}),el("span",{class:"me-dot"}));return ME.e}
@@ -1153,8 +1184,8 @@ const z2s=z=>Math.pow(2,z-6.5);
 function gmSync(){if(!GM.map)return;const c=GM.map.getCenter(),z=GM.map.getZoom();if(!c)return;const xy=P(c.lat(),c.lng());V.cx=xy[0];V.cy=xy[1];V.s=z2s(z)}
 function gmRender(){if(!GM.ov||!GM.layer)return;wrap.classList.toggle("far",(GM.map.getZoom()||0)<9);const pr=GM.ov.getProjection();if(!pr)return;
   const pos=(e,lat,lng)=>{const p=pr.fromLatLngToDivPixel(new google.maps.LatLng(lat,lng));e.style.left=p.x+"px";e.style.top=p.y+"px";if(e.parentNode!==GM.layer){GM.layer.append(e);google.maps.OverlayView.preventMapHitsAndGesturesFrom(e)}};
-  const vis=new Set(filtered().map(p=>p.id));
-  pinEls.forEach(o=>{pos(o.e,o.p.lat,o.p.lon);o.e.classList.toggle("closed",!!activeClosure(o.p));o.e.classList.toggle("sel",o.p.id===S.sel);o.e.hidden=!vis.has(o.p.id)&&o.p.id!==S.sel});if(S.dest)pos(destEl(),S.dest.lat,S.dest.lon);else if(DEST.e)DEST.e.remove();if(ME.lat!=null)pos(meEl(),ME.lat,ME.lon);
+  const vis=new Set(filtered().filter(layerOk).map(p=>p.id));
+  pinEls.forEach(o=>{pos(o.e,o.p.lat,o.p.lon);o.e.classList.toggle("closed",!!activeClosure(o.p));o.e.classList.toggle("sel",o.p.id===S.sel);o.e.hidden=!vis.has(o.p.id)&&o.p.id!==S.sel});if(S.dest)pos(destEl(),S.dest.lat,S.dest.lon);else if(DEST.e)DEST.e.remove();if(ME.lat!=null)pos(meEl(),ME.lat,ME.lon);ZN.labels.forEach(o=>pos(o.e,o.lat,o.lon));placeZoneLabels(GM.map.getZoom()||0);
   hotelEls.forEach(h=>h.remove());hotelEls=[];
   if(S.hotels){const list=S.sel?availHotels(S.sel):(GM.map.getZoom()>=15?availHotels(null):[]);
     list.forEach(h=>{const b=el("button",{class:"hpin",title:h.name+" · "+h.rooms+" kamers vrij",onclick:e=>{e.stopPropagation();nav(()=>{S.hotel=h.id;renderSheet();draw()})}},icon("i-bed"),"€"+h.price);if(S.hotel===h.id)b.classList.add("sel");pos(b,h.lat,h.lon);hotelEls.push(b)})}}
@@ -1188,9 +1219,9 @@ function render(){
   svg.setAttribute("viewBox",`${V.cx-W/2/V.s} ${V.cy-H/2/V.s} ${W/V.s} ${H/V.s}`);
   cityEls.forEach(c=>{place(c.e,c.xy);c.e.hidden=V.s<1.1&&!c.big});
   countryEls.forEach(c=>{place(c.e,c.xy);c.e.hidden=V.s>6});
-  const vis=new Set(filtered().map(p=>p.id));wrap.classList.toggle("far",V.s<9);
+  const vis=new Set(filtered().filter(layerOk).map(p=>p.id));wrap.classList.toggle("far",V.s<9);
   pinEls.forEach(o=>{place(o.e,o.xy);o.e.classList.toggle("closed",!!activeClosure(o.p));o.e.classList.toggle("sel",o.p.id===S.sel);o.e.hidden=!vis.has(o.p.id)&&o.p.id!==S.sel});
-  placeDest();placeMe();
+  placeDest();placeMe();ZN.labels.forEach(o=>{if(o.e.parentNode!==ov)ov.appendChild(o.e);place(o.e,P(o.lat,o.lon))});placeZoneLabels(s2z(V.s));
   hotelEls.forEach(h=>h.remove());hotelEls=[];
   if(S.hotels){
     const list=S.sel?availHotels(S.sel):(V.s>90?availHotels(null):[]);
@@ -1226,7 +1257,7 @@ let wt;wrap.addEventListener("wheel",e=>{if(GM.on)return;e.preventDefault();cons
 document.getElementById("zin").onclick=()=>zoomAt(1.6);
 document.getElementById("zout").onclick=()=>zoomAt(1/1.6);
 document.getElementById("zfit").onclick=()=>{S.sel=null;renderSheet();fitTo(PARKINGS.map(p=>p.lat),PARKINGS.map(p=>p.lon))};
-document.getElementById("proBtn").onclick=()=>openPro();document.getElementById("addFab").onclick=addParking;document.getElementById("locBtn").onclick=locateMe;
+document.getElementById("proBtn").onclick=()=>openPro();document.getElementById("addFab").onclick=addParking;document.getElementById("locBtn").onclick=locateMe;document.getElementById("layBtn").onclick=toggleLayers;
 const tH=document.getElementById("tHotels");if(!HOTELS_ON){tH.hidden=true;tH.classList.remove("acc")}tH.onclick=()=>{S.hotels=!S.hotels;tH.setAttribute("aria-pressed",S.hotels);tH.classList.toggle("acc",S.hotels);draw()};
 new ResizeObserver(draw).observe(wrap);
 
@@ -1241,7 +1272,7 @@ function geoSearch(q){clearTimeout(GEO.t);if(q.length<3){GEO.items=[];GEO.q=q;re
   GEO.t=setTimeout(async()=>{GEO.busy=true;try{const r=await fetch("https://nominatim.openstreetmap.org/search?format=jsonv2&limit=6&addressdetails=1&countrycodes=nl,be,de,fr,lu,at,cz&accept-language=nl&q="+encodeURIComponent(q));
       const js=await r.json();const items=js.map(x=>{const a=x.address||{};const name=x.name||(x.display_name||"").split(",")[0];const place=a.city||a.town||a.village||a.municipality||"";
         return{type:"g",label:name,sub:[x.type==="city"||x.type==="town"||x.addresstype==="city"?"Plaats":null,place&&place!==name?place:null,a.country].filter(Boolean).join(" · "),lat:+x.lat,lon:+x.lon,city:x.addresstype==="city"||x.addresstype==="town"||x.addresstype==="village"}});
-      GEO.cache[q]=items;if(norm(qi.value.trim())===q){GEO.items=items;GEO.q=q;showResults()}}catch(e){}finally{GEO.busy=false}},450)}
+      GEO.cache[q]=items;GEO.busy=false;if(norm(qi.value.trim())===q){GEO.items=items;GEO.q=q;showResults()}}catch(e){GEO.busy=false;if(norm(qi.value.trim())===q){GEO.items=[];GEO.q=q;showResults()}}finally{GEO.busy=false}},450)}
 function setDest(d){S.destMore=false;S.dest=d;S.sel=null;S.expanded=false;S.hideNearby=false;renderSheet();
   const near=filtered().map(p=>({p,k:kmBetween(d.lat,d.lon,p.lat,p.lon)})).sort((a,b)=>a.k-b.k).slice(0,d.city?8:5).filter((x,i)=>i<3||x.k<25);
   fitTo([d.lat,...near.map(x=>x.p.lat)],[d.lon,...near.map(x=>x.p.lon)],50);draw()}
@@ -1257,7 +1288,17 @@ function renderDest(){const d=S.dest;const all=filtered().map(p=>({p,k:kmBetween
     el("div",{style:"min-width:0"},el("h3",{},p.name),el("div",{class:"loc"},p.city+" · "+subOf(p))),el("div",{class:"meta"},el("span",{class:"dist"},fmtKm(k)),el("span",{class:"pm"},"hemelsbreed")))));
   sc.append(L);if(!far&&near.length>list.length)sc.append(el("button",{class:"btn",onclick:()=>{S.destMore=true;renderSheet()}},"Toon alle "+near.length+" plekken"));panel.append(sc);sheet.append(panel)}
 /* ---------- milieuzones (NDW open data via /api/zones) ---------- */
-const ZN={on:false,data:null,loading:false,err:null,g:null,gmAdded:false};
+const ZN={on:false,data:null,loading:false,err:null,g:null,gmAdded:false,labels:[]};
+const zFuture=z=>!!(z.from&&new Date(z.from)>new Date());
+const zNoEnd=z=>!z.until||new Date(z.until).getFullYear()>=2100;
+function monthsUntil(s){const d=new Date(s),n=new Date();const m=(d.getFullYear()-n.getFullYear())*12+d.getMonth()-n.getMonth();if(m<=0){const dd=Math.ceil((d-n)/864e5);return dd<=1?"morgen":"over "+dd+" dagen"}return m===1?"over 1 maand":m<24?"over "+m+" maanden":"over "+Math.round(m/12)+" jaar"}
+function zoneCenter(geom){let best=null,ba=-1;eachRing(geom,ring=>{let a=0,cx=0,cy=0;for(let i=0,j=ring.length-1;i<ring.length;j=i++){const f=ring[j][0]*ring[i][1]-ring[i][0]*ring[j][1];a+=f;cx+=(ring[j][0]+ring[i][0])*f;cy+=(ring[j][1]+ring[i][1])*f}
+  if(a!==0&&Math.abs(a)>ba){ba=Math.abs(a);best=[cy/(3*a),cx/(3*a)]}});return best}
+function zoneLabels(){ZN.labels.forEach(o=>o.e.remove());ZN.labels=[];if(!ZN.on||!ZN.data)return;
+  ZN.data.features.forEach(f=>{const z=f.properties,c=zoneCenter(f.geometry);if(!c)return;
+    const e=el("button",{type:"button",class:"zlabel "+(z.zone==="zero"?"ze":"le")+(zFuture(z)?" fut":""),onclick:ev=>{ev.stopPropagation();selectZone(z)}},el("span",{class:"zl-ic"},z.zone==="zero"?"⚡":"🌿"),el("span",{class:"zl-tx"},z.town||z.name));
+    ZN.labels.push({e,lat:c[0],lon:c[1]})})}
+function placeZoneLabels(zoom){const far=zoom<9.5;ZN.labels.forEach(o=>o.e.classList.toggle("dot",far))}
 function zoneRuleText(z){const cls=(z.bus||[]).map(c=>c.replace(/^EURO[_ ]?/,"Euro ").replace(/_/g," "));
   const min=cls.length?cls.slice().sort()[0]:null;
   if(z.zone==="zero")return min?"Zero-emissiezone. Volgens de NDW-gegevens geldt voor bussen een uitzondering voor: "+cls.join(", ")+".":"Zero-emissiezone: alleen uitstootvrije voertuigen. Voor bussen kan een overgangsregeling of ontheffing gelden.";
@@ -1269,26 +1310,31 @@ function eachRing(geom,fn){if(!geom)return;const polys=geom.type==="Polygon"?[ge
 function drawZonesSvg(){if(ZN.g){ZN.g.remove();ZN.g=null}if(!ZN.on||!ZN.data||GM.on)return;
   const g=document.createElementNS(NS,"g");g.setAttribute("class","zones");
   ZN.data.features.forEach((f,i)=>{const z=f.properties;let d="";eachRing(f.geometry,ring=>{if(ring.length>2)d+=pathFrom(ring.map(c=>[c[1],c[0]]))});if(!d)return;
-    const pth=document.createElementNS(NS,"path");pth.setAttribute("d",d);pth.setAttribute("class","zpath "+(z.zone==="zero"?"ze":"le")+(S.zone&&S.zone.id===z.id?" sel":""));pth.setAttribute("fill-rule","evenodd");pth.setAttribute("vector-effect","non-scaling-stroke");pth.dataset.zi=i;g.append(pth)});
+    const pth=document.createElementNS(NS,"path");pth.setAttribute("d",d);pth.setAttribute("class","zpath "+(z.zone==="zero"?"ze":"le")+(zFuture(z)?" fut":"")+(S.zone&&S.zone.id===z.id?" sel":""));pth.setAttribute("fill-rule","evenodd");pth.setAttribute("vector-effect","non-scaling-stroke");pth.dataset.zi=i;g.append(pth)});
   svg.append(g);ZN.g=g}
 function drawZonesGm(){if(!GM.on||!GM.map)return;const dl=GM.map.data;
   if(!ZN.on||!ZN.data){dl.forEach(f=>dl.remove(f));ZN.gmAdded=false;return}
   if(!ZN.gmAdded){dl.forEach(f=>dl.remove(f));dl.addGeoJson(ZN.data);ZN.gmAdded=true;
-    dl.setStyle(f=>{const ze=f.getProperty("zone")==="zero";const sel=S.zone&&S.zone.id===f.getProperty("id");return{fillColor:ze?"#7C3AED":"#16A34A",fillOpacity:sel?.28:.14,strokeColor:ze?"#6D28D9":"#15803D",strokeWeight:sel?3:1.6,clickable:true,zIndex:1}});
+    dl.setStyle(f=>{const ze=f.getProperty("zone")==="zero";const sel=S.zone&&S.zone.id===f.getProperty("id");const fut=f.getProperty("from")&&new Date(f.getProperty("from"))>new Date();return{fillColor:ze?"#7C3AED":"#16A34A",fillOpacity:sel?.38:fut?.1:.24,strokeColor:ze?"#6D28D9":"#15803D",strokeOpacity:fut?.6:1,strokeWeight:sel?4:2.5,clickable:true,zIndex:1}});
     if(!ZN.gmClick){ZN.gmClick=dl.addListener("click",e=>{const p={};e.feature.forEachProperty((v,k)=>p[k]=v);selectZone(p)})}}
   else dl.setStyle(dl.getStyle())}
-function drawZones(){drawZonesSvg();drawZonesGm()}
+function drawZones(){drawZonesSvg();drawZonesGm();if(ZN.on&&ZN.data&&!ZN.labels.length)zoneLabels();if(!ZN.on&&ZN.labels.length)zoneLabels();renderLegend();if(GM.on)gmRender();else draw()}
+function renderLegend(){let l=document.getElementById("zLegend");if(!ZN.on||!ZN.data){if(l)l.remove();return}
+  if(!l){l=el("div",{class:"zlegend",id:"zLegend"});document.getElementById("mapView").append(l)}
+  const hasFut=ZN.data.features.some(f=>zFuture(f.properties));
+  l.replaceChildren(...[el("span",{class:"lg"},el("i",{class:"le"}),"Milieuzone"),el("span",{class:"lg"},el("i",{class:"ze"}),"Zero-emissie"),hasFut?el("span",{class:"lg"},el("i",{class:"fut"}),"Toekomstig"):null].filter(Boolean))}
 async function toggleZones(){ZN.on=!ZN.on;buildChips();
   if(ZN.on){await loadZones();if(ZN.err==="preview"){alertMsg("Milieuzones zie je op de live site. Deze voorbeeldweergave mag de NDW-gegevens niet ophalen.");ZN.on=false;buildChips();return}
     if(ZN.err){alertMsg("Milieuzones laden lukte niet: "+ZN.err);ZN.on=false;buildChips();return}
-    thanks((ZN.data.features||[]).length+" milieuzones op de kaart","🌿")}
+    alertMsg((ZN.data.features||[]).length+" milieuzones op de kaart. Parkings verbergen? Gebruik de lagenknop rechts.")}
   else{S.zone=null;renderSheet()}drawZones();buildChips()}
 function selectZone(z){S.zone=z;S.sel=null;renderSheet();drawZones()}
 function renderZoneCard(){const z=S.zone;const panel=el("div",{class:"panel zonepanel"},el("div",{class:"grab"}));const sc=el("div",{class:"pscroll"});
-  sc.append(el("div",{class:"ptop"},el("div",{style:"min-width:0"},el("span",{class:"ztag "+(z.zone==="zero"?"ze":"le")},z.zone==="zero"?"Zero-emissiezone":"Milieuzone"),el("h2",{style:"margin:6px 0 0;font-size:19px;font-weight:800"},z.name),z.town&&z.town!==z.name?el("div",{class:"pm"},z.town):null),
+  sc.append(el("div",{class:"ptop"},el("div",{style:"min-width:0"},el("div",{class:"r",style:"gap:6px"},el("span",{class:"ztag "+(z.zone==="zero"?"ze":"le")},z.zone==="zero"?"Zero-emissiezone":"Milieuzone"),zFuture(z)?el("span",{class:"ztag fut"},"Toekomstig"):el("span",{class:"ztag now"},"● Nu van kracht")),el("h2",{style:"margin:6px 0 0;font-size:19px;font-weight:800"},z.name),z.town&&z.town!==z.name?el("div",{class:"pm"},z.town):null),
     el("button",{class:"roundbtn","aria-label":"Sluiten",onclick:()=>{S.zone=null;renderSheet();drawZones()}},icon("i-x","i"))));
+  if(zFuture(z))sc.append(el("div",{class:"zfuture"},el("span",{class:"zf-ic"},"🗓"),el("div",{},el("b",{},"Toekomstig · gaat "+monthsUntil(z.from)+" in"),el("span",{},"Vanaf "+fmtDate(z.from)+" gelden deze regels. Tot die tijd mag je er nog gewoon in."))));
   sc.append(el("div",{class:"zrule"},el("span",{class:"zic"},"🚌"),el("p",{},zoneRuleText(z))));
-  const facts=[[z.from&&new Date(z.from)>new Date()?"Geldt vanaf":"Geldig sinds",fmtDate(z.from)],["Geldig tot",fmtDate(z.until)],["Status",z.status]].filter(x=>x[1]);
+  const facts=[[zFuture(z)?"Ingangsdatum":"Van kracht sinds",fmtDate(z.from)],["Einddatum",zNoEnd(z)?"Geen einddatum (blijvend)":fmtDate(z.until)],["Status",z.status]].filter(x=>x[1]);
   if(facts.length)sc.append(el("div",{class:"infolist"},...facts.map(([k,v])=>el("div",{class:"inforow"},el("span",{},k),el("b",{},v)))));
   sc.append(el("div",{class:"r",style:"gap:8px;flex-wrap:wrap"},z.url?el("a",{class:"btn sm",href:z.url,target:"_blank",rel:"noopener"},"Meer informatie ↗"):null,el("a",{class:"btn sm",href:"https://www.milieuzones.nl",target:"_blank",rel:"noopener"},"Alle regels op milieuzones.nl ↗")));
   sc.append(el("p",{class:"note",style:"margin:0"},"Bron: NDW (Nationaal Dataportaal Wegverkeer), dagelijks bijgewerkt"+(ZN.data&&ZN.data.fetchedAt?" · opgehaald "+ago(Date.parse(ZN.data.fetchedAt)):"")+". Controleer bij twijfel altijd de borden ter plaatse."));
@@ -1311,12 +1357,13 @@ function showResults(){const raw=qi.value.trim();res.replaceChildren();if(!raw){
     h.type==="p"?el("span",{class:"cic img"},el("img",{src:isStopP(h.p)?STOP_LOGO:PARK_LOGO,alt:""})):el("span",{class:"cic"+(h.type==="c"?" cplace":"")},icon(h.type==="c"?"i-map":"i-pin")),
     el("span",{class:"ct"},el("span",{class:"hl2"},markMatch(h.label,raw)),el("span",{},h.sub||"")))))};
   grp("Plaatsen",hits.filter(h=>h.type==="c"));grp("Adressen en bestemmingen",hits.filter(h=>h.type==="g"));grp("Busparkings",hits.filter(h=>h.type==="p"));
-  if(!hits.length)res.append(el("div",{class:"empty",style:"padding:12px 14px"},GEO.busy||raw.length>=3&&GEO.q!==norm(raw)?"Zoeken…":"Niets gevonden. Probeer een plaats, adres of bezienswaardigheid."));
+  if(!hits.length)res.append(el("div",{class:"empty",style:"padding:12px 14px"},(GEO.busy||raw.length>=3&&GEO.q!==norm(raw))&&LIVE?"Zoeken…":"Geen resultaten voor ‘"+raw+"’. Probeer een andere plaats, een adres of een bezienswaardigheid."));
   res.append(el("div",{class:"hfoot"},"Tip: zoek op de bestemming van je groep, dan zie je de busparkings in de buurt."));
   res.hidden=false}
 qi.addEventListener("input",showResults);qi.addEventListener("focus",showResults);
 qi.addEventListener("blur",()=>setTimeout(()=>res.hidden=true,150));
 qi.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();const h=searchHits()[0];if(h)goHit(h)}if(e.key==="Escape"){qi.value="";res.hidden=true}});
+function layerOk(p){return isStopP(p)?S.ls!==false:S.lp!==false}
 function filtered(){const q=S.q.trim().toLowerCase();return PARKINGS.filter(p=>(!q||(p.name+" "+p.city).toLowerCase().includes(q))&&[...S.filters].every(f=>p.svc.includes(f)))}
 function nearby(){const c=S.dest?P(S.dest.lat,S.dest.lon):[V.cx,V.cy];return filtered().map(p=>{const xy=P(p.lat,p.lon);return{p,d:Math.hypot(xy[0]-c[0],xy[1]-c[1])}}).sort((a,b)=>a.d-b.d).map(o=>o.p)}
 function buildChips(){
@@ -1956,7 +2003,7 @@ function renderProPage(){let v=document.getElementById("proView");if(!v){v=el("s
   const inner=el("div",{class:"pp-in"});
   inner.append(el("div",{class:"pp-top"},el("button",{class:"roundbtn","aria-label":"Sluiten",onclick:closePro},icon("i-x","i"))));
   inner.append(el("div",{class:"pp-hero"},el("div",{class:"pp-badge"},"⭐"),el("h1",{},"Coachpilot Pro"),el("p",{},"Voor chauffeurs die de app elke rit gebruiken. Zonder advertenties, met een ⭐ bij je naam, en je helpt de app groeien.")));
-  const benefits=[["🚫","Geen advertenties","Nergens in de app: niet op de kaart, niet in de community en niet bij het nieuws."],["⭐","Pro-ster bij je naam","Collega's zien in de community en de Hangout dat je Pro bent."],["🛠","Steun de ontwikkeling","Je bijdrage gaat naar nieuwe parkeerplekken, functies en onderhoud."],["❤️","Gewoon opzegbaar","Maandelijks opzegbaar, zonder kleine lettertjes."]];
+  const benefits=[["🚫","Geen advertenties","Nergens in de app: niet op de kaart, niet in de community en niet bij het nieuws."],["⭐","Pro-ster bij je naam","Andere chauffeurs zien in de community en de Hangout dat je Pro bent."],["🛠","Steun de ontwikkeling","Je bijdrage gaat naar nieuwe parkeerplekken, functies en onderhoud."],["❤️","Gewoon opzegbaar","Maandelijks opzegbaar, zonder kleine lettertjes."]];
   inner.append(el("div",{class:"pp-ben"},...benefits.map(([e,t,d])=>el("div",{class:"pp-b"},el("span",{class:"pp-e"},e),el("div",{},el("b",{},t),el("span",{},d))))));
   const card=proCard();card.classList.add("pp-card");card.querySelector(".prohead")?.remove();card.querySelector(".proul")?.remove();
   inner.append(el("h2",{class:"pp-h2"},isPro(C.me)?"Jouw abonnement":"Kies je abonnement"),card);
@@ -2533,7 +2580,7 @@ function hangSeg(){const n1=unreadChats(),n2=friendRequests().length;const sc=C.
   [["home","Hangout",0],["dms","Berichten",n1],["friends","Vrienden",n2]].forEach(([k,t,n])=>seg.append(el("button",{role:"tab","aria-selected":sc===k,onclick:()=>{if(sc!==k)go(k)}},t,n?el("span",{class:"segb"},String(n)):null)));return seg}
 function renderDms(){if(!C.me){comm.append(needAccount("Log in om privéberichten te sturen."));return}
   const list=Object.values(C.chats||{}).filter(c=>c&&(c.users||[]).includes(C.me)).sort((a,b)=>(b.lastAt||0)-(a.lastAt||0));
-  if(!list.length){comm.append(el("div",{class:"card empty"},myFriends().length?"Nog geen gesprekken. Tik op een vriend bij Vrienden om een bericht te sturen.":"Nog geen gesprekken. Voeg eerst collega's toe als vriend, dan kun je ze een bericht sturen."),el("button",{class:"btn primary",onclick:()=>go("friends")},"🤝 Naar Vrienden"));return}
+  if(!list.length){comm.append(el("div",{class:"card empty"},myFriends().length?"Nog geen gesprekken. Tik op een vriend bij Vrienden om een bericht te sturen.":"Nog geen gesprekken. Voeg eerst chauffeurs toe als vriend, dan kun je ze een bericht sturen."),el("button",{class:"btn primary",onclick:()=>go("friends")},"🤝 Naar Vrienden"));return}
   const box=el("div",{class:"card list0"});list.forEach(c=>{const u=otherOf(c.id);const un=chatUnread(c);
     box.append(el("button",{class:"crow dmrow"+(un?" unread":""),onclick:()=>openChat(u)},avatar(u),el("div",{class:"tbody"},el("h3",{},nameOf(u)),el("div",{class:"pm"},(c.lastBy===C.me?"Jij: ":"")+(c.lastText||""))),
       el("div",{class:"dmmeta"},el("span",{class:"pm"},c.lastAt?ago(c.lastAt):""),un?el("span",{class:"segb",style:"margin:0"},un>9?"9+":String(un)):null)))});comm.append(box)}
@@ -2545,8 +2592,8 @@ function renderFriends(){if(!C.me){comm.append(needAccount("Log in om vrienden t
   if(fr.length){const b=el("div",{class:"card list0"});fr.sort((a,b)=>nameOf(a).localeCompare(nameOf(b))).forEach(u=>{const p=prof(u)||{};b.append(el("div",{class:"prow"},el("button",{class:"avbtn",onclick:()=>openUser(u)},avatar(u)),
     el("button",{class:"tbody",style:"border:0;background:none;text-align:left;padding:0",onclick:()=>openUser(u)},el("h3",{},nameOf(u)),el("div",{class:"pm"},[p.username&&"@"+p.username,p.company].filter(Boolean).join(" · "))),
     el("button",{class:"btn sm primary",onclick:()=>openChat(u)},"💬")))});comm.append(b)}
-  else comm.append(el("div",{class:"card empty"},"Nog geen vrienden. Zoek hieronder een collega, of open iemands profiel in de community en tik op ‘Vriend toevoegen’."));
-  comm.append(el("div",{class:"sec"},"Collega zoeken"));const inp=el("input",{id:"frq",type:"search",placeholder:"Naam of @gebruikersnaam",value:C.frq||"",autocomplete:"off"});const res=el("div",{class:"card list0"});
+  else comm.append(el("div",{class:"card empty"},"Nog geen vrienden. Zoek hieronder een chauffeur, of open iemands profiel in de community en tik op ‘Vriend toevoegen’."));
+  comm.append(el("div",{class:"sec"},"Chauffeurs zoeken"));comm.append(el("p",{class:"note",style:"margin:-4px 0 8px"},"Zoek collega's, maar ook chauffeurs van andere bus- en touringcarbedrijven."));const inp=el("input",{id:"frq",type:"search",placeholder:"Naam of @gebruikersnaam",value:C.frq||"",autocomplete:"off"});const res=el("div",{class:"card list0"});
   const draw=()=>{const q=norm((C.frq||"").replace(/^@/,""));res.replaceChildren();if(q.length<2){res.hidden=true;return}res.hidden=false;
     const hits=Object.entries(C.profiles||{}).filter(([id,p])=>id!==C.me&&p&&p.name&&norm([p.name,p.username,p.company].filter(Boolean).join(" ")).includes(q)).slice(0,10);
     if(!hits.length)res.append(el("div",{class:"empty"},"Niemand gevonden."));
@@ -3285,6 +3332,13 @@ async function initComm(){
   }catch(e){console.error(e);C.local=true;C.ready=true;renderComm()}
 }
 
+/* externe links vanuit de beginscherm-app in de echte browser openen */
+const IS_STANDALONE=(window.navigator.standalone===true)||(window.matchMedia&&matchMedia("(display-mode: standalone)").matches);
+const IS_IOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+function openExternal(url){if(IS_STANDALONE&&IS_IOS&&/^https?:\/\//i.test(url)){let left=false;const onHide=()=>{left=true};document.addEventListener("visibilitychange",onHide,{once:true});
+    location.href="x-safari-"+url;setTimeout(()=>{document.removeEventListener("visibilitychange",onHide);if(!left&&!document.hidden)window.open(url,"_blank","noopener")},700);return}
+  window.open(url,"_blank","noopener")}
+document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest('a[target="_blank"]');if(!a||!IS_STANDALONE)return;const h=a.getAttribute("href")||"";if(!/^https?:\/\//i.test(h))return;e.preventDefault();openExternal(h)},true);
 /* toetsenbord sluiten bij tikken naast een veld */
 document.addEventListener("pointerdown",e=>{const a=document.activeElement;
   if(!a||a===document.body||!a.matches("input,textarea,select,[contenteditable=true]"))return;
