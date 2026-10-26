@@ -1,6 +1,6 @@
 # Coachpilot
 
-De app voor touringcarchauffeurs: busparkings met voorzieningen en reviews, hotels in de buurt op de kaart, en een open community met meldingen en moderatie.
+De app voor touringcar- en buschauffeurs: busparkings met voorzieningen en reviews, hotels in de buurt op de kaart, en een open community met meldingen en moderatie.
 
 ## Hoe het in elkaar zit
 - `index.html` – de hele app (één pagina).

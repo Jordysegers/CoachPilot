@@ -22,7 +22,7 @@ module.exports = async (req, res) => {
   res.setHeader("Content-Type", "application/manifest+json");
   res.setHeader("Cache-Control", "public, max-age=300");
   res.status(200).send(JSON.stringify({
-    name: "Coachpilot", short_name: "Coachpilot", description: "De app voor touringcarchauffeurs: busparkings, community en nieuws.",
+    name: "Coachpilot", short_name: "Coachpilot", description: "De app voor touringcar- en buschauffeurs: busparkings, community en nieuws.",
     start_url: "/", scope: "/", display: "standalone", background_color: "#ECEFF5", theme_color: color, lang: "nl", icons
   }));
 };
