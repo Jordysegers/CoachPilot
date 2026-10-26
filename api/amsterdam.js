@@ -10,7 +10,8 @@ const OVERPASS = ["https://overpass-api.de/api/interpreter", "https://overpass.k
 const UA = "Coachpilot/1.0 (https://coachpilot-steel.vercel.app)";
 // Een API-sleutel van Amsterdam is (straks) verplicht; zet die dan als AMSTERDAM_API_KEY in Vercel.
 const amsHeaders = () => { const h = { Accept: "application/geo+json, application/json", "Accept-Crs": "EPSG:4326", "User-Agent": UA }; if (process.env.AMSTERDAM_API_KEY) h["X-Api-Key"] = process.env.AMSTERDAM_API_KEY; return h; };
-const S100_Q = '[out:json][timeout:25];area["name"="Amsterdam"]["admin_level"="8"]->.a;(way(area.a)["highway"]["ref"~"(^|;)S100(;|$)"];relation(area.a)["type"="route"]["ref"="S100"];)->.r;(.r;way(r.r););way._["highway"];out geom;';
+const BB = "(52.33,4.83,52.40,4.97)";
+const S100_Q = '[out:json][timeout:15];relation["route"="road"]["ref"="S100"]' + BB + '->.r;(way["highway"]["ref"~"(^|;)S100(;|$)"]' + BB + ';way(r.r)["highway"];);out geom;';
 
 // RD (Rijksdriehoek) naar WGS84, benadering van Schreutelkamp & Strang van Hees (nauwkeurig tot ~1 m)
 function rd2wgs(x, y) {
@@ -49,21 +50,24 @@ function linesOf(js) {
     const k = Object.keys(it).find(k => /^(wkt|geom|geometrie|wkt_lng_lat|geometry_wkt)/i.test(k)); if (k) fromGeom(it[k]); });
   return out.map(line).filter(l => l.length > 1);
 }
-async function getJson(url, opt) { const r = await fetch(url, opt); if (!r.ok) throw new Error(url.split("/")[2] + " gaf " + r.status); return r.json(); }
+async function fetchT(url, opt = {}, ms = 9000) { const c = new AbortController(); const t = setTimeout(() => c.abort(), ms);
+  try { return await fetch(url, { ...opt, signal: c.signal }); } catch (e) { throw new Error(url.split("/")[2] + (e.name === "AbortError" ? " reageerde niet op tijd" : ": " + e.message)); } finally { clearTimeout(t); } }
+async function getJson(url, opt) { const r = await fetchT(url, opt); if (!r.ok) throw new Error(url.split("/")[2] + " gaf " + r.status); return r.json(); }
 // Alle pagina's ophalen (DSO-API geeft een "next"-link mee)
 async function getAll(url) { let feats = [], next = url, n = 0;
   while (next && n++ < 20) { const js = await getJson(next, { headers: amsHeaders() }); const f = js.features || (js._embedded && Object.values(js._embedded)[0]) || (Array.isArray(js) ? js : []); feats = feats.concat(f);
     const l = js._links && js._links.next; next = (l && (l.href || l)) || (Array.isArray(js.links) && (js.links.find(x => x.rel === "next") || {}).href) || null; if (typeof next !== "string") next = null; }
   return feats; }
-async function overpass() { let last;
-  for (const u of OVERPASS) { try { return await getJson(u, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded", "User-Agent": UA, Accept: "application/json" }, body: "data=" + encodeURIComponent(S100_Q) }); } catch (e) { last = e; } }
-  throw last; }
+// Alle servers tegelijk proberen; de eerste die antwoordt wint
+async function overpass() {
+  try { return await Promise.any(OVERPASS.map(u => getJson(u, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded", "User-Agent": UA, Accept: "application/json" }, body: "data=" + encodeURIComponent(S100_Q) }))); }
+  catch (e) { throw new Error((e.errors || [e]).map(x => x.message).join(" / ")); } }
 
 module.exports = async (req, res) => {
   const out = { type: "FeatureCollection", fetchedAt: new Date().toISOString(), source: "Gemeente Amsterdam (open data) en OpenStreetMap", errors: [], features: [] };
   try {
     if (req.query && req.query.raw) {
-      res.setHeader("Cache-Control", "no-store"); const r = await fetch(SRC.vrij, { headers: amsHeaders() }); const t = await r.text();
+      res.setHeader("Cache-Control", "no-store"); const r = await fetchT(SRC.vrij, { headers: amsHeaders() }); const t = await r.text();
       return res.status(200).json({ status: r.status, key: !!process.env.AMSTERDAM_API_KEY, begin: t.slice(0, 1500) });
     }
     const jobs = Object.entries(SRC).map(async ([kind, url]) => { try { linesOf(await getAll(url)).forEach(c => out.features.push({ type: "Feature", properties: { kind }, geometry: { type: "LineString", coordinates: c } })); } catch (e) { out.errors.push(kind + ": " + e.message); } });
@@ -81,3 +85,5 @@ module.exports = async (req, res) => {
     res.status(502).json({ error: "Touringcarregels Amsterdam konden niet worden opgehaald: " + (e.message || e) });
   }
 };
+
+module.exports.config = { maxDuration: 30 };
