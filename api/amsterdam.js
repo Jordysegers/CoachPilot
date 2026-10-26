@@ -74,6 +74,18 @@ async function overpass() {
   try { return await Promise.any(OVERPASS.map(u => getJson(u + "?data=" + encodeURIComponent(S100_Q), { headers: { "User-Agent": UA, Accept: "*/*" } }, 25000))); }
   catch (e) { throw new Error((e.errors || [e]).map(x => x.message).join(" / ")); } }
 
+// Gaten dichten: OpenStreetMap knipt wegen op in stukken (pleinen, tunnels, kruisingen) die soms een andere naam hebben.
+// Voor elk los eindpunt zoeken we het dichtstbijzijnde punt op een ander stuk van dezelfde soort en trekken een korte verbindingslijn.
+function fillGaps(features, kind, maxM) {
+  const segs = features.filter(f => f.properties.kind === kind).map(f => f.geometry.coordinates); const add = [];
+  const m = (a, b) => { const k = Math.cos(a[1] * Math.PI / 180); return Math.hypot((a[0] - b[0]) * k, a[1] - b[1]) * 111320; };
+  segs.forEach((s, i) => [s[0], s[s.length - 1]].forEach(end => {
+    let best = null, bd = Infinity, connected = false;
+    segs.forEach((t, j) => { if (j === i) return; t.forEach(p => { const d = m(end, p); if (d < 8) connected = true; if (d < bd) { bd = d; best = p; } }); });
+    if (!connected && best && bd <= maxM) add.push({ type: "Feature", properties: { kind, gap: true }, geometry: { type: "LineString", coordinates: [end, best] } });
+  }));
+  return features.concat(add);
+}
 module.exports = async (req, res) => {
   const out = { type: "FeatureCollection", fetchedAt: new Date().toISOString(), source: "Gemeente Amsterdam (open data) en OpenStreetMap", errors: [], features: [] };
   try {
@@ -96,6 +108,7 @@ module.exports = async (req, res) => {
       }
       osm.forEach(f => out.features.push(f)); })());
     await Promise.all(jobs);
+    out.features = fillGaps(fillGaps(out.features, "corridor", 450), "s100", 300);
     if (req.query && req.query.debug) { const n = {}; out.features.forEach(f => n[f.properties.kind] = (n[f.properties.kind] || 0) + 1); res.setHeader("Cache-Control", "no-store"); return res.status(200).json({ aantallen: n, fouten: out.errors, sleutel: !!process.env.AMSTERDAM_API_KEY }); }
     if (!out.features.length) throw new Error(out.errors.join("; ") || "geen gegevens");
     res.setHeader("Cache-Control", "public, s-maxage=86400, stale-while-revalidate=604800");
