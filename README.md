@@ -21,3 +21,11 @@ on conflict do nothing;
 - De 17 voorbeeld-busparkings vervangen door echte (via "Parking doorgeven" of de moderatie).
 - Hotels: echte prijzen en beschikbaarheid via het Booking.com-partnerprogramma (nu voorbeelddata).
 - Kaart: Google Maps of Mapbox in plaats van de getekende kaart.
+
+## Pushmeldingen
+
+- `sw.js` toont de meldingen op de telefoon, `api/push.js` verstuurt ze (Vercel-functie).
+- Eenmalig nodig in Vercel → Settings → Environment Variables: `SUPABASE_SERVICE_ROLE_KEY`
+  (de *secret/service_role* sleutel uit Supabase → Project Settings → API). Daarna opnieuw deployen.
+- De VAPID-sleutels voor push worden automatisch aangemaakt en afgeschermd bewaard in de tabel `app_secrets`.
+- Op iPhone werken meldingen alleen als de app op het beginscherm staat (iOS 16.4+).

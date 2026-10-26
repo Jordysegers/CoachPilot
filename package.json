@@ -1,0 +1,11 @@
+{
+  "name": "coachpilot",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Coachpilot – app voor touringcarchauffeurs",
+  "engines": { "node": ">=18" },
+  "dependencies": {
+    "@supabase/supabase-js": "2.110.1",
+    "web-push": "3.6.7"
+  }
+}

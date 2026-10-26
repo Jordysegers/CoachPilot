@@ -58,6 +58,8 @@ create policy docs_select on public.docs for select using (
     when coll like 'data/%'     then coll = 'data/users/' || public.me()
     when coll = 'editors'       then id = public.me() or public.is_mod()
     when coll = 'bans'          then id = public.me() or public.is_mod()
+    when coll = 'pushsubs'      then data->>'user' = public.me()
+    when coll = 'pushlog'       then public.is_mod()
     else true
   end
 );
@@ -78,6 +80,7 @@ create policy docs_insert on public.docs for insert to authenticated with check 
     when coll = 'news'                   then public.is_mod() or (public.is_editor() and data->>'author' = public.me())
     when coll = 'hangout'                then data->>'author' = public.me() or public.is_mod()
     when coll = 'closures'               then data->>'by' = public.me() and (coalesce((data->>'approved')::boolean,false) = false or public.is_mod())
+    when coll = 'pushsubs'               then data->>'user' = public.me()
     when coll = 'data/users/' || public.me() then true
     else false
   end
@@ -97,6 +100,7 @@ using (
     when coll in ('parkings','companies','modOverrides','categories','editors','pro','settings','bans','ads','facilities') then public.is_mod()
     when coll = 'hangout'                then data->>'author' = public.me() or public.is_mod()
     when coll = 'closures'               then auth.uid() is not null
+    when coll = 'pushsubs'               then data->>'user' = public.me()
     when coll = 'data/users/' || public.me() then true
     else false
   end
@@ -113,6 +117,7 @@ with check (
     when coll in ('parkings','companies','modOverrides','categories','editors','pro','settings','bans','ads','facilities') then public.is_mod()
     when coll = 'hangout'                then data->>'author' = public.me() or public.is_mod()
     when coll = 'closures'               then auth.uid() is not null
+    when coll = 'pushsubs'               then data->>'user' = public.me()
     when coll = 'data/users/' || public.me() then true
     else false
   end
@@ -129,6 +134,7 @@ create policy docs_delete on public.docs for delete to authenticated using (
     when coll = 'news'                   then public.is_mod() or (public.is_editor() and data->>'author' = public.me())
     when coll = 'hangout'                then data->>'author' = public.me() or public.is_mod()
     when coll = 'closures'               then data->>'by' = public.me() or public.is_mod()
+    when coll = 'pushsubs'               then data->>'user' = public.me()
     when coll = 'data/users/' || public.me() then true
     else false
   end
@@ -189,6 +195,11 @@ create trigger hangout_guard before insert on public.docs
 grant select on public.docs, public.moderators to anon, authenticated;
 grant insert, update, delete on public.docs to authenticated;
 grant execute on function public.is_mod(), public.me(), public.is_editor(), public.is_banned() to anon, authenticated;
+
+-- Afgeschermde sleutels voor pushmeldingen (alleen de server kan hierbij, nooit de app)
+create table if not exists public.app_secrets (name text primary key, value jsonb not null);
+alter table public.app_secrets enable row level security;
+revoke all on public.app_secrets from anon, authenticated;
 
 -- 4. Live bijwerken (realtime)
 alter table public.docs replica identity full;
