@@ -819,6 +819,13 @@ body.picking .topbar,body.picking .sheet{display:none}
 #hgHost[hidden]{display:none}
 @media (max-width:699px){input,textarea,select{font-size:16px!important}}
 html,body{touch-action:manipulation}
+.app{position:fixed!important;inset:0!important;height:auto!important}
+.topbar{top:calc(12px + env(safe-area-inset-top,0px))}
+.page-in{padding-top:calc(20px + env(safe-area-inset-top,0px))}
+.threadv{padding-top:0!important}
+.nmwrap{display:flex;flex-direction:column;gap:8px}.nmhead b{font-size:13px;color:var(--muted);font-weight:800;letter-spacing:.02em}
+.newmem{display:flex;gap:12px;overflow-x:auto;padding:2px 2px 6px;scrollbar-width:none;margin:0 calc(-1 * max(16px,env(safe-area-inset-right,0px))) 0 calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:16px}.newmem::-webkit-scrollbar{display:none}
+.nmem{display:flex;flex-direction:column;align-items:center;gap:4px;border:0;background:none;padding:0;flex:none;width:56px}.nmem .av{width:44px;height:44px;font-size:16px}.nmem span{font-size:11.5px;font-weight:600;color:var(--ink);max-width:56px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -1356,8 +1363,8 @@ function logo(name,big){const src=logoSrc(name,false);if(src){const im=el("img",
 function remember(){return{screen:C.screen,cat:C.cat,open:C.open,viewUser:C.viewUser,viewCompany:C.viewCompany,tab:document.querySelector('nav.tabs [aria-selected="true"]')?.dataset.tab}}
 function goBack(){const b=C.backStack.pop();if(!b)return go("home");if(b.tab&&b.tab!=="commView"){showTab(b.tab);return}
   if(b.screen==="thread"&&b.open)return openThread(b.open);go(b.screen,{cat:b.cat,viewUser:b.viewUser,viewCompany:b.viewCompany})}
-function openUser(id){C.backStack.push(remember());showTab("commView");go("user",{viewUser:id})}
-function openCompany(name){C.backStack.push(remember());showTab("commView");go("company",{viewCompany:name})}
+function openUser(id){C.backStack.push(remember());if(C.secMem)delete C.secMem.forum;showTab("commView");go("user",{viewUser:id})}
+function openCompany(name){C.backStack.push(remember());if(C.secMem)delete C.secMem.forum;showTab("commView");go("company",{viewCompany:name})}
 function renderUser(){
   const id=C.viewUser,p=prof(id)||{name:"Chauffeur"};
   comm.append(el("button",{class:"backlink",onclick:()=>navBack()},"‹ Terug"));
@@ -1404,7 +1411,7 @@ const photosOf=p=>(p&&p.photos||[]).map(blob).filter(Boolean);
 const formView=document.getElementById("formView"),formIn=document.getElementById("formIn");
 let F=null;
 function openSubmit(mode,p){if(isBanned(C.me)){thanks("Je account is geblokkeerd. Je kunt niets meer insturen.","🚫");return}const base=p||{};
-  F={mode,pid:p?p.id:null,mod:isMod(C.me),data:{name:base.name||"",address:base.address||"",city:base.city||"",country:base.country||"NL",price:base.price||"",spots:base.spots?String(base.spots):"",maxh:base.maxh||"",svc:[...(base.svc||[])]},lat:base.lat,lon:base.lon,photos:[],note:"",err:""};
+  F={mode,pid:p?p.id:null,mod:isMod(C.me),data:{name:base.name||"",address:base.address||"",city:base.city||"",country:base.country||"NL",price:base.price||"",spots:base.spots?String(base.spots):"",maxh:base.maxh||"",note:base.note||"",hours:base.hours||"",phone:base.phone||"",svc:[...(base.svc||[])]},lat:base.lat,lon:base.lon,photos:[],note:"",err:""};
   renderForm();formView.hidden=false;formView.scrollTop=0;formView.classList.remove("enter");void formView.offsetWidth;formView.classList.add("enter")}
 function closeForm(){formView.hidden=true;F=null}
 function renderForm(){
@@ -1422,6 +1429,8 @@ function renderForm(){
   }
   f.append(el("div",{class:"r2"},fld("spots","Aantal busplekken"+(isNew?" *":""),{inputmode:"numeric",maxlength:"4"}),fld("price","Tarief",{maxlength:"20",placeholder:"€15/dag of Gratis"})));
   f.append(fld("maxh","Maximale parkeerduur",{maxlength:"20",placeholder:"Bijv. 4u, 1 dag of geen"}));
+  {const ta=el("textarea",{id:"sf-note",rows:"3",maxlength:"400",placeholder:"Bijv. 4,00 euro/uur, max. 40 euro per 24 uur. Alleen voor bezoekers van …"});ta.value=d.note||"";ta.addEventListener("input",()=>d.note=ta.value);f.append(el("label",{class:"fl",for:"sf-note"},"Tarief en opmerkingen",ta))}
+  f.append(el("div",{class:"r2"},fld("hours","Openingstijden",{maxlength:"80",placeholder:"Bijv. 9.00 – 21.00"}),fld("phone","Telefoon",{maxlength:"30",inputmode:"tel",placeholder:"Bijv. 020 123 45 67"})));
   const sv=el("div",{class:"chips wrap"});SVC_KEYS.forEach(k=>sv.append(el("button",{type:"button",class:"chip","aria-pressed":d.svc.includes(k),onclick:e=>{d.svc=d.svc.includes(k)?d.svc.filter(x=>x!==k):[...d.svc,k];e.currentTarget.setAttribute("aria-pressed",d.svc.includes(k))}},icon(SVC[k][1]),SVC[k][0])));
   f.append(el("div",{class:"fl"},"Voorzieningen",sv));
   const ph=el("div",{class:"phgrid"});F.photos.forEach((x,i)=>ph.append(el("div",{class:"phitem"},el("img",{src:x.src,alt:"Foto "+(i+1)}),el("button",{type:"button","aria-label":"Foto weghalen",onclick:()=>{F.photos.splice(i,1);renderForm()}},"×"))));
@@ -1438,20 +1447,20 @@ function renderForm(){
 async function saveParkingDoc(id,patch){const docs=C.parkDocs||{};const cur=docs[id]||{};const doc={...cur,...patch};
   if(C.db)await C.db.collection("parkings").doc(id).set(doc);else{C.parkDocs={...docs,[id]:doc};applyParkings()}}
 async function submitForm(){const d=F.data,isNew=F.mode==="new";F.err="";
-  const clean={name:d.name.trim(),address:(d.address||"").trim(),city:(d.city||"").trim(),country:d.country,price:d.price.trim(),spots:parseInt(d.spots,10)||0,maxh:d.maxh.trim(),svc:d.svc};
+  const clean={name:d.name.trim(),address:(d.address||"").trim(),city:(d.city||"").trim(),country:d.country,price:d.price.trim(),spots:parseInt(d.spots,10)||0,maxh:d.maxh.trim(),note:(d.note||"").trim(),hours:(d.hours||"").trim(),phone:(d.phone||"").trim(),svc:d.svc};
   if(isNew){const miss=[!clean.name&&"naam",!clean.city&&"plaats",typeof F.lat!=="number"&&"locatie"].filter(Boolean);
     if(miss.length){F.err="Vul nog in: "+miss.join(", ")+".";return renderForm()}}
   if(F.mod){
     try{if(isNew){const id="u"+Date.now().toString(36);await saveParkingDoc(id,{...clean,price:clean.price,maxh:clean.maxh,lat:F.lat,lon:F.lon,photos:F.photos.map(x=>x.v),isNew:true,addedBy:C.me,addedAt:Date.now()});closeForm();thanks("Parking staat live op de kaart","📍");return}
       const p=PARKINGS.find(x=>x.id===F.pid);const patch={...clean,lat:typeof F.lat==="number"?F.lat:p.lat,lon:typeof F.lon==="number"?F.lon:p.lon};
-      Object.keys(patch).forEach(k=>{if(patch[k]===""&&k!=="address")delete patch[k]});if(!patch.spots)delete patch.spots;
+      Object.keys(patch).forEach(k=>{if(patch[k]===""&&!["address","note","hours","phone","price","maxh"].includes(k))delete patch[k]});if(!patch.spots)delete patch.spots;
       if(F.photos.length)patch.photos=[...(p.photos||[]),...F.photos.map(x=>x.v)];
       await saveParkingDoc(F.pid,patch);closeForm();thanks("Wijziging staat live","✅");return}
     catch(e){F.err="Opslaan lukte niet.";return renderForm()}}
   let sub;
   if(isNew)sub={kind:"new",parking:null,parkingName:clean.name,data:{...clean,price:clean.price,maxh:clean.maxh,lat:F.lat,lon:F.lon}};
   else{const p=PARKINGS.find(x=>x.id===F.pid);const ch={};
-    ["name","price","maxh","address"].forEach(k=>{if(clean[k]&&clean[k]!==(p[k]||""))ch[k]=clean[k]});
+    ["name","price","maxh","address","note","hours","phone"].forEach(k=>{if(clean[k]!==(p[k]||"")&&(clean[k]||p[k]))ch[k]=clean[k]});
     if(clean.spots&&clean.spots!==p.spots)ch.spots=clean.spots;
     const a=[...p.svc].sort().join(),b=[...clean.svc].sort().join();if(a!==b)ch.svc=clean.svc;
     if(!Object.keys(ch).length&&!F.photos.length){F.err="Je hebt nog niets gewijzigd en geen foto toegevoegd.";return renderForm()}
@@ -1591,7 +1600,7 @@ function updateModTab(){const t=document.querySelector('nav.tabs [data-tab="modV
   document.querySelector("nav.tabs").classList.toggle("four",isMod(C.me));
   const n=pendingSubs().length+(C.reports||[]).length+pendingClosures().length;let b=t.querySelector(".tbadge");if(!b){b=el("span",{class:"tbadge"});t.append(b)}b.textContent=n>9?"9+":String(n);b.hidden=!n;
   if(!document.getElementById("modView").hidden)renderMod(true)}
-const FIELD_NL={address:"Adres",name:"Naam",price:"Tarief",spots:"Plekken",maxh:"Max. duur",svc:"Voorzieningen"};
+const FIELD_NL={address:"Adres",name:"Naam",price:"Tarief",spots:"Plekken",maxh:"Max. duur",svc:"Voorzieningen",note:"Tarief en opmerkingen",hours:"Openingstijden",phone:"Telefoon"};
 function renderMod(fromSnap){
   if(fromSnap===true&&C.modTab==="theme")return;if(fromSnap===true&&(C.coEdit||C.catEdit||C.muEdit||C.adEdit||C.facEdit)&&modIn.querySelector("form"))return;if(fromSnap===true&&document.activeElement&&modIn.contains(document.activeElement)&&/INPUT|TEXTAREA/.test(document.activeElement.tagName))return;
   modIn.replaceChildren();if(!isMod(C.me))return;
@@ -2129,7 +2138,7 @@ function threadRow(p,hideCat){
   card.append(el("div",{class:"tfoot"},hideCat?null:el("span",{class:"catx",style:"color:hsl("+catHue(catOf(p.cat))+" 50% 42%)"},"● "+catOf(p.cat).t),el("span",{},"💬 "+n+" "+(n===1?"reactie":"reacties")),likes?el("span",{},"👍 "+likes):null,p.place?el("span",{class:"ptag"},"📍 "+p.place.name):null));
   return card}
 const postCard=threadRow;
-const SECTIONS=[["forum","Forum"],["news","Nieuws"],["hangout","Hangout"]];
+const SECTIONS=[["forum","Community"],["news","Nieuws"],["hangout","Hangout"]];
 let lastScreenKey="";
 function screenKey(){return[C.section||"forum",C.screen,C.open&&C.open.id,C.cat,C.viewUser,C.viewCompany,C.newsOpen&&C.newsOpen.id,C.newsEdit?1:0].join("|")}
 function animateIn(node){node.classList.remove("enter");void node.offsetWidth;node.classList.add("enter")}
@@ -2171,22 +2180,25 @@ function renderForumHome(){
   if(recent.length){comm.append(el("div",{class:"sec"},"Recent actief"));const feed=el("div",{class:"feed"});feedFill(feed,recent,p=>threadRow(p),"community");comm.append(feed)}
   else comm.append(el("div",{class:"card empty"},C.ready||C.local?"Nog geen vragen. Stel de eerste!":"Community laden…"));
   const ad=adBlock("community");if(ad)comm.append(ad);{const t=proTeaser("comm");if(t)comm.append(t)}
+  {const nm=Object.entries(C.profiles||{}).filter(([id,p])=>p&&p.name&&!isBanned(id)).sort((a,b)=>(b[1].joinedAt||0)-(a[1].joinedAt||0)).slice(0,12);
+   if(nm.length>1){const row=el("div",{class:"newmem"});nm.forEach(([id,p])=>row.append(el("button",{class:"nmem",onclick:()=>openUser(id)},avatar(id),el("span",{},String(p.name).split(" ")[0]))));
+     comm.append(el("div",{class:"nmwrap"},el("div",{class:"nmhead"},el("b",{},"👋 Nieuwste leden")),row))}}
   comm.append(el("div",{class:"phead",style:"align-items:center"},el("div",{class:"sec",style:"margin:0"},"Categorieën"),isMod(C.me)?el("button",{class:"link",style:"box-shadow:none",onclick:()=>{C.modTab="cats";showTab("modView")}},"✏️ Beheren"):null));
   const box=el("div",{class:"card list0 catlist"});
   CATS.forEach(c=>{const ps=C.posts.filter(p=>p.cat===c.id);const last=ps.slice().sort((a,b)=>(b.lastAt||0)-(a.lastAt||0))[0];const open=ps.filter(p=>!(p.replyCount>0)).length;
     box.append(el("button",{class:"crow",onclick:()=>go("cat",{cat:c.id,ffilter:"new"})},catIcon(c),
       el("div",{class:"tbody"},el("h3",{},c.t),el("div",{class:"pm"},last?"Laatst: "+last.title+" · "+ago(last.lastAt||last.createdAt):(c.d||"Nog geen onderwerpen"))),
-      el("div",{class:"tcount"},el("b",{},String(ps.length)),el("span",{},open?open+" open":"onderwerpen"))))});
+      el("div",{class:"tcount"},el("b",{},String(ps.length)),el("span",{},ps.length===1?"onderwerp":"onderwerpen"))))});
   comm.append(box);
   if(C.local)comm.append(el("p",{class:"note"},"Proefmodus: berichten blijven alleen op dit apparaat."));
 }
 function renderCatPage(){const c=catOf(C.cat);
-  comm.append(el("button",{class:"backlink",onclick:()=>backTo(t=>t.tab==="commView"&&t.screen==="home",()=>go("home",{section:"forum"}))},"‹ Forum"));
+  comm.append(el("button",{class:"backlink",onclick:()=>backTo(t=>t.tab==="commView"&&t.screen==="home",()=>go("home",{section:"forum"}))},"‹ Community"));
   comm.append(el("div",{class:"cathead"},catIcon(c),el("div",{style:"min-width:0"},el("h1",{},c.t),c.d?el("p",{class:"lede",style:"margin:2px 0 0"},c.d):null)));
   comm.append(askBox(c.id));
   const F=C.ffilter||"new";const all=C.posts.filter(p=>p.cat===c.id);const open=all.filter(p=>!(p.replyCount>0)).length;
-  const seg=el("div",{class:"seg",style:"grid-template-columns:repeat(3,1fr)"});
-  [["new","Nieuw"],["open","Onbeantwoord"+(open?" ("+open+")":"")],["top","Populair"]].forEach(([k,t])=>seg.append(el("button",{"aria-selected":F===k,onclick:()=>{C.ffilter=k;renderComm()}},t)));
+  if(C.ffilter==="open")C.ffilter="new";const seg=el("div",{class:"seg",style:"grid-template-columns:repeat(2,1fr)"});
+  [["new","Nieuw"],["top","Populair"]].forEach(([k,t])=>seg.append(el("button",{"aria-selected":F===k,onclick:()=>{C.ffilter=k;renderComm()}},t)));
   comm.append(seg);
   let list=all.slice().sort((a,b)=>(b.lastAt||0)-(a.lastAt||0));
   if(F==="open")list=list.filter(p=>!(p.replyCount>0));
@@ -3138,7 +3150,7 @@ const showTabRaw=showTab;showTab=function(id){return nav(()=>showTabRaw(id))};
   if(!inFrame&&!standalone)return; /* in gewone Safari doet de eigen terug-veeg van iOS dit al */
   let sx=0,sy=0,dx=0,on=false,tgt=null,decided=false;
   const target=()=>!formView.hidden?formView:curTab()==="mapView"?sheet:document.querySelector(".view:not([hidden])");
-  document.addEventListener("touchstart",e=>{if(e.touches.length!==1)return;const t=e.touches[0];if(t.clientX>28||!NAV.stack.length)return;sx=t.clientX;sy=t.clientY;dx=0;on=true;decided=false;tgt=null},{passive:true,capture:true});
+  document.addEventListener("touchstart",e=>{if(e.touches.length!==1)return;const t=e.touches[0];if(t.clientX>28||!NAV.stack.length)return;if(curTab()==="mapView"&&formView.hidden&&!C.proOpen)return;sx=t.clientX;sy=t.clientY;dx=0;on=true;decided=false;tgt=null},{passive:true,capture:true});
   document.addEventListener("touchmove",e=>{if(!on)return;const t=e.touches[0];const mx=t.clientX-sx,my=t.clientY-sy;
     if(!decided){if(Math.abs(mx)<8&&Math.abs(my)<8)return;decided=true;if(Math.abs(my)>Math.abs(mx)||mx<0){on=false;return}tgt=target();if(tgt){tgt.style.transition="none";tgt.classList.add("swiping")}}
     e.preventDefault();e.stopPropagation();dx=Math.max(0,mx);if(tgt)tgt.style.transform="translateX("+dx+"px)"},{passive:false,capture:true});
