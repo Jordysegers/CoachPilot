@@ -60,6 +60,8 @@ create policy docs_select on public.docs for select using (
     when coll = 'bans'          then id = public.me() or public.is_mod()
     when coll = 'pushsubs'      then data->>'user' = public.me()
     when coll = 'pushlog'       then public.is_mod()
+    when coll = 'friends' or coll = 'chats' then data->'users' ? public.me()
+    when coll like 'chats/%/messages' then position(public.me() in coll) > 0
     else true
   end
 );
@@ -81,6 +83,9 @@ create policy docs_insert on public.docs for insert to authenticated with check 
     when coll = 'hangout'                then data->>'author' = public.me() or public.is_mod()
     when coll = 'closures'               then data->>'by' = public.me() and (coalesce((data->>'approved')::boolean,false) = false or public.is_mod())
     when coll = 'pushsubs'               then data->>'user' = public.me()
+    when coll = 'friends'                then data->>'from' = public.me() and data->>'status' = 'pending' and data->'users' ? public.me()
+    when coll = 'chats'                  then data->'users' ? public.me() and exists (select 1 from public.docs f where f.path = 'friends/' || docs.id and f.data->>'status' = 'accepted')
+    when coll like 'chats/%/messages'    then data->>'author' = public.me() and position(public.me() in coll) > 0 and exists (select 1 from public.docs f where f.path = 'friends/' || split_part(docs.coll,'/',2) and f.data->>'status' = 'accepted')
     when coll = 'data/users/' || public.me() then true
     else false
   end
@@ -101,6 +106,7 @@ using (
     when coll = 'hangout'                then data->>'author' = public.me() or public.is_mod()
     when coll = 'closures'               then auth.uid() is not null
     when coll = 'pushsubs'               then data->>'user' = public.me()
+    when coll = 'friends' or coll = 'chats' then data->'users' ? public.me()
     when coll = 'data/users/' || public.me() then true
     else false
   end
@@ -118,6 +124,7 @@ with check (
     when coll = 'hangout'                then data->>'author' = public.me() or public.is_mod()
     when coll = 'closures'               then auth.uid() is not null
     when coll = 'pushsubs'               then data->>'user' = public.me()
+    when coll = 'friends' or coll = 'chats' then data->'users' ? public.me()
     when coll = 'data/users/' || public.me() then true
     else false
   end
@@ -135,6 +142,8 @@ create policy docs_delete on public.docs for delete to authenticated using (
     when coll = 'hangout'                then data->>'author' = public.me() or public.is_mod()
     when coll = 'closures'               then data->>'by' = public.me() or public.is_mod()
     when coll = 'pushsubs'               then data->>'user' = public.me()
+    when coll = 'friends' or coll = 'chats' then data->'users' ? public.me()
+    when coll like 'chats/%/messages'    then data->>'author' = public.me() or public.is_mod()
     when coll = 'data/users/' || public.me() then true
     else false
   end
@@ -165,6 +174,13 @@ begin
   if new.coll = 'closures' and not public.is_mod() and coalesce(new.data->>'approved','') is distinct from coalesce(old.data->>'approved','') then
     raise exception 'Alleen een admin kan een sluiting bevestigen';
   end if;
+  if new.coll = 'friends' and not public.is_mod() then
+    if new.data->'users' is distinct from old.data->'users' then raise exception 'Je kunt de deelnemers niet aanpassen'; end if;
+    if old.data->>'status' = 'pending' and new.data->>'status' = 'accepted' and old.data->>'to' <> public.me() then
+      raise exception 'Alleen de ontvanger kan een vriendschapsverzoek accepteren';
+    end if;
+  end if;
+  if new.coll = 'chats' and new.data->'users' is distinct from old.data->'users' then raise exception 'Je kunt de deelnemers niet aanpassen'; end if;
   new.updated_at := now();
   return new;
 end $$;

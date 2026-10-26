@@ -8,7 +8,7 @@ const SUPABASE_URL = process.env.SUPABASE_URL || "https://ediwujxxzpwontltomrv.s
 const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY;
 const CONTACT = process.env.PUSH_CONTACT || "mailto:info@coachpilot.app";
 
-const PREF_OF = { mention: "mention", reply: "reply", rreply: "reply", ncomment: "reply", nreply: "reply", dm: "dm" };
+const PREF_OF = { mention: "mention", reply: "reply", rreply: "reply", ncomment: "reply", nreply: "reply", dm: "dm", friendreq: "dm", friendok: "dm" };
 
 function db() {
   if (!SERVICE_KEY) throw Object.assign(new Error("SUPABASE_SERVICE_ROLE_KEY ontbreekt in Vercel"), { status: 500 });
@@ -41,7 +41,9 @@ function textFor(n, who) {
     rreply: [who + " antwoordde op je reactie", t],
     ncomment: ["Nieuwe reactie op je nieuwsbericht", who + ": " + (t || "")],
     nreply: [who + " antwoordde op je reactie", t],
-    dm: ["Nieuw bericht van " + who, n.title || ""]
+    dm: [who, n.title || "Nieuw bericht"],
+    friendreq: ["Nieuw vriendschapsverzoek", who + " wil vrienden met je worden"],
+    friendok: ["Vriendschap geaccepteerd", who + " heeft je verzoek geaccepteerd"]
   })[n.type] || ["Coachpilot", who + " " + t];
 }
 
@@ -49,6 +51,7 @@ function urlFor(n) {
   if (n.newsId) return "/?open=news:" + encodeURIComponent(n.newsId);
   if (n.postId) return "/?open=post:" + encodeURIComponent(n.postId);
   if (n.chatId) return "/?open=chat:" + encodeURIComponent(n.chatId);
+  if (n.type === "friendreq") return "/?open=friends:";
   return "/";
 }
 
@@ -117,7 +120,7 @@ module.exports = async (req, res) => {
       const { data: subs } = await sb.from("docs").select("path,data").eq("coll", "pushsubs").eq("data->>user", n.to);
       const list = (subs || []).filter(s => !(s.data && s.data.prefs && s.data.prefs[pref] === false));
       const [title, text] = textFor(n, who);
-      sent += await sendTo(sb, keys, list, { title, body: text, url: urlFor(n), tag: n.type + "-" + (n.postId || n.newsId || "") });
+      sent += await sendTo(sb, keys, list, { title, body: text, url: urlFor(n), tag: n.type + "-" + (n.postId || n.newsId || n.chatId || "") });
       await sb.from("docs").update({ data: { ...n, pushed: true } }).eq("path", r.path);
     }
     return res.status(200).json({ sent });
