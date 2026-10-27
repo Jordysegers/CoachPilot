@@ -121,6 +121,10 @@ body.drawing .topbar,body.drawing .sheet,body.drawing .mapside,body.drawing .zle
 .dact:active{transform:scale(.96)}
 .moremenu{position:fixed;z-index:200;background:var(--card);border-radius:16px;box-shadow:0 12px 32px rgb(20 22 31 / .22);padding:6px;min-width:230px;display:flex;flex-direction:column}
 .mitem{display:flex;align-items:center;gap:10px;border:0;background:none;padding:11px 12px;border-radius:10px;font-size:14px;font-weight:600;text-align:left;color:inherit;cursor:pointer}.mitem:active{background:var(--soft)}.mic{width:22px;text-align:center}
+.limsign{position:absolute;transform:translate(-50%,-50%);width:38px;height:38px;border-radius:50%;background:#fff;border:4px solid #DC2626;display:grid;place-items:center;padding:0;box-shadow:0 2px 6px rgb(0 0 0 / .3);z-index:5;pointer-events:auto;cursor:pointer;color:#111;font-weight:800;font-size:10.5px;line-height:1;letter-spacing:-.02em}
+.limsign span{white-space:nowrap}.limsign.lh span::before{content:"↕";display:block;font-size:9px;text-align:center;margin-bottom:-1px}
+.zlabel.amslabel.dot .zl-tx{display:none}.zlabel.amslabel{font-size:11px;padding:2px 8px 2px 3px}.zlabel.amslabel.big{font-size:13px;padding:4px 11px 4px 5px}.zlabel.amslabel.dot{padding:2px}
+.zlegend .lgsign{display:inline-block;width:12px;height:12px;border-radius:50%;border:2.5px solid #DC2626;background:#fff}
 .ztag.fut{background:#FFF7E6;color:#92400E;box-shadow:inset 0 0 0 1.5px #F59E0B}.ztag.now{background:#E8F5E9;color:#166534}
 .zfuture{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:16px;background:#FFF7E6;border:1.5px dashed #F59E0B}.zfuture b{display:block;color:#92400E}.zfuture span{font-size:13px;color:#78350F}.zf-ic{font-size:20px}
 .zactive{display:inline-flex;align-self:flex-start;align-items:center;gap:7px;font-size:13px;font-weight:800;color:#166534;background:#E8F5E9;padding:5px 10px;border-radius:999px}.zdot{width:8px;height:8px;border-radius:50%;background:#16A34A;box-shadow:0 0 0 3px rgb(22 163 74 / .25)}
@@ -905,7 +909,7 @@ html,body{touch-action:manipulation}
   nav.tabs button[aria-selected="true"] svg{stroke-width:2.2}
 }
 .carousel{scroll-padding-inline:max(16px,env(safe-area-inset-left,0px))}
-@media (max-width:699px){.sheet{bottom:calc(var(--navh,64px) + 4px)!important}.panel{margin-bottom:calc(-4px - var(--navh,64px))!important;padding-bottom:calc(4px + var(--navh,64px))!important}}
+@media (max-width:699px){.sheet{bottom:calc(var(--navh,64px) + 14px)!important}.panel{margin-bottom:calc(-14px - var(--navh,64px))!important;padding-bottom:calc(14px + var(--navh,64px))!important}}
 .chatv{padding-top:0!important}.chatv .chatbar{margin-left:calc(-1 * max(16px,env(safe-area-inset-left,0px)));margin-right:calc(-1 * max(16px,env(safe-area-inset-right,0px)))}
 .zpath{fill:#7C3AED;fill-opacity:.2;stroke:#6D28D9;stroke-width:2.5;cursor:pointer}.zpath.fut{fill-opacity:.1;stroke-dasharray:6 5}.zpath.ze{fill:#7C3AED;stroke:#6D28D9}.zpath.sel{fill-opacity:.3;stroke-width:3}
 .chip.layer{background:var(--card);color:var(--ink,#14161F);box-shadow:0 2px 8px rgb(20 22 31 / .08);padding:6px 12px 6px 6px}
@@ -1223,7 +1227,7 @@ const s2z=s=>Math.max(3,Math.min(19,Math.round(Math.log2(Math.max(s,0.1))+6.5)))
 const z2s=z=>Math.pow(2,z-6.5);
 function gmSync(){if(!GM.map)return;const c=GM.map.getCenter(),z=GM.map.getZoom();if(!c)return;const xy=P(c.lat(),c.lng());V.cx=xy[0];V.cy=xy[1];V.s=z2s(z)}
 function gmRender(){if(!GM.ov||!GM.layer)return;wrap.classList.toggle("far",(GM.map.getZoom()||0)<9);const pr=GM.ov.getProjection();if(!pr)return;
-  const pos=(e,lat,lng)=>{const p=pr.fromLatLngToDivPixel(new google.maps.LatLng(lat,lng));e.style.left=p.x+"px";e.style.top=p.y+"px";if(e.parentNode!==GM.layer){GM.layer.append(e);google.maps.OverlayView.preventMapHitsAndGesturesFrom(e)}};
+  const pos=(e,lat,lng)=>{const p=pr.fromLatLngToDivPixel(new google.maps.LatLng(lat,lng));e.style.left=p.x+"px";e.style.top=p.y+"px";if(e.parentNode!==GM.layer){GM.layer.append(e);google.maps.OverlayView.preventMapHitsAndGesturesFrom(e)}};GM.pos=pos;
   const vis=new Set(filtered().filter(layerOk).map(p=>p.id));
   pinEls.forEach(o=>{pos(o.e,o.p.lat,o.p.lon);o.e.classList.toggle("closed",!!activeClosure(o.p));o.e.classList.toggle("sel",o.p.id===S.sel);o.e.hidden=!vis.has(o.p.id)&&o.p.id!==S.sel});if(S.dest)pos(destEl(),S.dest.lat,S.dest.lon);else if(DEST.e)DEST.e.remove();if(ME.lat!=null)pos(meEl(),ME.lat,ME.lon);ZN.labels.forEach(o=>pos(o.e,o.lat,o.lon));placeZoneLabels(GM.map.getZoom()||0);placeDraft(pos);{const al=amsLabel();if(al)pos(al,AMS.center[0],AMS.center[1])}
   hotelEls.forEach(h=>h.remove());hotelEls=[];
@@ -1340,7 +1344,8 @@ function zoneLabels(){ZN.labels.forEach(o=>o.e.remove());ZN.labels=[];if(!ZN.on|
   ZN.data.features.forEach(f=>{const z=f.properties,c=zoneCenter(f.geometry);if(!c)return;
     const e=el("button",{type:"button",class:"zlabel "+(z.zone==="zero"?"ze":"le")+(zFuture(z)?" fut":""),onclick:ev=>{ev.stopPropagation();selectZone(z)}},el("span",{class:"zl-ic"},z.zone==="zero"?"⚡":"🌿"),el("span",{class:"zl-tx"},z.town||z.name));
     ZN.labels.push({e,lat:c[0],lon:c[1]})})}
-function placeZoneLabels(zoom){const far=zoom<9.5;ZN.labels.forEach(o=>o.e.classList.toggle("dot",far))}
+function placeZoneLabels(zoom){const far=zoom<9.5;ZN.labels.forEach(o=>o.e.classList.toggle("dot",far));
+  if(AMS.label){AMS.label.classList.toggle("dot",zoom<12);AMS.label.classList.toggle("big",zoom>=14)}placeLimits(zoom)}
 function zoneRuleText(z){return"Paarse milieuzone: dieselbussen vanaf Euro 6 hebben toegang. Lager dan Euro 6: ontheffing aanvragen bij de gemeente."}
 const fmtDate=s=>{if(!s)return"";const d=new Date(s);return isNaN(d)?String(s):d.toLocaleDateString("nl-NL",{day:"numeric",month:"long",year:"numeric"})};
 function loadZones(){if(ZN.data)return Promise.resolve();if(ZN.p)return ZN.p;if(!LIVE){ZN.err="preview";return Promise.resolve()}ZN.loading=true;return ZN.p=(async()=>{
@@ -1358,11 +1363,11 @@ function drawZonesGm(){if(!GM.on||!GM.map)return;const dl=GM.map.data;
     if(!ZN.gmClick){ZN.gmClick=dl.addListener("click",e=>{const p={};e.feature.forEachProperty((v,k)=>p[k]=v);selectZone(p)})}}
   else dl.setStyle(dl.getStyle())}
 function drawZones(){drawZonesSvg();drawZonesGm();if(ZN.on&&ZN.data&&!ZN.labels.length)zoneLabels();if(!ZN.on&&ZN.labels.length)zoneLabels();renderLegend();if(GM.on)gmRender();else draw()}
-function renderLegend(){let l=document.getElementById("zLegend");const z=ZN.on&&ZN.data,af=AMS.on?amsFeatures():[],ak=new Set(af.map(f=>f.properties.kind)),a=af.length>0;if(!z&&!a){if(l)l.remove();return}
+function renderLegend(){let l=document.getElementById("zLegend");const z=ZN.on&&ZN.data,af=AMS.on?amsFeatures():[],ak=new Set(af.map(f=>f.properties.kind)),a=af.length>0||(AMS.on&&LIM.data&&LIM.data.length>0);if(!z&&!a){if(l)l.remove();return}
   if(!l){l=el("div",{class:"zlegend",id:"zLegend"});document.getElementById("mapView").append(l)}
   const hasFut=z&&ZN.data.features.some(f=>zFuture(f.properties));
   l.replaceChildren(...[z?el("span",{class:"lg"},el("i",{class:"le"}),"Paarse milieuzone (bussen)"):null,z&&ZN.data.features.some(f=>f.properties.zone==="zero")?el("span",{class:"lg"},el("i",{class:"ze"}),"Zero-emissie"):null,hasFut?el("span",{class:"lg"},el("i",{class:"fut"}),"Toekomstig"):null,
-    ak.has("corridor")?el("span",{class:"lg"},el("b",{class:"ln vrij"}),"Corridor: mag"):null,ak.has("ontheffing")?el("span",{class:"lg"},el("b",{class:"ln onth"}),"Met ontheffing"):null,ak.has("s100")?el("span",{class:"lg"},el("b",{class:"ln s100"}),"S100 verbod"):null].filter(Boolean))}
+    ak.has("corridor")?el("span",{class:"lg"},el("b",{class:"ln vrij"}),"Corridor: mag"):null,ak.has("ontheffing")?el("span",{class:"lg"},el("b",{class:"ln onth"}),"Met ontheffing"):null,ak.has("s100")?el("span",{class:"lg"},el("b",{class:"ln s100"}),"S100 verbod"):null,AMS.on&&LIM.data&&LIM.data.length?el("span",{class:"lg"},el("b",{class:"lgsign"}),"Hoogte/gewicht (zoom in)"):null].filter(Boolean))}
 async function toggleZones(){ZN.on=!ZN.on;buildChips();
   if(ZN.on){await loadZones();if(ZN.err==="preview"){alertMsg("Milieuzones zie je op de live site. Deze voorbeeldweergave mag de NDW-gegevens niet ophalen.");ZN.on=false;buildChips();return}
     if(ZN.err){alertMsg("Milieuzones laden lukte niet: "+ZN.err);ZN.on=false;buildChips();return}
@@ -1406,12 +1411,12 @@ function amsLabel(){if(!AMS.on||!amsFeatures().some(f=>f.properties.kind==="s100
   if(!AMS.label)AMS.label=el("button",{type:"button",class:"zlabel amslabel",onclick:ev=>{ev.stopPropagation();openAms()}},el("span",{class:"zl-ic"},"🚫"),el("span",{class:"zl-tx"},"S100 · touringcarverbod"));return AMS.label}
 function drawAms(){drawAmsSvg();drawAmsGm();amsLabel();renderLegend();if(GM.on)gmRender();else draw()}
 async function toggleAms(){AMS.on=!AMS.on;buildChips();
-  if(AMS.on){await loadAms();if(AMS.err==="preview"&&!ownLines().length){alertMsg("De touringcarroutes zie je op de live site. Deze voorbeeldweergave mag de gegevens niet ophalen.");AMS.on=false;buildChips();return}
-    if(AMS.err&&!ownLines().length){alertMsg("Touringcarroutes laden lukte niet: "+AMS.err);AMS.on=false;buildChips();return}
-    {const k=new Set(amsFeatures().map(f=>f.properties.kind));alertMsg(!k.has("s100")?"De S100 en corridor konden nu niet geladen worden (kaartserver reageert niet). Probeer het later nog eens.":"Amsterdam: rood = S100 (verbod binnen de ring), groen = corridor (mag zonder ontheffing).")};if(!GM.on||!GM.map||(GM.map.getZoom()||0)<11)flyTo(P(AMS.center[0],AMS.center[1]),GM.on?null:60)}
+  if(AMS.on){loadLimits();await loadAms();if(AMS.err==="preview"&&!ownLines().length){alertMsg("De beperkingen zie je op de live site. Deze voorbeeldweergave mag de gegevens niet ophalen.");AMS.on=false;buildChips();return}
+    if(AMS.err&&!ownLines().length){alertMsg("Beperkingen laden lukte niet: "+AMS.err);AMS.on=false;buildChips();return}
+    {const k=new Set(amsFeatures().map(f=>f.properties.kind));alertMsg("Beperkingen staan aan: doorrijhoogtes en maximaal gewicht (zoom in om de borden te zien) en de verboden zones, zoals de S100 in Amsterdam.")}}
   else{S.ams=false;renderSheet()}drawAms();buildChips()}
 // gegevens alvast op de achtergrond ophalen, zodat de lagen meteen verschijnen als je ze aanzet
-if(LIVE)setTimeout(()=>{try{loadAms().then(()=>buildChips());loadZones().then(()=>buildChips())}catch(e){}},4000);
+if(LIVE)setTimeout(()=>{try{loadAms().then(()=>buildChips());loadLimits();loadZones().then(()=>buildChips())}catch(e){}},4000);
 function openAms(){S.zone=null;S.sel=null;S.ams=true;renderSheet();drawZones()}
 function closeAms(){S.ams=false;renderSheet()}
 function renderAmsCard(){const panel=grippedPanel("zonepanel",closeAms);const sc=el("div",{class:"pscroll"});
@@ -1425,6 +1430,20 @@ function renderAmsCard(){const panel=grippedPanel("zonepanel",closeAms);const sc
   sc.append(el("div",{class:"r",style:"gap:8px;flex-wrap:wrap"},el("a",{class:"btn sm",href:"https://www.amsterdam.nl/verkeer-vervoer/touringcar/",target:"_blank",rel:"noopener"},"Regels en ontheffing aanvragen ↗"),isMod(C.me)?el("button",{class:"btn sm",type:"button",onclick:()=>{closeAms();nav(()=>{showTabRaw("modView");C.modTab="lines";renderMod()})}},"✏️ Lijnen tekenen"):null));
   sc.append(el("p",{class:"note",style:"margin:0"},(ownLines().length?"Lijnen gecontroleerd door de beheerders":"S100 en corridor: OpenStreetMap")+(AMS.data&&AMS.data.fetchedAt?" · opgehaald "+ago(Date.parse(AMS.data.fetchedAt)):"")+". Volg altijd de borden ter plaatse."));
   panel.append(sc);sheet.append(panel)}
+/* ---------- doorrijhoogtes en maximaal gewicht (NDW verkeersborden C19/C21) ---------- */
+const LIM={data:null,p:null,err:null,els:new Map()};
+function loadLimits(){if(LIM.data)return Promise.resolve();if(LIM.p)return LIM.p;if(!LIVE){LIM.err="preview";return Promise.resolve()}
+  return LIM.p=(async()=>{try{const r=await fetch("/api/limits?v=1");const js=await r.json();if(!r.ok||js.error)throw new Error(js.error||("fout "+r.status));LIM.data=js.items||[];LIM.err=null}catch(e){LIM.err=e.message||String(e)}finally{LIM.p=null}if(AMS.on){renderLegend();if(GM.on)gmRender();else draw()}})()}
+const fmtLim=(k,v)=>k==="h"?String(v).replace(".",",")+" m":String(v).replace(".",",")+" t";
+function limEl(it){const key=it.join("|");let e=LIM.els.get(key);if(!e){e=el("button",{type:"button",class:"limsign "+(it[2]==="h"?"lh":"lt"),title:(it[2]==="h"?"Maximale hoogte ":"Maximaal gewicht ")+fmtLim(it[2],it[3]),onclick:ev=>{ev.stopPropagation();alertMsg((it[2]==="h"?"Doorrijhoogte: voertuigen hoger dan ":"Maximaal gewicht: voertuigen zwaarder dan ")+fmtLim(it[2],it[3])+" mogen hier niet door (bord "+(it[2]==="h"?"C19":"C21")+").")}},el("span",{},fmtLim(it[2],it[3])));LIM.els.set(key,e)}return e}
+// alleen borden in beeld en pas vanaf zoom 12 tonen, anders wordt de kaart te druk
+const gmPos=(e,a,b)=>{if(GM.pos)GM.pos(e,a,b)};
+function placeLimits(zoom){const show=AMS.on&&LIM.data&&zoom>=12&&!DRAW;let used=new Set();
+  if(show){let b;if(GM.on&&GM.map){const bb=GM.map.getBounds();if(bb){const ne=bb.getNorthEast(),sw=bb.getSouthWest();b=[sw.lat(),sw.lng(),ne.lat(),ne.lng()]}}
+    else{const[W,H]=size();const a=unP(V.cx-W/2/V.s,V.cy-H/2/V.s),c=unP(V.cx+W/2/V.s,V.cy+H/2/V.s);b=[c.lat,a.lng,a.lat,c.lng]}
+    if(b){let n=0;for(const it of LIM.data){if(it[0]<b[0]||it[0]>b[2]||it[1]<b[1]||it[1]>b[3])continue;if(++n>250)break;const e=limEl(it);used.add(e);
+      if(GM.on)gmPos(e,it[0],it[1]);else{if(e.parentNode!==ov)ov.appendChild(e);place(e,P(it[0],it[1]))}}}}
+  LIM.els.forEach(e=>{if(!used.has(e)&&e.parentNode)e.remove()})}
 /* ---------- kaartlijnen tekenen (beheer) ---------- */
 let DRAW=null;
 const LKIND={corridor:["Corridor","Groen: hier mag je zonder ontheffing rijden","#059669"],s100:["Verbodsgrens","Rood: binnen deze lijn geldt een verbod","#DC2626"],ontheffing:["Route met ontheffing","Oranje: verplichte route met ontheffing","#F59E0B"]};
@@ -1508,7 +1527,7 @@ function buildChips(){
   const lchip=(img,label,on,fn,cls)=>c.append(el("button",{class:"chip layer "+(cls||"")+(on?" on":""),"aria-pressed":on,title:(on?"Verberg ":"Toon ")+label.toLowerCase(),onclick:fn},img,label));
   lchip(el("img",{class:"lci",src:PARK_LOGO,alt:""}),"Parkeren",S.lp!==false,()=>{S.lp=S.lp===false;buildChips();draw()});
   lchip(el("span",{class:"lci zi"},ZN.loading&&ZN.on?"⏳":"🌿"),"Milieuzones",ZN.on,toggleZones,"zone");
-  lchip(el("span",{class:"lci zi"},AMS.loading&&AMS.on?"⏳":"🚫"),"Touringcarroutes",AMS.on,toggleAms,"ams");
+  lchip(el("span",{class:"lci zi"},AMS.loading&&AMS.on?"⏳":"🚫"),"Beperkingen",AMS.on,toggleAms,"ams");
   lchip(el("img",{class:"lci",src:STOP_LOGO,alt:""}),"In- en uitstappen",S.ls!==false,()=>{S.ls=S.ls===false;buildChips();draw()});
   c.append(el("span",{class:"chipdiv","aria-hidden":"true"}));
   ["wc","nacht","afval","was"].filter(k=>SVC[k]).forEach(fchip);
@@ -1584,6 +1603,12 @@ function sheetGrip(panel,onToggle,onClose){const g=el("div",{class:"gripzone",ro
   const end=e=>{if(y0==null)return;const dy=e.clientY-y0;y0=null;panel.style.transform="";if(!moved){onToggle();return}if(dy<-30)onToggle(true);else if(dy>40)(panel.classList.contains("tall")?onToggle(false):onClose())};
   g.addEventListener("pointerup",end);g.addEventListener("pointercancel",()=>{y0=null;panel.style.transform=""});
   g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();onToggle()}});return g}
+// foto direct toevoegen, zonder het wijzigingsformulier
+function quickPhoto(p){if(!C.me){alertMsg("Log in om een foto toe te voegen.");return}if(isBanned(C.me)){alertMsg("Je account is geblokkeerd.");return}
+  pickImage("photo",async src=>{alertMsg("Foto uploaden…");const v=await storeImage(src.blob,src.data);if(!v)return;
+    if(isMod(C.me)){try{await saveParkingDoc(p.id,{photos:[...(p.photos||[]),v]});thanks("Foto staat live","📷")}catch(e){alertMsg("Opslaan lukte niet.")}return}
+    const sub={kind:"photo",parking:p.id,parkingName:p.name,data:{},photos:[v],note:"",by:C.me,createdAt:Date.now(),status:"pending"};
+    try{if(C.db)await C.db.collection("submissions").add(sub);else{C.subs=[...(C.subs||[]),{id:"l"+Date.now(),...sub}];updateModTab()}thanks("Bedankt! Een moderator bekijkt je foto en zet hem daarna live.","📷")}catch(e){alertMsg("Insturen lukte niet.")}})}
 function moreMenu(anchor,p){let m=document.getElementById("moreMenu");if(m){m.remove();return}
   const item=(ic,t,fn)=>el("button",{type:"button",class:"mitem",onclick:()=>{m.remove();fn()}},el("span",{class:"mic"},ic),t);
   m=el("div",{class:"moremenu",id:"moreMenu",onclick:e=>e.stopPropagation()},
@@ -1614,7 +1639,7 @@ function renderDetail(p){
   sc.append(el("div",{class:"dacts"},
     act("i-nav","Navigeer",{href:navUrl,primary:true}),
     act("i-sv","Street View",{href:svUrl}),
-    act("i-cam","Foto",{onclick:()=>{openSubmit("edit",p);setTimeout(()=>{const b=document.querySelector(".phadd");b&&b.scrollIntoView({block:"center"})},50)}}),
+    act("i-cam","Foto",{onclick:()=>quickPhoto(p)}),
     act("i-more","Meer",{onclick:e=>{e.stopPropagation();moreMenu(e.currentTarget,p)}})));
   sc.append(el("div",{class:"stats"},
     p.price?el("div",{class:"stat"},el("span",{class:"ic"},"€"),priceEl(p.price)):null,
@@ -3496,8 +3521,10 @@ async function initComm(){
 /* externe links vanuit de beginscherm-app in de echte browser openen */
 const IS_STANDALONE=(window.navigator.standalone===true)||(window.matchMedia&&matchMedia("(display-mode: standalone)").matches);
 const IS_IOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
-function openExternal(url){if(IS_STANDALONE&&IS_IOS&&/^https?:\/\//i.test(url)){let left=false;const onHide=()=>{left=true};document.addEventListener("visibilitychange",onHide,{once:true});
-    location.href="x-safari-"+url;setTimeout(()=>{document.removeEventListener("visibilitychange",onHide);if(!left&&!document.hidden)window.open(url,"_blank","noopener")},700);return}
+function openExternal(url){if(IS_STANDALONE&&IS_IOS&&/^https?:\/\//i.test(url)){let left=false;const onHide=()=>{left=true};
+    ["visibilitychange","pagehide","blur"].forEach(ev=>window.addEventListener(ev,onHide,{once:true}));document.addEventListener("visibilitychange",onHide,{once:true});
+    // iOS 17+: opent direct in Safari (of in de Google Maps-app). Alleen als er na 2,5 s echt niets gebeurd is, openen we het alsnog in de app.
+    location.href="x-safari-"+url;setTimeout(()=>{if(!left&&!document.hidden&&document.hasFocus())window.open(url,"_blank","noopener")},2500);return}
   window.open(url,"_blank","noopener")}
 document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest('a[target="_blank"]');if(!a||!IS_STANDALONE)return;const h=a.getAttribute("href")||"";if(!/^https?:\/\//i.test(h))return;e.preventDefault();openExternal(h)},true);
 /* toetsenbord sluiten bij tikken naast een veld */
