@@ -121,8 +121,9 @@ body.drawing .topbar,body.drawing .sheet,body.drawing .mapside,body.drawing .zle
 .dact:active{transform:scale(.96)}
 .moremenu{position:fixed;z-index:200;background:var(--card);border-radius:16px;box-shadow:0 12px 32px rgb(20 22 31 / .22);padding:6px;min-width:230px;display:flex;flex-direction:column}
 .mitem{display:flex;align-items:center;gap:10px;border:0;background:none;padding:11px 12px;border-radius:10px;font-size:14px;font-weight:600;text-align:left;color:inherit;cursor:pointer}.mitem:active{background:var(--soft)}.mic{width:22px;text-align:center}
-.limsign{position:absolute;transform:translate(-50%,-50%);width:30px;height:30px;border:0;background:none;padding:0;z-index:5;pointer-events:auto;cursor:pointer;filter:drop-shadow(0 2px 3px rgb(0 0 0 / .35))}
-.limsign svg{width:100%;height:100%;display:block}.limsign.big{width:38px;height:38px}
+.limline{fill:none;stroke:#DC2626;stroke-width:6;stroke-linecap:round;opacity:.85;cursor:pointer;pointer-events:stroke}
+.limsign{position:absolute;transform:translate(-50%,-50%);width:28px;height:28px;border:0;background:none;padding:0;z-index:5;pointer-events:auto;cursor:pointer;filter:drop-shadow(0 2px 3px rgb(0 0 0 / .35))}
+.limsign svg{width:100%;height:100%;display:block}.limsign.big{width:34px;height:34px}
 .zlabel.amslabel.dot .zl-tx{display:none}.zlabel.amslabel{font-size:11px;padding:2px 8px 2px 3px}.zlabel.amslabel.big{font-size:13px;padding:4px 11px 4px 5px}.zlabel.amslabel.dot{padding:2px}
 .zlegend .lgsign{display:inline-block;width:12px;height:12px;border-radius:50%;border:2.5px solid #DC2626;background:#fff}
 .ztag.fut{background:#FFF7E6;color:#92400E;box-shadow:inset 0 0 0 1.5px #F59E0B}.ztag.now{background:#E8F5E9;color:#166534}
@@ -1367,7 +1368,7 @@ function renderLegend(){let l=document.getElementById("zLegend");const z=ZN.on&&
   if(!l){l=el("div",{class:"zlegend",id:"zLegend"});document.getElementById("mapView").append(l)}
   const hasFut=z&&ZN.data.features.some(f=>zFuture(f.properties));
   l.replaceChildren(...[z?el("span",{class:"lg"},el("i",{class:"le"}),"Paarse milieuzone (bussen)"):null,z&&ZN.data.features.some(f=>f.properties.zone==="zero")?el("span",{class:"lg"},el("i",{class:"ze"}),"Zero-emissie"):null,hasFut?el("span",{class:"lg"},el("i",{class:"fut"}),"Toekomstig"):null,
-    ak.has("corridor")?el("span",{class:"lg"},el("b",{class:"ln vrij"}),"Corridor: mag"):null,ak.has("ontheffing")?el("span",{class:"lg"},el("b",{class:"ln onth"}),"Met ontheffing"):null,ak.has("s100")?el("span",{class:"lg"},el("b",{class:"ln s100"}),"S100 verbod"):null,AMS.on&&LIM.data&&LIM.data.length?el("span",{class:"lg"},el("b",{class:"lgsign"}),"Doorrijhoogte (zoom in)"):null].filter(Boolean))}
+    ak.has("corridor")?el("span",{class:"lg"},el("b",{class:"ln vrij"}),"Corridor: mag"):null,ak.has("ontheffing")?el("span",{class:"lg"},el("b",{class:"ln onth"}),"Met ontheffing"):null,ak.has("s100")?el("span",{class:"lg"},el("b",{class:"ln s100"}),"S100 verbod"):null,AMS.on&&LIM.data&&LIM.data.length?el("span",{class:"lg"},el("b",{class:"lgsign"}),"Hoogte, lengte, gewicht"):null].filter(Boolean))}
 async function toggleZones(){ZN.on=!ZN.on;buildChips();
   if(ZN.on){await loadZones();if(ZN.err==="preview"){alertMsg("Milieuzones zie je op de live site. Deze voorbeeldweergave mag de NDW-gegevens niet ophalen.");ZN.on=false;buildChips();return}
     if(ZN.err){alertMsg("Milieuzones laden lukte niet: "+ZN.err);ZN.on=false;buildChips();return}
@@ -1413,7 +1414,7 @@ function drawAms(){drawAmsSvg();drawAmsGm();amsLabel();renderLegend();if(GM.on)g
 async function toggleAms(){AMS.on=!AMS.on;buildChips();
   if(AMS.on){loadLimits();await loadAms();if(AMS.err==="preview"&&!ownLines().length){alertMsg("De beperkingen zie je op de live site. Deze voorbeeldweergave mag de gegevens niet ophalen.");AMS.on=false;buildChips();return}
     if(AMS.err&&!ownLines().length){alertMsg("Beperkingen laden lukte niet: "+AMS.err);AMS.on=false;buildChips();return}
-    {const k=new Set(amsFeatures().map(f=>f.properties.kind));alertMsg("Beperkingen staan aan: doorrijhoogtes en maximaal gewicht (zoom in om de borden te zien) en de verboden zones, zoals de S100 in Amsterdam.")}}
+    {const k=new Set(amsFeatures().map(f=>f.properties.kind));alertMsg("Beperkingen staan aan. Zoom in op straatniveau voor doorrijhoogtes, lengte- en gewichtsbeperkingen (rode streep op de weg). Ook verboden zones zoals de S100 in Amsterdam.")}}
   else{S.ams=false;renderSheet()}drawAms();buildChips()}
 // gegevens alvast op de achtergrond ophalen, zodat de lagen meteen verschijnen als je ze aanzet
 if(LIVE)setTimeout(()=>{try{loadAms().then(()=>buildChips());loadLimits();loadZones().then(()=>buildChips())}catch(e){}},4000);
@@ -1431,28 +1432,50 @@ function renderAmsCard(){const panel=grippedPanel("zonepanel",closeAms);const sc
   sc.append(el("p",{class:"note",style:"margin:0"},(ownLines().length?"Lijnen gecontroleerd door de beheerders":"S100 en corridor: OpenStreetMap")+(AMS.data&&AMS.data.fetchedAt?" · opgehaald "+ago(Date.parse(AMS.data.fetchedAt)):"")+". Volg altijd de borden ter plaatse."));
   panel.append(sc);sheet.append(panel)}
 /* ---------- doorrijhoogtes en maximaal gewicht (NDW verkeersborden C19/C21) ---------- */
-const LIM={data:null,p:null,err:null,els:new Map()};
+const LIM={data:null,p:null,err:null,els:new Map(),lines:new Map(),g:null};
 function loadLimits(){if(LIM.data)return Promise.resolve();if(LIM.p)return LIM.p;if(!LIVE){LIM.err="preview";return Promise.resolve()}
-  return LIM.p=(async()=>{try{const r=await fetch("/api/limits?v=2");const js=await r.json();if(!r.ok||js.error)throw new Error(js.error||("fout "+r.status));LIM.data=js.items||[];LIM.err=null}catch(e){LIM.err=e.message||String(e)}finally{LIM.p=null}if(AMS.on){renderLegend();if(GM.on)gmRender();else draw()}})()}
-const fmtLim=(k,v)=>k==="h"?String(v).replace(".",",")+" m":String(v).replace(".",",")+" t";
+  return LIM.p=(async()=>{try{const r=await fetch("/api/limits?v=3");const js=await r.json();if(!r.ok||js.error)throw new Error(js.error||("fout "+r.status));LIM.data=js.items||[];LIM.err=null}catch(e){LIM.err=e.message||String(e)}finally{LIM.p=null}if(AMS.on){renderLegend();if(GM.on)gmRender();else draw()}})()}
+const fmtLim=(k,v)=>String(v).replace(".",",")+(k==="t"?" t":" m");
+const LIMTXT={h:["Doorrijhoogte","hoger dan"],t:["Maximaal gewicht","zwaarder dan"],l:["Maximale lengte","langer dan"]};
+function limInfo(it){alertMsg(LIMTXT[it[2]][0]+": voertuigen "+LIMTXT[it[2]][1]+" "+fmtLim(it[2],it[3])+" mogen hier niet door"+(it[4]?" ("+it[4]+")":"")+".")}
 // eigen bordje in de stijl van het verkeersbord: C19 (hoogte, met pijlpunten boven en onder) en C21 (gewicht)
-function signSvg(k,v){const t=String(v).replace(".",",")+(k==="h"?"m":"t");const fs=t.length>=5?11:t.length===4?12.5:14;
+function signSvg(k,v){const t=String(v).replace(".",",")+(k==="t"?"t":"m");const fs=t.length>=5?11:t.length===4?12.5:14;
   return '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="22" fill="#fff"/><circle cx="24" cy="24" r="19" fill="none" stroke="#D7262E" stroke-width="5.5"/>'+
-    (k==="h"?'<path d="M24 14.5l-4.2-5h8.4z M24 33.5l-4.2 5h8.4z" fill="#111"/>':'')+
+    (k==="h"?'<path d="M24 14.5l-4.2-5h8.4z M24 33.5l-4.2 5h8.4z" fill="#111"/>':k==="l"?'<path d="M8.6 24l5-4.2v8.4z M39.4 24l-5-4.2v8.4z" fill="#111"/>':'')+
     '<text x="24" y="'+(k==="h"?28.6:29.4)+'" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="'+fs+'" fill="#111" letter-spacing="-.4">'+t+'</text></svg>'}
-function limEl(it){const key=it.join("|");let e=LIM.els.get(key);if(!e){e=el("button",{type:"button",class:"limsign "+(it[2]==="h"?"lh":"lt"),title:(it[2]==="h"?"Maximale hoogte ":"Maximaal gewicht ")+fmtLim(it[2],it[3]),onclick:ev=>{ev.stopPropagation();alertMsg((it[2]==="h"?"Doorrijhoogte: voertuigen hoger dan ":"Maximaal gewicht: voertuigen zwaarder dan ")+fmtLim(it[2],it[3])+" mogen hier niet door"+(it[4]?" ("+it[4]+")":"")+".")}});e.innerHTML=signSvg(it[2],it[3]);LIM.els.set(key,e)}return e}
+function limEl(it){const key=it.join("|");let e=LIM.els.get(key);if(!e){e=el("button",{type:"button",class:"limsign "+(it[2]==="h"?"lh":"lt"),title:LIMTXT[it[2]][0]+" "+fmtLim(it[2],it[3]),onclick:ev=>{ev.stopPropagation();limInfo(it)}});e.innerHTML=signSvg(it[2],it[3]);LIM.els.set(key,e)}return e}
 // alleen borden in beeld en pas vanaf zoom 12 tonen, anders wordt de kaart te druk
 const gmPos=(e,a,b)=>{if(GM.pos)GM.pos(e,a,b)};
-function placeLimits(zoom){const show=AMS.on&&LIM.data&&zoom>=13&&!DRAW;let used=new Set();
+// Wegvakken (NWB) van de borden in beeld ophalen, zodat we de beperking als rode streep over de weg kunnen tekenen
+const NWB=new Map();let roadQ=new Set(),roadT=0;
+const ROAD_SKIP=/^(FP|VP|VZ|RP|FPR|VPR|BVP|ST)$/i; // fietspad, voetpad, voetgangerszone, ruiterpad e.d.
+function needRoads(ids){ids.forEach(id=>{if(id&&!NWB.has(id)){NWB.set(id,"wacht");roadQ.add(id)}});if(!roadQ.size||!LIVE)return;clearTimeout(roadT);
+  roadT=setTimeout(async()=>{const list=[...roadQ].slice(0,100);list.forEach(i=>roadQ.delete(i));list.sort((a,b)=>a-b);
+    try{const r=await fetch("/api/roads?ids="+list.join(","));const js=await r.json();list.forEach(i=>NWB.set(i,(js.roads&&js.roads[i])||null))}catch(e){list.forEach(i=>NWB.set(i,null))}
+    if(roadQ.size)needRoads([]);if(AMS.on){if(GM.on)gmRender();else draw()}},250)}
+function midOf(c){let L=0;const d=[];for(let i=1;i<c.length;i++){const k=Math.cos(c[i][1]*Math.PI/180);const x=Math.hypot((c[i][0]-c[i-1][0])*k,c[i][1]-c[i-1][1]);d.push(x);L+=x}
+  let h=L/2;for(let i=1;i<c.length;i++){if(h<=d[i-1]){const t=d[i-1]?h/d[i-1]:0;return[c[i-1][1]+(c[i][1]-c[i-1][1])*t,c[i-1][0]+(c[i][0]-c[i-1][0])*t]}h-=d[i-1]}return[c[0][1],c[0][0]]}
+const relevant=it=>it[2]==="h"?it[3]<=4.5:it[2]==="l"?it[3]<=15:it[3]<=40;
+function limLine(key,it,c){let o=LIM.lines.get(key);if(o)return o;o={key};
+  if(GM.on&&GM.map){o.gm=new google.maps.Polyline({path:c.map(q=>({lat:q[1],lng:q[0]})),strokeColor:"#DC2626",strokeOpacity:.85,strokeWeight:6,zIndex:4,clickable:true});o.gm.addListener("click",()=>limInfo(it))}
+  else{const p=document.createElementNS(NS,"path");p.setAttribute("d",lineD(c));p.setAttribute("class","limline");p.setAttribute("vector-effect","non-scaling-stroke");p.addEventListener("click",()=>limInfo(it));o.svg=p}
+  LIM.lines.set(key,o);return o}
+function placeLimits(zoom){const show=AMS.on&&LIM.data&&zoom>=14&&!DRAW;const used=new Set(),usedL=new Set();
   if(show){let b;if(GM.on&&GM.map){const bb=GM.map.getBounds();if(bb){const ne=bb.getNorthEast(),sw=bb.getSouthWest();b=[sw.lat(),sw.lng(),ne.lat(),ne.lng()]}}
     else{const[W,H]=size();const a=unP(V.cx-W/2/V.s,V.cy-H/2/V.s),c=unP(V.cx+W/2/V.s,V.cy+H/2/V.s);b=[c.lat,a.lng,a.lat,c.lng]}
-    if(b){// samenvoegen: per vakje van ~56 px op het scherm alleen het strengste bord; borden die voor een touringcar niet uitmaken weglaten
-      const cell=56/(256*Math.pow(2,zoom)/360),best=new Map();
-      for(const it of LIM.data){if(it[0]<b[0]||it[0]>b[2]||it[1]<b[1]||it[1]>b[3])continue;if(it[2]==="h"&&it[3]>4.5)continue;if(it[2]==="t"&&zoom<14)continue;
-        const k=it[2]+Math.floor(it[1]/cell)+","+Math.floor(it[0]/(cell*0.62));const o=best.get(k);if(!o||it[3]<o[3])best.set(k,it)}
-      let n=0;for(const it of best.values()){if(++n>80)break;const e=limEl(it);used.add(e);e.classList.toggle("big",zoom>=16);
-        if(GM.on)gmPos(e,it[0],it[1]);else{if(e.parentNode!==ov)ov.appendChild(e);place(e,P(it[0],it[1]))}}}}
-  LIM.els.forEach(e=>{if(!used.has(e)&&e.parentNode)e.remove()})}
+    if(b){const groups=new Map();
+      for(const it of LIM.data){if(it[0]<b[0]||it[0]>b[2]||it[1]<b[1]||it[1]>b[3]||!relevant(it))continue;
+        const k=it[5]?it[2]+"#"+it[5]:it[2]+"@"+it[0].toFixed(4)+","+it[1].toFixed(4);const o=groups.get(k);if(!o||it[3]<o[3])groups.set(k,it)}
+      needRoads([...groups.values()].map(it=>it[5]).filter(Boolean));
+      let n=0;for(const [k,it] of groups){if(++n>120)break;const rd=it[5]?NWB.get(it[5]):null;
+        if(rd&&rd!=="wacht"&&ROAD_SKIP.test(rd.t||""))continue; // borden op fietspaden e.d. niet tonen
+        let at=[it[0],it[1]];
+        if(rd&&rd!=="wacht"&&rd.c&&rd.c.length>1){const o=limLine(k,it,rd.c);usedL.add(o);at=midOf(rd.c);
+          if(o.gm&&!o.gm.getMap())o.gm.setMap(GM.map);if(o.svg&&!o.svg.parentNode){if(!LIM.g){LIM.g=document.createElementNS(NS,"g");LIM.g.setAttribute("class","limg")}if(!LIM.g.parentNode)svg.append(LIM.g);LIM.g.append(o.svg)}}
+        const e=limEl(it);used.add(e);e.classList.toggle("big",zoom>=16);
+        if(GM.on)gmPos(e,at[0],at[1]);else{if(e.parentNode!==ov)ov.appendChild(e);place(e,P(at[0],at[1]))}}}}
+  LIM.els.forEach(e=>{if(!used.has(e)&&e.parentNode)e.remove()});
+  LIM.lines.forEach(o=>{if(usedL.has(o))return;if(o.gm&&o.gm.getMap())o.gm.setMap(null);if(o.svg&&o.svg.parentNode)o.svg.remove();if((o.gm&&!GM.on)||(o.svg&&GM.on))LIM.lines.delete(o.key)})}
 /* ---------- kaartlijnen tekenen (beheer) ---------- */
 let DRAW=null;
 const LKIND={corridor:["Corridor","Groen: hier mag je zonder ontheffing rijden","#059669"],s100:["Verbodsgrens","Rood: binnen deze lijn geldt een verbod","#DC2626"],ontheffing:["Route met ontheffing","Oranje: verplichte route met ontheffing","#F59E0B"]};

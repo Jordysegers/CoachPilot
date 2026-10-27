@@ -8,7 +8,7 @@ const SB_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SEC
 const sb = () => SB_KEY ? createClient(SB_URL, SB_KEY, { auth: { persistSession: false } }) : null;
 const UA = "Coachpilot/1.0 (https://coachpilot-steel.vercel.app)";
 const BASES = ["https://data.ndw.nu/api/rest/static-road-data/traffic-signs/v4/current-state", "https://data.ndw.nu/api/rest/static-road-data/traffic-signs/v1/current-state"];
-const KINDS = { C19: "h", C21: "t" };
+const KINDS = { C19: "h", C21: "t", C17: "l" };
 
 async function fetchT(url, ms) { const c = new AbortController(); const t = setTimeout(() => c.abort(), ms);
   try { return await fetch(url, { headers: { "User-Agent": UA, Accept: "application/json", "Accept-Encoding": "gzip" }, signal: c.signal }); }
@@ -18,7 +18,7 @@ const get = (o, paths) => { for (const p of paths) { let v = o; for (const k of 
 // Waarde van het bord: "3,5 m" / "3.5" / "12t"
 function valueOf(s, kind) { if (s.properties) s = { ...s, ...s.properties };
   const cands = [get(s, ["blackCode", "black_code", "value", "details.blackCode"]), ...(get(s, ["textSigns", "text_signs"]) || []).map(t => typeof t === "string" ? t : (t && (t.text || t.value)) || "")].filter(Boolean).map(String);
-  for (const c of cands) { const m = c.replace(",", ".").match(/(\d{1,2}(?:\.\d{1,2})?)/); if (m) { const v = parseFloat(m[1]); if (kind === "h" && v >= 1.5 && v <= 6) return v; if (kind === "t" && v >= 1 && v <= 80) return v; } }
+  for (const c of cands) { const m = c.replace(",", ".").match(/(\d{1,2}(?:\.\d{1,2})?)/); if (m) { const v = parseFloat(m[1]); if (kind === "h" && v >= 1.5 && v <= 6) return v; if (kind === "t" && v >= 1 && v <= 80) return v; if (kind === "l" && v >= 4 && v <= 30) return v; } }
   return null;
 }
 async function fetchKind(code) {
@@ -56,7 +56,7 @@ module.exports = async (req, res) => {
   const errors = []; let out = null;
   const c = sb(); let cached = null;
   try { if (c) { const { data } = await c.from("app_secrets").select("value").eq("name", "ndw_limits").maybeSingle(); cached = data && data.value; } } catch (e) {}
-  const fresh = cached && cached.items && Date.now() - Date.parse(cached.at) < 14 * 864e5 && !(req.query && req.query.fresh);
+  const fresh = cached && cached.items && cached.v === 2 && Date.now() - Date.parse(cached.at) < 14 * 864e5 && !(req.query && req.query.fresh);
   if (fresh) out = cached;
   else {
     const items = [];
@@ -67,18 +67,18 @@ module.exports = async (req, res) => {
           const pr = s.properties || s; if (pr.status && !/PLACED/i.test(pr.status)) return;
           const ll = latLon(s); const v = valueOf(s, kind); if (!ll || v == null) { skipped++; return; } const [lat, lon] = ll;
           const k = kind + lat.toFixed(4) + lon.toFixed(4) + v; if (seen.has(k)) return; seen.add(k);
-          items.push([Math.round(lat * 1e5) / 1e5, Math.round(lon * 1e5) / 1e5, kind, v, [pr.roadName, pr.townName].filter(Boolean).join(", ")]);
+          items.push([Math.round(lat * 1e5) / 1e5, Math.round(lon * 1e5) / 1e5, kind, v, [pr.roadName, pr.townName].filter(Boolean).join(", "), pr.roadSectionId || pr.road_section_id || (s.location && s.location.road && s.location.road.wvk_id) || 0]);
         });
         if (skipped) errors.push(code + ": " + skipped + " van " + list.length + " borden overgeslagen (geen locatie of waarde)");
       } catch (e) { errors.push(code + ": " + e.message); }
     }
-    if (items.length) { out = { at: new Date().toISOString(), items }; try { if (c) await c.from("app_secrets").upsert({ name: "ndw_limits", value: out }); } catch (e) {} }
+    if (items.length) { out = { v: 2, at: new Date().toISOString(), items }; try { if (c) await c.from("app_secrets").upsert({ name: "ndw_limits", value: out }); } catch (e) {} }
     else if (cached && cached.items) { out = cached; errors.push("reservekopie gebruikt"); }
   }
-  if (req.query && req.query.debug) { res.setHeader("Cache-Control", "no-store"); return res.status(200).json({ aantal: out ? out.items.length : 0, hoogtes: out ? out.items.filter(i => i[2] === "h").length : 0, gewichten: out ? out.items.filter(i => i[2] === "t").length : 0, bijgewerkt: out && out.at, fouten: errors, voorbeeld: out ? out.items.slice(0, 5) : [] }); }
+  if (req.query && req.query.debug) { res.setHeader("Cache-Control", "no-store"); return res.status(200).json({ aantal: out ? out.items.length : 0, hoogtes: out ? out.items.filter(i => i[2] === "h").length : 0, gewichten: out ? out.items.filter(i => i[2] === "t").length : 0, lengtes: out ? out.items.filter(i => i[2] === "l").length : 0, bijgewerkt: out && out.at, fouten: errors, voorbeeld: out ? out.items.slice(0, 5) : [] }); }
   if (!out) { res.setHeader("Cache-Control", "public, s-maxage=300"); return res.status(502).json({ error: "Doorrijhoogtes konden niet worden opgehaald: " + errors.join("; ") }); }
   res.setHeader("Cache-Control", "public, s-maxage=86400, stale-while-revalidate=604800");
   res.setHeader("Content-Type", "application/json");
-  res.status(200).send(JSON.stringify({ source: "NDW verkeersborden (C19 hoogte, C21 gewicht)", at: out.at, items: out.items, errors }));
+  res.status(200).send(JSON.stringify({ source: "NDW verkeersborden (C19 hoogte, C21 gewicht, C17 lengte)", at: out.at, items: out.items, errors }));
 };
 module.exports.config = { maxDuration: 60 };
