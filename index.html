@@ -1450,9 +1450,11 @@ const gmPos=(e,a,b)=>{if(GM.pos)GM.pos(e,a,b)};
 const NWB=new Map();let roadQ=new Set(),roadT=0;
 const ROAD_SKIP=/^(FP|VP|VZ|RP|FPR|VPR|BVP|ST)$/i; // fietspad, voetpad, voetgangerszone, ruiterpad e.d.
 function needRoads(ids){ids.forEach(id=>{if(id&&!NWB.has(id)){NWB.set(id,"wacht");roadQ.add(id)}});if(!roadQ.size||!LIVE)return;clearTimeout(roadT);
-  roadT=setTimeout(async()=>{const list=[...roadQ].slice(0,100);list.forEach(i=>roadQ.delete(i));list.sort((a,b)=>a-b);
-    try{const r=await fetch("/api/roads?v=2&ids="+list.join(","));const js=await r.json();list.forEach(i=>NWB.set(i,(js.roads&&js.roads[i])||null))}catch(e){list.forEach(i=>NWB.set(i,null))}
-    if(roadQ.size)needRoads([]);if(AMS.on){if(GM.on)gmRender();else draw()}},250)}
+  roadT=setTimeout(()=>{const all=[...roadQ].sort((a,b)=>a-b);roadQ.clear();
+    // in kleine porties tegelijk ophalen: sneller en minder kans op een time-out
+    for(let i=0;i<all.length;i+=30){const list=all.slice(i,i+30);
+      fetch("/api/roads?v=2&ids="+list.join(",")).then(r=>r.json()).then(js=>{list.forEach(id=>NWB.set(id,(js.roads&&js.roads[id])||null))},()=>{list.forEach(id=>NWB.delete(id))})
+        .finally(()=>{if(AMS.on){if(GM.on)gmRender();else draw()}})}},250)}
 function midOf(c){let L=0;const d=[];for(let i=1;i<c.length;i++){const k=Math.cos(c[i][1]*Math.PI/180);const x=Math.hypot((c[i][0]-c[i-1][0])*k,c[i][1]-c[i-1][1]);d.push(x);L+=x}
   let h=L/2;for(let i=1;i<c.length;i++){if(h<=d[i-1]){const t=d[i-1]?h/d[i-1]:0;return[c[i-1][1]+(c[i][1]-c[i-1][1])*t,c[i-1][0]+(c[i][0]-c[i-1][0])*t]}h-=d[i-1]}return[c[0][1],c[0][0]]}
 // A-/N-wegen, rijks- en provinciale wegen, plus de doorgaande stadswegen (NWB functionele wegklasse 0-4)
