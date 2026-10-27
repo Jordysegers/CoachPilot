@@ -37,7 +37,22 @@ async function fetchKind(code) {
   throw lastErr;
 }
 
+// Coördinaten uit allerlei mogelijke vormen halen
+function latLon(s) {
+  const g = s.geometry || (s.location && s.location.geometry);
+  if (g && Array.isArray(g.coordinates) && typeof g.coordinates[0] === "number") return [+g.coordinates[1], +g.coordinates[0]];
+  const lat = +get(s, ["location.wgs84.latitude", "location.wgs84.lat", "location.latitude", "location.lat", "latitude", "lat", "wgs84.latitude", "properties.latitude"]);
+  const lon = +get(s, ["location.wgs84.longitude", "location.wgs84.lon", "location.wgs84.lng", "location.longitude", "location.lon", "location.lng", "longitude", "lon", "lng", "wgs84.longitude", "properties.longitude"]);
+  if (lat && lon) return [lat, lon];
+  const x = +get(s, ["location.rd.x", "rd.x", "location.x"]), y = +get(s, ["location.rd.y", "rd.y", "location.y"]);
+  if (x > 1000 && y > 1000) { const dX = (x - 155000) * 1e-5, dY = (y - 463000) * 1e-5;
+    return [52.1551744 + (3235.65389 * dY - 32.58297 * dX * dX - 0.2475 * dY * dY - 0.84978 * dX * dX * dY - 0.0655 * dY ** 3) / 3600, 5.38720621 + (5260.52916 * dX + 105.94684 * dX * dY + 2.45656 * dX * dY * dY - 0.81885 * dX ** 3) / 3600]; }
+  return null;
+}
 module.exports = async (req, res) => {
+  if (req.query && req.query.raw) { res.setHeader("Cache-Control", "no-store"); const tries = [];
+    for (const base of BASES) for (const param of ["rvvCode", "rvv-code"]) { try { const r = await fetchT(base + "?" + param + "=C19", 40000); const t = await r.text(); tries.push({ url: base.split("/traffic-signs/")[1] + "?" + param, status: r.status, lengte: t.length, begin: t.slice(0, 900) }); if (r.ok && t.length > 50) return res.status(200).json(tries); } catch (e) { tries.push({ url: base + "?" + param, fout: e.message }); } }
+    return res.status(200).json(tries); }
   const errors = []; let out = null;
   const c = sb(); let cached = null;
   try { if (c) { const { data } = await c.from("app_secrets").select("value").eq("name", "ndw_limits").maybeSingle(); cached = data && data.value; } } catch (e) {}
@@ -47,13 +62,13 @@ module.exports = async (req, res) => {
     const items = [];
     for (const [code, kind] of Object.entries(KINDS)) {
       try {
-        const list = await fetchKind(code); const seen = new Set();
+        const list = await fetchKind(code); const seen = new Set(); let skipped = 0;
         list.forEach(s => {
-          const lat = +get(s, ["location.wgs84.latitude", "location.lat", "latitude", "lat"]), lon = +get(s, ["location.wgs84.longitude", "location.lon", "location.lng", "longitude", "lon"]);
-          const v = valueOf(s, kind); if (!lat || !lon || v == null) return;
+          const ll = latLon(s); const v = valueOf(s, kind); if (!ll || v == null) { skipped++; return; } const [lat, lon] = ll;
           const k = kind + lat.toFixed(4) + lon.toFixed(4) + v; if (seen.has(k)) return; seen.add(k);
           items.push([Math.round(lat * 1e5) / 1e5, Math.round(lon * 1e5) / 1e5, kind, v]);
         });
+        if (skipped) errors.push(code + ": " + skipped + " van " + list.length + " borden overgeslagen (geen locatie of waarde)");
       } catch (e) { errors.push(code + ": " + e.message); }
     }
     if (items.length) { out = { at: new Date().toISOString(), items }; try { if (c) await c.from("app_secrets").upsert({ name: "ndw_limits", value: out }); } catch (e) {} }
