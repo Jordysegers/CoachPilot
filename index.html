@@ -1451,16 +1451,17 @@ const NWB=new Map();let roadQ=new Set(),roadT=0;
 const ROAD_SKIP=/^(FP|VP|VZ|RP|FPR|VPR|BVP|ST)$/i; // fietspad, voetpad, voetgangerszone, ruiterpad e.d.
 function needRoads(ids){ids.forEach(id=>{if(id&&!NWB.has(id)){NWB.set(id,"wacht");roadQ.add(id)}});if(!roadQ.size||!LIVE)return;clearTimeout(roadT);
   roadT=setTimeout(async()=>{const list=[...roadQ].slice(0,100);list.forEach(i=>roadQ.delete(i));list.sort((a,b)=>a-b);
-    try{const r=await fetch("/api/roads?ids="+list.join(","));const js=await r.json();list.forEach(i=>NWB.set(i,(js.roads&&js.roads[i])||null))}catch(e){list.forEach(i=>NWB.set(i,null))}
+    try{const r=await fetch("/api/roads?v=2&ids="+list.join(","));const js=await r.json();list.forEach(i=>NWB.set(i,(js.roads&&js.roads[i])||null))}catch(e){list.forEach(i=>NWB.set(i,null))}
     if(roadQ.size)needRoads([]);if(AMS.on){if(GM.on)gmRender();else draw()}},250)}
 function midOf(c){let L=0;const d=[];for(let i=1;i<c.length;i++){const k=Math.cos(c[i][1]*Math.PI/180);const x=Math.hypot((c[i][0]-c[i-1][0])*k,c[i][1]-c[i-1][1]);d.push(x);L+=x}
   let h=L/2;for(let i=1;i<c.length;i++){if(h<=d[i-1]){const t=d[i-1]?h/d[i-1]:0;return[c[i-1][1]+(c[i][1]-c[i-1][1])*t,c[i-1][0]+(c[i][0]-c[i-1][0])*t]}h-=d[i-1]}return[c[0][1],c[0][0]]}
+const majorRoad=rd=>!ROAD_SKIP.test(rd.t||"")&&(/^[ANE]/i.test(rd.r||"")||/^[RP]$/i.test(rd.w||""));
 const relevant=it=>it[2]==="h"?it[3]<=4.5:it[2]==="l"?it[3]<=15:it[3]<=40;
 function limLine(key,it,c){let o=LIM.lines.get(key);if(o)return o;o={key};
   if(GM.on&&GM.map){o.gm=new google.maps.Polyline({path:c.map(q=>({lat:q[1],lng:q[0]})),strokeColor:"#DC2626",strokeOpacity:.85,strokeWeight:6,zIndex:4,clickable:true});o.gm.addListener("click",()=>limInfo(it))}
   else{const p=document.createElementNS(NS,"path");p.setAttribute("d",lineD(c));p.setAttribute("class","limline");p.setAttribute("vector-effect","non-scaling-stroke");p.addEventListener("click",()=>limInfo(it));o.svg=p}
   LIM.lines.set(key,o);return o}
-function placeLimits(zoom){const show=AMS.on&&LIM.data&&zoom>=14&&!DRAW;const used=new Set(),usedL=new Set();
+function placeLimits(zoom){const show=AMS.on&&LIM.data&&zoom>=13&&!DRAW;const used=new Set(),usedL=new Set();
   if(show){let b;if(GM.on&&GM.map){const bb=GM.map.getBounds();if(bb){const ne=bb.getNorthEast(),sw=bb.getSouthWest();b=[sw.lat(),sw.lng(),ne.lat(),ne.lng()]}}
     else{const[W,H]=size();const a=unP(V.cx-W/2/V.s,V.cy-H/2/V.s),c=unP(V.cx+W/2/V.s,V.cy+H/2/V.s);b=[c.lat,a.lng,a.lat,c.lng]}
     if(b){const groups=new Map();
@@ -1468,7 +1469,8 @@ function placeLimits(zoom){const show=AMS.on&&LIM.data&&zoom>=14&&!DRAW;const us
         const k=it[5]?it[2]+"#"+it[5]:it[2]+"@"+it[0].toFixed(4)+","+it[1].toFixed(4);const o=groups.get(k);if(!o||it[3]<o[3])groups.set(k,it)}
       needRoads([...groups.values()].map(it=>it[5]).filter(Boolean));
       let n=0;for(const [k,it] of groups){if(++n>120)break;const rd=it[5]?NWB.get(it[5]):null;
-        if(rd&&rd!=="wacht"&&ROAD_SKIP.test(rd.t||""))continue; // borden op fietspaden e.d. niet tonen
+        // alleen beperkingen op grote wegen (A- en N-wegen, rijks- en provinciale wegen); kleine straten en fietspaden laten we weg
+        if(!rd||rd==="wacht"||!majorRoad(rd))continue;
         let at=[it[0],it[1]];
         if(rd&&rd!=="wacht"&&rd.c&&rd.c.length>1){const o=limLine(k,it,rd.c);usedL.add(o);at=midOf(rd.c);
           if(o.gm&&!o.gm.getMap())o.gm.setMap(GM.map);if(o.svg&&!o.svg.parentNode){if(!LIM.g){LIM.g=document.createElementNS(NS,"g");LIM.g.setAttribute("class","limg")}if(!LIM.g.parentNode)svg.append(LIM.g);LIM.g.append(o.svg)}}

@@ -24,7 +24,7 @@ async function one(id) {
   const f = fs.find(x => String((x.properties || {}).wvk_id ?? (x.properties || {}).WVK_ID ?? x.id) === String(id)) || (fs.length === 1 ? fs[0] : null);
   if (!f) throw new Error("niet gevonden");
   const p = f.properties || {}; const c = lines(f.geometry).flat();
-  return { c: simplify(c.map(q => [Math.round(q[0] * 1e5) / 1e5, Math.round(q[1] * 1e5) / 1e5])), t: p.bst_code || p.bstCode || "", n: p.stt_naam || p.sttNaam || "" };
+  return { c: simplify(c.map(q => [Math.round(q[0] * 1e5) / 1e5, Math.round(q[1] * 1e5) / 1e5])), t: p.bst_code || p.bstCode || "", n: p.stt_naam || p.sttNaam || "", r: [p.routeltr, p.routeltr2].filter(Boolean).join(""), w: p.wegbehsrt || "", f: p.frc != null ? +p.frc : null };
 }
 
 module.exports = async (req, res) => {
@@ -36,7 +36,7 @@ module.exports = async (req, res) => {
   const out = {}, errors = []; let i = 0;
   async function worker() { while (i < ids.length) { const id = ids[i++]; try { out[id] = await one(id); } catch (e) { out[id] = null; errors.push(id + ": " + e.message); } } }
   await Promise.all(Array.from({ length: 10 }, worker));
-  res.setHeader("Cache-Control", errors.length === ids.length && ids.length ? "public, s-maxage=600" : "public, s-maxage=2592000, stale-while-revalidate=2592000");
+  res.setHeader("Cache-Control", errors.length ? "public, s-maxage=600" : "public, s-maxage=2592000, stale-while-revalidate=2592000");
   res.status(200).json({ roads: out, errors: errors.slice(0, 5) });
 };
 module.exports.config = { maxDuration: 30 };
