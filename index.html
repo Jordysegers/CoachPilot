@@ -121,8 +121,8 @@ body.drawing .topbar,body.drawing .sheet,body.drawing .mapside,body.drawing .zle
 .dact:active{transform:scale(.96)}
 .moremenu{position:fixed;z-index:200;background:var(--card);border-radius:16px;box-shadow:0 12px 32px rgb(20 22 31 / .22);padding:6px;min-width:230px;display:flex;flex-direction:column}
 .mitem{display:flex;align-items:center;gap:10px;border:0;background:none;padding:11px 12px;border-radius:10px;font-size:14px;font-weight:600;text-align:left;color:inherit;cursor:pointer}.mitem:active{background:var(--soft)}.mic{width:22px;text-align:center}
-.limsign{position:absolute;transform:translate(-50%,-50%);width:38px;height:38px;border-radius:50%;background:#fff;border:4px solid #DC2626;display:grid;place-items:center;padding:0;box-shadow:0 2px 6px rgb(0 0 0 / .3);z-index:5;pointer-events:auto;cursor:pointer;color:#111;font-weight:800;font-size:10.5px;line-height:1;letter-spacing:-.02em}
-.limsign span{white-space:nowrap}.limsign.lh span::before{content:"↕";display:block;font-size:9px;text-align:center;margin-bottom:-1px}
+.limsign{position:absolute;transform:translate(-50%,-50%);width:42px;height:42px;border:0;background:none;padding:0;z-index:5;pointer-events:auto;cursor:pointer;filter:drop-shadow(0 2px 3px rgb(0 0 0 / .35))}
+.limsign svg{width:100%;height:100%;display:block}
 .zlabel.amslabel.dot .zl-tx{display:none}.zlabel.amslabel{font-size:11px;padding:2px 8px 2px 3px}.zlabel.amslabel.big{font-size:13px;padding:4px 11px 4px 5px}.zlabel.amslabel.dot{padding:2px}
 .zlegend .lgsign{display:inline-block;width:12px;height:12px;border-radius:50%;border:2.5px solid #DC2626;background:#fff}
 .ztag.fut{background:#FFF7E6;color:#92400E;box-shadow:inset 0 0 0 1.5px #F59E0B}.ztag.now{background:#E8F5E9;color:#166534}
@@ -1435,7 +1435,12 @@ const LIM={data:null,p:null,err:null,els:new Map()};
 function loadLimits(){if(LIM.data)return Promise.resolve();if(LIM.p)return LIM.p;if(!LIVE){LIM.err="preview";return Promise.resolve()}
   return LIM.p=(async()=>{try{const r=await fetch("/api/limits?v=1");const js=await r.json();if(!r.ok||js.error)throw new Error(js.error||("fout "+r.status));LIM.data=js.items||[];LIM.err=null}catch(e){LIM.err=e.message||String(e)}finally{LIM.p=null}if(AMS.on){renderLegend();if(GM.on)gmRender();else draw()}})()}
 const fmtLim=(k,v)=>k==="h"?String(v).replace(".",",")+" m":String(v).replace(".",",")+" t";
-function limEl(it){const key=it.join("|");let e=LIM.els.get(key);if(!e){e=el("button",{type:"button",class:"limsign "+(it[2]==="h"?"lh":"lt"),title:(it[2]==="h"?"Maximale hoogte ":"Maximaal gewicht ")+fmtLim(it[2],it[3]),onclick:ev=>{ev.stopPropagation();alertMsg((it[2]==="h"?"Doorrijhoogte: voertuigen hoger dan ":"Maximaal gewicht: voertuigen zwaarder dan ")+fmtLim(it[2],it[3])+" mogen hier niet door (bord "+(it[2]==="h"?"C19":"C21")+").")}},el("span",{},fmtLim(it[2],it[3])));LIM.els.set(key,e)}return e}
+// eigen bordje in de stijl van het verkeersbord: C19 (hoogte, met pijlpunten boven en onder) en C21 (gewicht)
+function signSvg(k,v){const t=String(v).replace(".",",")+(k==="h"?"m":"t");const fs=t.length>=5?11:t.length===4?12.5:14;
+  return '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="22" fill="#fff"/><circle cx="24" cy="24" r="19" fill="none" stroke="#D7262E" stroke-width="5.5"/>'+
+    (k==="h"?'<path d="M24 14.5l-4.2-5h8.4z M24 33.5l-4.2 5h8.4z" fill="#111"/>':'')+
+    '<text x="24" y="'+(k==="h"?28.6:29.4)+'" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="'+fs+'" fill="#111" letter-spacing="-.4">'+t+'</text></svg>'}
+function limEl(it){const key=it.join("|");let e=LIM.els.get(key);if(!e){e=el("button",{type:"button",class:"limsign "+(it[2]==="h"?"lh":"lt"),title:(it[2]==="h"?"Maximale hoogte ":"Maximaal gewicht ")+fmtLim(it[2],it[3]),onclick:ev=>{ev.stopPropagation();alertMsg((it[2]==="h"?"Doorrijhoogte: voertuigen hoger dan ":"Maximaal gewicht: voertuigen zwaarder dan ")+fmtLim(it[2],it[3])+" mogen hier niet door (bord "+(it[2]==="h"?"C19":"C21")+").")}});e.innerHTML=signSvg(it[2],it[3]);LIM.els.set(key,e)}return e}
 // alleen borden in beeld en pas vanaf zoom 12 tonen, anders wordt de kaart te druk
 const gmPos=(e,a,b)=>{if(GM.pos)GM.pos(e,a,b)};
 function placeLimits(zoom){const show=AMS.on&&LIM.data&&zoom>=12&&!DRAW;let used=new Set();
