@@ -126,6 +126,15 @@ body.drawing .topbar,body.drawing .sheet,body.drawing .mapside,body.drawing .zle
 .limsign svg{width:100%;height:100%;display:block}.limsign.big{width:34px;height:34px}
 .zlabel.amslabel.dot .zl-tx{display:none}.zlabel.amslabel{font-size:11px;padding:2px 8px 2px 3px}.zlabel.amslabel.big{font-size:13px;padding:4px 11px 4px 5px}.zlabel.amslabel.dot{padding:2px}
 .zlegend .lgsign{display:inline-block;width:12px;height:12px;border-radius:50%;border:2.5px solid #DC2626;background:#fff}
+.busdlg{position:fixed;inset:0;z-index:300;background:rgb(10 12 20 / .45);display:flex;align-items:flex-end;justify-content:center;padding:12px;padding-bottom:calc(12px + env(safe-area-inset-bottom))}
+.busform{background:var(--card);border-radius:22px;padding:16px;width:100%;max-width:460px;display:flex;flex-direction:column;gap:12px;box-shadow:0 20px 50px rgb(0 0 0 / .3)}
+.bhead{display:flex;align-items:center;justify-content:space-between}.bhead h3{margin:0;font-size:18px}
+.bpres{display:flex;gap:6px;flex-wrap:wrap}.bpres .chip{box-shadow:none;background:var(--soft)}
+.bflds{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.bfld{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:700;color:var(--muted)}
+.bin{display:flex;align-items:center;background:var(--soft);border-radius:12px;padding:0 10px}.bin input{border:0;background:none;width:100%;min-width:0;padding:11px 0;font-size:17px;font-weight:800;color:var(--ink,#14161F)}.bin b{font-size:13px;color:var(--muted)}
+.buscard{display:flex;align-items:center;gap:12px}
+.zlegend .lgbus{border:0;background:none;padding:0;font:inherit;color:inherit;display:flex;align-items:center;gap:5px;cursor:pointer}
+.chip.layer.bus.on{background:#EEF2FF;box-shadow:inset 0 0 0 2px var(--accent),0 2px 8px rgb(20 22 31 / .08)}
 .ztag.fut{background:#FFF7E6;color:#92400E;box-shadow:inset 0 0 0 1.5px #F59E0B}.ztag.now{background:#E8F5E9;color:#166534}
 .zfuture{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:16px;background:#FFF7E6;border:1.5px dashed #F59E0B}.zfuture b{display:block;color:#92400E}.zfuture span{font-size:13px;color:#78350F}.zf-ic{font-size:20px}
 .zactive{display:inline-flex;align-self:flex-start;align-items:center;gap:7px;font-size:13px;font-weight:800;color:#166534;background:#E8F5E9;padding:5px 10px;border-radius:999px}.zdot{width:8px;height:8px;border-radius:50%;background:#16A34A;box-shadow:0 0 0 3px rgb(22 163 74 / .25)}
@@ -1364,11 +1373,11 @@ function drawZonesGm(){if(!GM.on||!GM.map)return;const dl=GM.map.data;
     if(!ZN.gmClick){ZN.gmClick=dl.addListener("click",e=>{const p={};e.feature.forEachProperty((v,k)=>p[k]=v);selectZone(p)})}}
   else dl.setStyle(dl.getStyle())}
 function drawZones(){drawZonesSvg();drawZonesGm();if(ZN.on&&ZN.data&&!ZN.labels.length)zoneLabels();if(!ZN.on&&ZN.labels.length)zoneLabels();renderLegend();if(GM.on)gmRender();else draw()}
-function renderLegend(){let l=document.getElementById("zLegend");const z=ZN.on&&ZN.data,af=AMS.on?amsFeatures():[],ak=new Set(af.map(f=>f.properties.kind)),a=af.length>0||(AMS.on&&LIM.data&&LIM.data.length>0);if(!z&&!a){if(l)l.remove();return}
+function renderLegend(){let l=document.getElementById("zLegend");const z=ZN.on&&ZN.data,af=AMS.on?amsFeatures():[],ak=new Set(af.map(f=>f.properties.kind)),a=af.length>0||BUS.on;if(!z&&!a){if(l)l.remove();return}
   if(!l){l=el("div",{class:"zlegend",id:"zLegend"});document.getElementById("mapView").append(l)}
   const hasFut=z&&ZN.data.features.some(f=>zFuture(f.properties));
   l.replaceChildren(...[z?el("span",{class:"lg"},el("i",{class:"le"}),"Paarse milieuzone (bussen)"):null,z&&ZN.data.features.some(f=>f.properties.zone==="zero")?el("span",{class:"lg"},el("i",{class:"ze"}),"Zero-emissie"):null,hasFut?el("span",{class:"lg"},el("i",{class:"fut"}),"Toekomstig"):null,
-    ak.has("corridor")?el("span",{class:"lg"},el("b",{class:"ln vrij"}),"Corridor: mag"):null,ak.has("ontheffing")?el("span",{class:"lg"},el("b",{class:"ln onth"}),"Met ontheffing"):null,ak.has("s100")?el("span",{class:"lg"},el("b",{class:"ln s100"}),"S100 verbod"):null,AMS.on&&LIM.data&&LIM.data.length?el("span",{class:"lg"},el("b",{class:"lgsign"}),"Hoogte, lengte, gewicht"):null].filter(Boolean))}
+    ak.has("corridor")?el("span",{class:"lg"},el("b",{class:"ln vrij"}),"Corridor: mag"):null,ak.has("ontheffing")?el("span",{class:"lg"},el("b",{class:"ln onth"}),"Met ontheffing"):null,ak.has("s100")?el("span",{class:"lg"},el("b",{class:"ln s100"}),"S100 verbod"):null,BUS.on&&BUS.dims?el("button",{type:"button",class:"lg lgbus",onclick:()=>openBusDims()},el("b",{class:"lgsign"}),"Jouw bus: "+busTxt()+" ✏️"):null].filter(Boolean))}
 async function toggleZones(){ZN.on=!ZN.on;buildChips();
   if(ZN.on){await loadZones();if(ZN.err==="preview"){alertMsg("Milieuzones zie je op de live site. Deze voorbeeldweergave mag de NDW-gegevens niet ophalen.");ZN.on=false;buildChips();return}
     if(ZN.err){alertMsg("Milieuzones laden lukte niet: "+ZN.err);ZN.on=false;buildChips();return}
@@ -1412,12 +1421,12 @@ function amsLabel(){if(!AMS.on||!amsFeatures().some(f=>f.properties.kind==="s100
   if(!AMS.label)AMS.label=el("button",{type:"button",class:"zlabel amslabel",onclick:ev=>{ev.stopPropagation();openAms()}},el("span",{class:"zl-ic"},"🚫"),el("span",{class:"zl-tx"},"S100 · touringcarverbod"));return AMS.label}
 function drawAms(){drawAmsSvg();drawAmsGm();amsLabel();renderLegend();if(GM.on)gmRender();else draw()}
 async function toggleAms(){AMS.on=!AMS.on;buildChips();
-  if(AMS.on){loadLimits();await loadAms();if(AMS.err==="preview"&&!ownLines().length){alertMsg("De beperkingen zie je op de live site. Deze voorbeeldweergave mag de gegevens niet ophalen.");AMS.on=false;buildChips();return}
+  if(AMS.on){await loadAms();if(AMS.err==="preview"&&!ownLines().length){alertMsg("De beperkingen zie je op de live site. Deze voorbeeldweergave mag de gegevens niet ophalen.");AMS.on=false;buildChips();return}
     if(AMS.err&&!ownLines().length){alertMsg("Beperkingen laden lukte niet: "+AMS.err);AMS.on=false;buildChips();return}
-    {const k=new Set(amsFeatures().map(f=>f.properties.kind));alertMsg("Beperkingen staan aan. Zoom in op straatniveau voor doorrijhoogtes, lengte- en gewichtsbeperkingen (rode streep op de weg). Ook verboden zones zoals de S100 in Amsterdam.")}}
+    {const k=new Set(amsFeatures().map(f=>f.properties.kind));alertMsg("Verboden zones staan aan, zoals de S100 en de corridor in Amsterdam.")}}
   else{S.ams=false;renderSheet()}drawAms();buildChips()}
 // gegevens alvast op de achtergrond ophalen, zodat de lagen meteen verschijnen als je ze aanzet
-if(LIVE)setTimeout(()=>{try{loadAms().then(()=>buildChips());loadLimits();loadZones().then(()=>buildChips())}catch(e){}},4000);
+if(LIVE)setTimeout(()=>{try{loadAms().then(()=>buildChips());if(BUS.dims)loadLimits();loadZones().then(()=>buildChips())}catch(e){}},4000);
 function openAms(){S.zone=null;S.sel=null;S.ams=true;renderSheet();drawZones()}
 function closeAms(){S.ams=false;renderSheet()}
 function renderAmsCard(){const panel=grippedPanel("zonepanel",closeAms);const sc=el("div",{class:"pscroll"});
@@ -1431,10 +1440,30 @@ function renderAmsCard(){const panel=grippedPanel("zonepanel",closeAms);const sc
   sc.append(el("div",{class:"r",style:"gap:8px;flex-wrap:wrap"},el("a",{class:"btn sm",href:"https://www.amsterdam.nl/verkeer-vervoer/touringcar/",target:"_blank",rel:"noopener"},"Regels en ontheffing aanvragen ↗"),isMod(C.me)?el("button",{class:"btn sm",type:"button",onclick:()=>{closeAms();nav(()=>{showTabRaw("modView");C.modTab="lines";renderMod()})}},"✏️ Lijnen tekenen"):null));
   sc.append(el("p",{class:"note",style:"margin:0"},(ownLines().length?"Lijnen gecontroleerd door de beheerders":"S100 en corridor: OpenStreetMap")+(AMS.data&&AMS.data.fetchedAt?" · opgehaald "+ago(Date.parse(AMS.data.fetchedAt)):"")+". Volg altijd de borden ter plaatse."));
   panel.append(sc);sheet.append(panel)}
+/* ---------- mijn bus: afmetingen invoeren, alleen beperkingen tonen die voor jouw bus gelden ---------- */
+const BUS={on:false,dims:store("cp-bus")};
+const n1=v=>String(+(+v).toFixed(2)).replace(".",",");
+function busTxt(){const d=BUS.dims||{};return n1(d.h)+" m · "+n1(d.l)+" m · "+n1(d.t)+" t"}
+function toggleBus(){if(!BUS.dims){openBusDims(true);return}BUS.on=!BUS.on;if(BUS.on){loadLimits();if(!LIVE)alertMsg("De borden zie je op de live site.");else alertMsg("Je ziet nu alleen doorrijhoogtes, lengte- en gewichtsbeperkingen die voor jouw bus gelden. Zoom in om ze te zien.")}
+  buildChips();renderLegend();if(GM.on)gmRender();else draw()}
+function openBusDims(turnOn){document.getElementById("busDlg")?.remove();const d={...(BUS.dims||{h:3.8,l:13,t:24})};
+  const fld=(k,label,unit,min,max)=>{const i=el("input",{type:"text",inputmode:"decimal",value:n1(d[k]),"aria-label":label});i.addEventListener("input",()=>{d[k]=parseFloat(i.value.replace(",","."))});return el("label",{class:"bfld"},el("span",{},label),el("div",{class:"bin"},i,el("b",{},unit)))};
+  const presets=[["Touringcar 12 m",{h:3.7,l:12.2,t:19.5}],["Touringcar 3-asser",{h:3.8,l:14,t:26}],["Dubbeldekker",{h:4,l:13.9,t:26}],["Midi / kleine bus",{h:3.2,l:9,t:12}]];
+  const form=el("form",{class:"busform"});
+  const body=()=>{form.replaceChildren(el("div",{class:"bhead"},el("h3",{},"🚌 Jouw bus"),el("button",{type:"button",class:"roundbtn","aria-label":"Sluiten",onclick:()=>dlg.remove()},icon("i-x","i"))),
+    el("p",{class:"note",style:"margin:0"},"Vul de afmetingen van je bus in. Je ziet dan alleen de doorrijhoogtes, lengte- en gewichtsbeperkingen die voor jóuw bus gelden."),
+    el("div",{class:"bpres"},...presets.map(([t,v])=>el("button",{type:"button",class:"chip",onclick:()=>{Object.assign(d,v);body()}},t))),
+    el("div",{class:"bflds"},fld("h","Hoogte","m"),fld("l","Lengte","m"),fld("t","Gewicht","t")),
+    el("button",{class:"btn primary",type:"submit"},"Opslaan"))};
+  body();
+  form.addEventListener("submit",e=>{e.preventDefault();if(!(d.h>=1.5&&d.h<=5&&d.l>=4&&d.l<=25&&d.t>=1&&d.t<=60)){alertMsg("Controleer de afmetingen: hoogte 1,5–5 m, lengte 4–25 m, gewicht 1–60 t.");return}
+    BUS.dims={h:+d.h,l:+d.l,t:+d.t};store("cp-bus",BUS.dims);dlg.remove();if(turnOn||!BUS.on){BUS.on=false;toggleBus()}else{buildChips();renderLegend();if(GM.on)gmRender();else draw()}if(!document.getElementById("accView").hidden)renderAcc()});
+  const dlg=el("div",{class:"busdlg",id:"busDlg",onclick:e=>{if(e.target===dlg)dlg.remove()}},form);document.body.append(dlg);setTimeout(()=>{const i=form.querySelector("input");i&&i.focus()},100)}
+function busCard(){return el("div",{class:"card buscard"},el("div",{style:"min-width:0;flex:1"},el("b",{},"🚌 Mijn bus"),el("div",{class:"pm"},BUS.dims?busTxt():"Nog niet ingevuld")),el("button",{class:"btn sm",onclick:()=>openBusDims()},BUS.dims?"Wijzigen":"Invullen"))}
 /* ---------- doorrijhoogtes en maximaal gewicht (NDW verkeersborden C19/C21) ---------- */
 const LIM={data:null,p:null,err:null,els:new Map(),lines:new Map(),g:null};
 function loadLimits(){if(LIM.data)return Promise.resolve();if(LIM.p)return LIM.p;if(!LIVE){LIM.err="preview";return Promise.resolve()}
-  return LIM.p=(async()=>{try{const r=await fetch("/api/limits?v=3");const js=await r.json();if(!r.ok||js.error)throw new Error(js.error||("fout "+r.status));LIM.data=js.items||[];LIM.err=null}catch(e){LIM.err=e.message||String(e)}finally{LIM.p=null}if(AMS.on){renderLegend();if(GM.on)gmRender();else draw()}})()}
+  return LIM.p=(async()=>{try{const r=await fetch("/api/limits?v=3");const js=await r.json();if(!r.ok||js.error)throw new Error(js.error||("fout "+r.status));LIM.data=js.items||[];LIM.err=null}catch(e){LIM.err=e.message||String(e)}finally{LIM.p=null}if(BUS.on){renderLegend();if(GM.on)gmRender();else draw()}})()}
 const fmtLim=(k,v)=>String(v).replace(".",",")+(k==="t"?" t":" m");
 const LIMTXT={h:["Doorrijhoogte","hoger dan"],t:["Maximaal gewicht","zwaarder dan"],l:["Maximale lengte","langer dan"]};
 function limInfo(it){alertMsg(LIMTXT[it[2]][0]+": voertuigen "+LIMTXT[it[2]][1]+" "+fmtLim(it[2],it[3])+" mogen hier niet door"+(it[4]?" ("+it[4]+")":"")+".")}
@@ -1455,17 +1484,19 @@ function needRoads(its){its.forEach(it=>{const id=it[5];if(id&&!NWB.has(id)){NWB
     // in kleine porties tegelijk ophalen: sneller en minder kans op een time-out
     for(let i=0;i<all.length;i+=30){const list=all.slice(i,i+30);
       fetch("/api/roads?v=3&ids="+list.map(id=>id+":"+(NWBPOS.get(id)||"")).join(",")).then(r=>r.json()).then(js=>{list.forEach(id=>NWB.set(id,(js.roads&&js.roads[id])||null))},()=>{list.forEach(id=>NWB.delete(id))})
-        .finally(()=>{if(AMS.on){if(GM.on)gmRender();else draw()}})}},250)}
+        .finally(()=>{if(BUS.on){if(GM.on)gmRender();else draw()}})}},250)}
 function midOf(c){let L=0;const d=[];for(let i=1;i<c.length;i++){const k=Math.cos(c[i][1]*Math.PI/180);const x=Math.hypot((c[i][0]-c[i-1][0])*k,c[i][1]-c[i-1][1]);d.push(x);L+=x}
   let h=L/2;for(let i=1;i<c.length;i++){if(h<=d[i-1]){const t=d[i-1]?h/d[i-1]:0;return[c[i-1][1]+(c[i][1]-c[i-1][1])*t,c[i-1][0]+(c[i][0]-c[i-1][0])*t]}h-=d[i-1]}return[c[0][1],c[0][0]]}
 // A-/N-wegen, rijks- en provinciale wegen, plus de doorgaande stadswegen (NWB functionele wegklasse 0-5)
-const majorRoad=rd=>!ROAD_SKIP.test(rd.t||"")&&(/^[ANE]/i.test(rd.r||"")||/^[RP]$/i.test(rd.w||"")||(rd.f!=null&&rd.f<=5));
-const relevant=it=>it[2]==="h"?it[3]<=4.5:it[2]==="l"?it[3]<=15:it[3]<=40;
+// geen fietspaden, voetpaden en voetgangersgebieden (wegklasse 7)
+const majorRoad=rd=>!ROAD_SKIP.test(rd.t||"")&&!(rd.f!=null&&rd.f>=7);
+// alleen borden die voor jóuw bus gelden: lager, korter of lichter dan je bus
+const relevant=it=>{const d=BUS.dims||{};return it[2]==="h"?it[3]<(d.h||0):it[2]==="l"?it[3]<(d.l||0):it[3]<(d.t||0)};
 function limLine(key,it,c){let o=LIM.lines.get(key);if(o)return o;o={key};
   if(GM.on&&GM.map){o.gm=new google.maps.Polyline({path:c.map(q=>({lat:q[1],lng:q[0]})),strokeColor:"#DC2626",strokeOpacity:.85,strokeWeight:6,zIndex:4,clickable:true});o.gm.addListener("click",()=>limInfo(it))}
   else{const p=document.createElementNS(NS,"path");p.setAttribute("d",lineD(c));p.setAttribute("class","limline");p.setAttribute("vector-effect","non-scaling-stroke");p.addEventListener("click",()=>limInfo(it));o.svg=p}
   LIM.lines.set(key,o);return o}
-function placeLimits(zoom){const show=AMS.on&&LIM.data&&zoom>=13&&!DRAW;const used=new Set(),usedL=new Set();
+function placeLimits(zoom){const show=BUS.on&&BUS.dims&&LIM.data&&zoom>=13&&!DRAW;const used=new Set(),usedL=new Set();
   if(show){let b;if(GM.on&&GM.map){const bb=GM.map.getBounds();if(bb){const ne=bb.getNorthEast(),sw=bb.getSouthWest();b=[sw.lat(),sw.lng(),ne.lat(),ne.lng()]}}
     else{const[W,H]=size();const a=unP(V.cx-W/2/V.s,V.cy-H/2/V.s),c=unP(V.cx+W/2/V.s,V.cy+H/2/V.s);b=[c.lat,a.lng,a.lat,c.lng]}
     if(b){const groups=new Map();
@@ -1566,6 +1597,7 @@ function buildChips(){
   lchip(el("img",{class:"lci",src:PARK_LOGO,alt:""}),"Parkeren",S.lp!==false,()=>{S.lp=S.lp===false;buildChips();draw()});
   lchip(el("span",{class:"lci zi"},ZN.loading&&ZN.on?"⏳":"🌿"),"Milieuzones",ZN.on,toggleZones,"zone");
   lchip(el("span",{class:"lci zi"},AMS.loading&&AMS.on?"⏳":"🚫"),"Beperkingen",AMS.on,toggleAms,"ams");
+  lchip(el("span",{class:"lci zi"},"🚌"),"Mijn bus",BUS.on,toggleBus,"bus");
   lchip(el("img",{class:"lci",src:STOP_LOGO,alt:""}),"In- en uitstappen",S.ls!==false,()=>{S.ls=S.ls===false;buildChips();draw()});
   c.append(el("span",{class:"chipdiv","aria-hidden":"true"}));
   ["wc","nacht","afval","was"].filter(k=>SVC[k]).forEach(fchip);
@@ -3474,6 +3506,7 @@ function renderAcc(){
   acc.append(el("div",{class:"tacho"},el("div",{class:"tile"},el("span",{},"Onderwerpen"),el("b",{},String(mine.length))),el("div",{class:"tile"},el("span",{},"Parking-reviews"),el("b",{},String(myRev.length)))));
   {const t=proTeaser("account");if(t)acc.append(t);else acc.append(proCard())}
   if(C.me)acc.append(pushCard());
+  acc.append(busCard());
   renderMySubs();
   acc.append(el("div",{class:"sec"},"Mijn onderwerpen"));
   const mb=el("div",{class:"card list0"});mine.forEach(x=>mb.append(threadRow(x)));if(!mine.length)mb.append(el("div",{class:"empty"},"Je hebt nog niets geplaatst."));acc.append(mb);
