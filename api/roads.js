@@ -27,7 +27,18 @@ async function one(id) {
   return { c: simplify(c.map(q => [Math.round(q[0] * 1e5) / 1e5, Math.round(q[1] * 1e5) / 1e5])), t: p.bst_code || p.bstCode || "", n: p.stt_naam || p.sttNaam || "", r: [p.routeltr, p.routeltr2].filter(Boolean).join(""), w: p.wegbehsrt || "", f: p.frc != null ? +p.frc : null };
 }
 
+// Diagnose: ?near=lat,lon → de dichtstbijzijnde borden met hun wegklasse
+async function near(q) {
+  const [lat, lon] = String(q).split(",").map(Number); const { createClient } = require("@supabase/supabase-js");
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY; const c = createClient(process.env.SUPABASE_URL || "https://ediwujxxzpwontltomrv.supabase.co", key, { auth: { persistSession: false } });
+  const { data } = await c.from("app_secrets").select("value").eq("name", "ndw_limits").maybeSingle(); const items = (data && data.value && data.value.items) || [];
+  const rel = it => it[2] === "h" ? it[3] <= 4.5 : it[2] === "l" ? it[3] <= 15 : it[3] <= 40;
+  const list = items.filter(rel).map(it => [Math.hypot((it[0] - lat) * 111, (it[1] - lon) * 68), it]).sort((a, b) => a[0] - b[0]).slice(0, 25);
+  const t0 = Date.now(); const out = await Promise.all(list.map(async ([d, it]) => { try { const r = await one(it[5]); return { km: +d.toFixed(2), bord: it[2] + " " + it[3], straat: it[4], wegklasse: r.f, beheer: r.w, route: r.r, soort: r.t }; } catch (e) { return { km: +d.toFixed(2), bord: it[2] + " " + it[3], straat: it[4], fout: e.message }; } }));
+  return { borden_totaal: items.length, ms: Date.now() - t0, dichtstbij: out };
+}
 module.exports = async (req, res) => {
+  if (req.query && req.query.near) { res.setHeader("Cache-Control", "no-store"); try { return res.status(200).json(await near(req.query.near)); } catch (e) { return res.status(200).json({ fout: e.message }); } }
   const ids = String((req.query && req.query.ids) || "").split(",").map(s => s.trim()).filter(s => /^\d{3,12}$/.test(s)).slice(0, 100);
   if (req.query && req.query.debug == "2") { res.setHeader("Cache-Control", "no-store"); try { return res.status(200).json(await one(ids[0])); } catch (e) { return res.status(200).json({ fout: e.message }); } }
   if (req.query && req.query.debug) { res.setHeader("Cache-Control", "no-store");
