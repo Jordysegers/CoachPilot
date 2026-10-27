@@ -1433,14 +1433,14 @@ function renderAmsCard(){const panel=grippedPanel("zonepanel",closeAms);const sc
 /* ---------- doorrijhoogtes en maximaal gewicht (NDW verkeersborden C19/C21) ---------- */
 const LIM={data:null,p:null,err:null,els:new Map()};
 function loadLimits(){if(LIM.data)return Promise.resolve();if(LIM.p)return LIM.p;if(!LIVE){LIM.err="preview";return Promise.resolve()}
-  return LIM.p=(async()=>{try{const r=await fetch("/api/limits?v=1");const js=await r.json();if(!r.ok||js.error)throw new Error(js.error||("fout "+r.status));LIM.data=js.items||[];LIM.err=null}catch(e){LIM.err=e.message||String(e)}finally{LIM.p=null}if(AMS.on){renderLegend();if(GM.on)gmRender();else draw()}})()}
+  return LIM.p=(async()=>{try{const r=await fetch("/api/limits?v=2");const js=await r.json();if(!r.ok||js.error)throw new Error(js.error||("fout "+r.status));LIM.data=js.items||[];LIM.err=null}catch(e){LIM.err=e.message||String(e)}finally{LIM.p=null}if(AMS.on){renderLegend();if(GM.on)gmRender();else draw()}})()}
 const fmtLim=(k,v)=>k==="h"?String(v).replace(".",",")+" m":String(v).replace(".",",")+" t";
 // eigen bordje in de stijl van het verkeersbord: C19 (hoogte, met pijlpunten boven en onder) en C21 (gewicht)
 function signSvg(k,v){const t=String(v).replace(".",",")+(k==="h"?"m":"t");const fs=t.length>=5?11:t.length===4?12.5:14;
   return '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="22" fill="#fff"/><circle cx="24" cy="24" r="19" fill="none" stroke="#D7262E" stroke-width="5.5"/>'+
     (k==="h"?'<path d="M24 14.5l-4.2-5h8.4z M24 33.5l-4.2 5h8.4z" fill="#111"/>':'')+
     '<text x="24" y="'+(k==="h"?28.6:29.4)+'" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="'+fs+'" fill="#111" letter-spacing="-.4">'+t+'</text></svg>'}
-function limEl(it){const key=it.join("|");let e=LIM.els.get(key);if(!e){e=el("button",{type:"button",class:"limsign "+(it[2]==="h"?"lh":"lt"),title:(it[2]==="h"?"Maximale hoogte ":"Maximaal gewicht ")+fmtLim(it[2],it[3]),onclick:ev=>{ev.stopPropagation();alertMsg((it[2]==="h"?"Doorrijhoogte: voertuigen hoger dan ":"Maximaal gewicht: voertuigen zwaarder dan ")+fmtLim(it[2],it[3])+" mogen hier niet door (bord "+(it[2]==="h"?"C19":"C21")+").")}});e.innerHTML=signSvg(it[2],it[3]);LIM.els.set(key,e)}return e}
+function limEl(it){const key=it.join("|");let e=LIM.els.get(key);if(!e){e=el("button",{type:"button",class:"limsign "+(it[2]==="h"?"lh":"lt"),title:(it[2]==="h"?"Maximale hoogte ":"Maximaal gewicht ")+fmtLim(it[2],it[3]),onclick:ev=>{ev.stopPropagation();alertMsg((it[2]==="h"?"Doorrijhoogte: voertuigen hoger dan ":"Maximaal gewicht: voertuigen zwaarder dan ")+fmtLim(it[2],it[3])+" mogen hier niet door"+(it[4]?" ("+it[4]+")":"")+".")}});e.innerHTML=signSvg(it[2],it[3]);LIM.els.set(key,e)}return e}
 // alleen borden in beeld en pas vanaf zoom 12 tonen, anders wordt de kaart te druk
 const gmPos=(e,a,b)=>{if(GM.pos)GM.pos(e,a,b)};
 function placeLimits(zoom){const show=AMS.on&&LIM.data&&zoom>=12&&!DRAW;let used=new Set();

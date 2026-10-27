@@ -16,7 +16,7 @@ async function fetchT(url, ms) { const c = new AbortController(); const t = setT
 
 const get = (o, paths) => { for (const p of paths) { let v = o; for (const k of p.split(".")) v = v == null ? v : v[k]; if (v != null && v !== "") return v; } return null; };
 // Waarde van het bord: "3,5 m" / "3.5" / "12t"
-function valueOf(s, kind) {
+function valueOf(s, kind) { if (s.properties) s = { ...s, ...s.properties };
   const cands = [get(s, ["blackCode", "black_code", "value", "details.blackCode"]), ...(get(s, ["textSigns", "text_signs"]) || []).map(t => typeof t === "string" ? t : (t && (t.text || t.value)) || "")].filter(Boolean).map(String);
   for (const c of cands) { const m = c.replace(",", ".").match(/(\d{1,2}(?:\.\d{1,2})?)/); if (m) { const v = parseFloat(m[1]); if (kind === "h" && v >= 1.5 && v <= 6) return v; if (kind === "t" && v >= 1 && v <= 80) return v; } }
   return null;
@@ -64,9 +64,10 @@ module.exports = async (req, res) => {
       try {
         const list = await fetchKind(code); const seen = new Set(); let skipped = 0;
         list.forEach(s => {
+          const pr = s.properties || s; if (pr.status && !/PLACED/i.test(pr.status)) return;
           const ll = latLon(s); const v = valueOf(s, kind); if (!ll || v == null) { skipped++; return; } const [lat, lon] = ll;
           const k = kind + lat.toFixed(4) + lon.toFixed(4) + v; if (seen.has(k)) return; seen.add(k);
-          items.push([Math.round(lat * 1e5) / 1e5, Math.round(lon * 1e5) / 1e5, kind, v]);
+          items.push([Math.round(lat * 1e5) / 1e5, Math.round(lon * 1e5) / 1e5, kind, v, [pr.roadName, pr.townName].filter(Boolean).join(", ")]);
         });
         if (skipped) errors.push(code + ": " + skipped + " van " + list.length + " borden overgeslagen (geen locatie of waarde)");
       } catch (e) { errors.push(code + ": " + e.message); }
